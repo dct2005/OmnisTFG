@@ -1,0 +1,43 @@
+{
+  "hash": "03f0a37a",
+  "configHash": "1446bf10",
+  "lockfileHash": "fb791580",
+  "browserHash": "92fae7a6",
+  "optimized": {
+    "@angular/core": {
+      "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "8915e12c",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "4f30993f",
+      "needsInterop": false
+    },
+    "@angular/router": {
+      "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
+      "file": "@angular_router.js",
+      "fileHash": "647ebc93",
+      "needsInterop": false
+    },
+    "zone.js": {
+      "src": "../../../../../../node_modules/zone.js/fesm2015/zone.js",
+      "file": "zone__js.js",
+      "fileHash": "ca9eef26",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-IUPBNWQQ": {
+      "file": "chunk-IUPBNWQQ.js"
+    },
+    "chunk-JRC4WPNH": {
+      "file": "chunk-JRC4WPNH.js"
+    },
+    "chunk-WDMUDEB6": {
+      "file": "chunk-WDMUDEB6.js"
+    }
+  }
+}
