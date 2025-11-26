@@ -1,0 +1,71 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 4rem;
+  background-color: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.logo-container .logo {
+  height: 60px; /* Adjust based on actual logo aspect ratio */
+  width: auto;
+}
+
+.nav-links {
+  display: flex;
+  gap: 3rem;
+}
+
+.nav-link {
+  color: #fff;
+  text-decoration: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #a855f7; /* Purple accent */
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.btn {
+  text-decoration: none;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  border-radius: 2rem;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+  transform: translateY(-1px);
+}
+
+.btn-text {
+  color: white;
+}
+
+.btn-text:hover {
+  color: #a855f7;
+}
