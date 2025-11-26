@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 4rem;
+  padding: 0 4rem 1rem 4rem;
   background-color: transparent;
   position: absolute;
   top: 0;
@@ -12,19 +12,20 @@
 }
 
 .logo-container .logo {
-  height: 60px; /* Adjust based on actual logo aspect ratio */
+  height: 90px;
+  /* Adjust based on actual logo aspect ratio */
   width: auto;
 }
 
 .nav-links {
   display: flex;
-  gap: 3rem;
+  gap: 122px;
 }
 
 .nav-link {
   color: #fff;
   text-decoration: none;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Audiowide', cursive;
   font-size: 1rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -33,7 +34,8 @@
 }
 
 .nav-link:hover {
-  color: #a855f7; /* Purple accent */
+  color: #a855f7;
+  /* Purple accent */
 }
 
 .auth-buttons {
@@ -44,7 +46,7 @@
 
 .btn {
   text-decoration: none;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Audiowide', cursive;
   font-weight: 600;
   padding: 0.6rem 1.5rem;
   border-radius: 2rem;

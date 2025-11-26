@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -9,5 +9,9 @@ import { RouterLink } from '@angular/router';
     styleUrl: './login.component.css'
 })
 export class LoginComponent {
+    passwordVisible = signal(false);
 
+    togglePasswordVisibility() {
+        this.passwordVisible.update(value => !value);
+    }
 }

@@ -11,8 +11,12 @@
             </div>
 
             <div class="form-group password-group">
-                <input type="password" id="password" placeholder="Contraseña" class="form-control">
-                <span class="show-password">Mostrar</span>
+                <input [type]="passwordVisible() ? 'text' : 'password'" id="password" placeholder="Contraseña"
+                    class="form-control">
+                <span class="show-password" (click)="togglePasswordVisibility()"
+                    style="cursor: pointer; user-select: none;">
+                    {{ passwordVisible() ? 'Ocultar' : 'Mostrar' }}
+                </span>
             </div>
 
             <div class="form-options">
@@ -31,8 +35,7 @@
 
         <div class="social-login">
             <button class="btn-social google">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google"
-                    width="20">
+                <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google" width="20">
                 Google
             </button>
             <button class="btn-social apple">
