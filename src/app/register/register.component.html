@@ -5,18 +5,21 @@
             <p>Únete a la comunidad de Omnis</p>
         </div>
 
-        <form class="register-form">
+        <form class="register-form" (ngSubmit)="onSubmit()">
+
             <div class="form-group">
                 <input type="text" id="name" placeholder="Nombre completo" class="form-control">
             </div>
 
             <div class="form-group">
-                <input type="email" id="email" placeholder="Correo electrónico" class="form-control">
+                <input type="email" id="email" name="email" [(ngModel)]="user.username" placeholder="Correo electrónico"
+                    class="form-control" required>
             </div>
 
             <div class="form-group password-group">
-                <input [type]="passwordVisible() ? 'text' : 'password'" id="password" placeholder="Contraseña"
-                    class="form-control">
+                <input [type]="passwordVisible() ? 'text' : 'password'" id="password" name="password"
+                    [(ngModel)]="user.password" placeholder="Contraseña" class="form-control" required>
+
                 <span class="show-password" (click)="togglePasswordVisibility()"
                     style="cursor: pointer; user-select: none;">
                     {{ passwordVisible() ? 'Ocultar' : 'Mostrar' }}
