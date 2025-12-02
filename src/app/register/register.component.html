@@ -14,12 +14,18 @@
                 <input type="email" id="email" placeholder="Correo electrónico" class="form-control">
             </div>
 
-            <div class="form-group">
-                <input type="password" id="password" placeholder="Contraseña" class="form-control">
+            <div class="form-group password-group">
+                <input [type]="passwordVisible() ? 'text' : 'password'" id="password" placeholder="Contraseña"
+                    class="form-control">
+                <span class="show-password" (click)="togglePasswordVisibility()"
+                    style="cursor: pointer; user-select: none;">
+                    {{ passwordVisible() ? 'Ocultar' : 'Mostrar' }}
+                </span>
             </div>
 
-            <div class="form-group">
-                <input type="password" id="confirm-password" placeholder="Confirmar contraseña" class="form-control">
+            <div class="form-group password-group">
+                <input [type]="passwordVisible() ? 'text' : 'password'" id="confirm-password"
+                    placeholder="Confirmar contraseña" class="form-control">
             </div>
 
             <div class="form-options">

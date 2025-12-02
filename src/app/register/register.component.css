@@ -19,7 +19,7 @@
 }
 
 .register-header h2 {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Audiowide', cursive;
     font-size: 2rem;
     font-weight: 600;
     color: white;
@@ -30,6 +30,7 @@
     color: #a0a0a0;
     margin-bottom: 2rem;
     font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
 }
 
 .form-group {
@@ -44,7 +45,7 @@
     border-radius: 8px;
     color: white;
     font-size: 1rem;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Audiowide', cursive;
     outline: none;
     transition: border-color 0.3s;
     box-sizing: border-box;
@@ -54,10 +55,26 @@
     border-color: #a855f7;
 }
 
+.password-group {
+    position: relative;
+}
+
+.show-password {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a0a0a0;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
+}
+
 .form-options {
     margin-bottom: 1.5rem;
     color: #a0a0a0;
     font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
 }
 
 .terms {
@@ -75,7 +92,7 @@
 .btn-submit {
     width: 100%;
     padding: 1rem;
-    background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+    background: #7c3aed;
     border: none;
     border-radius: 8px;
     color: white;
@@ -83,7 +100,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.2s;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Audiowide', cursive;
 }
 
 .btn-submit:hover {
@@ -96,6 +113,7 @@
     text-align: center;
     margin: 1.5rem 0;
     color: #a0a0a0;
+    font-family: 'Poppins', sans-serif;
 }
 
 .divider::before,
@@ -127,14 +145,17 @@
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Poppins', sans-serif;
     color: black;
 }
 
 .login-prompt {
-    margin-top: 2rem;
-    text-align: center;
+    margin-top: 0.5rem;
+    text-align: left;
     color: white;
+    font-family: 'Audiowide', cursive;
+    width: 100%;
+    max-width: 450px;
 }
 
 .login-prompt a {
