@@ -1,16 +1,15 @@
-// api/register.ts
-import { getSql } from '../lib/db';
-import bcrypt from 'bcrypt';
+// api/register.js
+const { neon } = require('@neondatabase/serverless');
+const bcrypt = require('bcrypt');
 
-export default async function handler(req: any, res: any) {
-    // Configuración de CORS
+module.exports = async function handler(req, res) {
+    // Configuración CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    // Validación de método
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Método no permitido' });
     }
@@ -22,10 +21,15 @@ export default async function handler(req: any, res: any) {
             return res.status(400).json({ error: 'Faltan datos' });
         }
 
-        const sql = getSql();
+        // Conexión a DB
+        const dbUrl = process.env.DATABASE_URL;
+        if (!dbUrl) {
+            throw new Error('Falta la variable DATABASE_URL');
+        }
 
-        // --- CORRECCIÓN LÍNEA 37 ---
-        // Usamos comillas invertidas (backticks) y ponemos la variable directamente
+        const sql = neon(dbUrl);
+
+        // Verificar si existe
         const userCheck = await sql`SELECT * FROM users WHERE email = ${username}`;
 
         if (userCheck.length > 0) {
@@ -34,14 +38,16 @@ export default async function handler(req: any, res: any) {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // --- CORRECCIÓN LÍNEA 47 ---
-        // Usamos comillas invertidas y variables directas. ¡Adiós a los $1, $2!
+        // Insertar
         await sql`INSERT INTO users (email, password) VALUES (${username}, ${hashedPassword})`;
 
         return res.status(201).json({ message: 'Usuario registrado correctamente' });
 
     } catch (error) {
-        console.error('Error en register:', error);
-        return res.status(500).json({ error: 'Error del servidor' });
+        console.error('Error completo:', error);
+        return res.status(500).json({
+            error: 'Error del servidor',
+            details: error.message
+        });
     }
-}
+};

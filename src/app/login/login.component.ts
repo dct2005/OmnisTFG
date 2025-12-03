@@ -16,7 +16,7 @@ export class LoginComponent {
         username: '', // Recuerda: en tu API esto es el email
         password: ''
     };
-    constructor(/*private authService: AuthService, private router: Router*/) { }
+    constructor(private authService: AuthService, private router: Router) { }
     togglePasswordVisibility() {
         this.passwordVisible.update(value => !value);
     }
@@ -28,7 +28,7 @@ export class LoginComponent {
             return;
         }
 
-        /*this.authService.login(this.credentials).subscribe({
+        this.authService.login(this.credentials).subscribe({
             next: (response: any) => {
                 console.log('Login exitoso:', response);
 
@@ -45,6 +45,6 @@ export class LoginComponent {
                 console.error('Error login:', error);
                 alert('Error: ' + (error.error?.error || 'Credenciales incorrectas'));
             }
-        });*/
+        });
     }
 }

@@ -20,15 +20,26 @@ export class RegisterComponent {
         this.passwordVisible.update(value => !value);
     }
     onSubmit() {
-        console.log('Enviando formulario...', this.user); // Para ver si llegan los datos
+        console.log('Enviando...', this.user);
 
         this.authService.register(this.user).subscribe({
             next: (res) => {
-                alert('Registro exitoso');
+                alert('¡Registro exitoso!');
                 this.router.navigate(['/login']);
             },
             error: (err) => {
-                alert('Error: ' + err.error.message); // O err.error.error dependiendo de la API
+                // Esto lo verás en la consola (F12) en rojo
+                console.error('ERROR DEL SERVIDOR:', err);
+
+                // 1. Intentamos sacar el mensaje si viene en formato JSON
+                let mensaje = err.error?.details || err.error?.error || err.error?.message;
+
+                // 2. Si sigue sin haber mensaje, convertimos TODO el objeto a texto
+                if (!mensaje) {
+                    mensaje = JSON.stringify(err.error || err.message);
+                }
+
+                alert('Fallo: ' + mensaje);
             }
         });
     }
