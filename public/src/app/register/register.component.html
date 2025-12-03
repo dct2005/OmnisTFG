@@ -1,0 +1,63 @@
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <h2>Crea tu cuenta</h2>
+            <p>Únete a la comunidad de Omnis</p>
+        </div>
+
+        <form class="register-form" (ngSubmit)="onSubmit()">
+
+            <div class="form-group">
+                <input type="text" id="name" placeholder="Nombre completo" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <input type="email" id="email" name="email" [(ngModel)]="user.username" placeholder="Correo electrónico"
+                    class="form-control" required>
+            </div>
+
+            <div class="form-group password-group">
+                <input [type]="passwordVisible() ? 'text' : 'password'" id="password" name="password"
+                    [(ngModel)]="user.password" placeholder="Contraseña" class="form-control" required>
+
+                <span class="show-password" (click)="togglePasswordVisibility()"
+                    style="cursor: pointer; user-select: none;">
+                    {{ passwordVisible() ? 'Ocultar' : 'Mostrar' }}
+                </span>
+            </div>
+
+            <div class="form-group password-group">
+                <input [type]="passwordVisible() ? 'text' : 'password'" id="confirm-password"
+                    placeholder="Confirmar contraseña" class="form-control">
+            </div>
+
+            <div class="form-options">
+                <label class="terms">
+                    <input type="checkbox"> Acepto los <a href="#">Términos y Condiciones</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn-submit">Registrarse</button>
+        </form>
+
+        <div class="divider">
+            <span>o regístrate con</span>
+        </div>
+
+        <div class="social-login">
+            <button class="btn-social google">
+                <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google" width="20">
+                Google
+            </button>
+            <button class="btn-social apple">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple"
+                    width="20">
+                Apple
+            </button>
+        </div>
+    </div>
+
+    <div class="login-prompt">
+        <p>¿Ya tienes cuenta? <a routerLink="/login">Inicia Sesión</a></p>
+    </div>
+</div>

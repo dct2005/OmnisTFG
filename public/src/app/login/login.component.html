@@ -1,0 +1,55 @@
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h2>Inicia Sesión</h2>
+            <p>Juega, Crea, Conecta</p>
+        </div>
+
+        <form class="login-form" (ngSubmit)="onLogin()">
+
+            <div class="form-group">
+                <input type="text" id="email" name="email" [(ngModel)]="credentials.username"
+                    placeholder="Email o número de teléfono" class="form-control">
+            </div>
+
+            <div class="form-group password-group">
+                <input [type]="passwordVisible() ? 'text' : 'password'" id="password" name="password"
+                    [(ngModel)]="credentials.password" placeholder="Contraseña" class="form-control">
+
+                <span class="show-password" (click)="togglePasswordVisibility()"
+                    style="cursor: pointer; user-select: none;">
+                    {{ passwordVisible() ? 'Ocultar' : 'Mostrar' }}
+                </span>
+            </div>
+
+            <div class="form-options">
+                <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                <label class="remember-me">
+                    <input type="checkbox"> Recuérdame
+                </label>
+            </div>
+
+            <button type="submit" class="btn-submit">Iniciar Sesión</button>
+        </form>
+
+        <div class="divider">
+            <span>o</span>
+        </div>
+
+        <div class="social-login">
+            <button class="btn-social google">
+                <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google" width="20">
+                Google
+            </button>
+            <button class="btn-social apple">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple"
+                    width="20">
+                Apple
+            </button>
+        </div>
+    </div>
+
+    <div class="register-prompt">
+        <p>Nuevo en omnis? <a routerLink="/register">Regístrate</a></p>
+    </div>
+</div>
