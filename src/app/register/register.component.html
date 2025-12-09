@@ -5,39 +5,76 @@
             <p>Únete a la comunidad de Omnis</p>
         </div>
 
-        <form class="register-form" (ngSubmit)="onSubmit()">
+        <form class="register-form" (ngSubmit)="onSubmit()" #registerForm="ngForm">
 
             <div class="form-group">
-                <input type="text" id="name" placeholder="Nombre completo" class="form-control">
+                <input type="text" id="name" name="name" [(ngModel)]="user.name" placeholder="Nombre completo"
+                    class="form-control" required #name="ngModel">
+                @if (name.invalid && (name.dirty || name.touched)) {
+                <span class="validation-error">
+                    @if (name.errors?.['required']) {
+                    El nombre es obligatorio
+                    }
+                </span>
+                }
             </div>
 
             <div class="form-group">
                 <input type="email" id="email" name="email" [(ngModel)]="user.username" placeholder="Correo electrónico"
-                    class="form-control" required>
+                    class="form-control" required email #email="ngModel">
+                @if (email.invalid && (email.dirty || email.touched)) {
+                <span class="validation-error">
+                    @if (email.errors?.['required']) {
+                    El email es obligatorio
+                    }
+                    @if (email.errors?.['email']) {
+                    El email no es válido
+                    }
+                </span>
+                }
             </div>
 
             <div class="form-group password-group">
                 <input [type]="passwordVisible() ? 'text' : 'password'" id="password" name="password"
-                    [(ngModel)]="user.password" placeholder="Contraseña" class="form-control" required>
+                    [(ngModel)]="user.password" placeholder="Contraseña" class="form-control" required minlength="6"
+                    #password="ngModel">
 
                 <span class="show-password" (click)="togglePasswordVisibility()"
                     style="cursor: pointer; user-select: none;">
                     {{ passwordVisible() ? 'Ocultar' : 'Mostrar' }}
                 </span>
+                @if (password.invalid && (password.dirty || password.touched)) {
+                <span class="validation-error">
+                    @if (password.errors?.['required']) {
+                    La contraseña es obligatoria
+                    }
+                    @if (password.errors?.['minlength']) {
+                    Mínimo 6 caracteres
+                    }
+                </span>
+                }
             </div>
 
             <div class="form-group password-group">
-                <input [type]="passwordVisible() ? 'text' : 'password'" id="confirm-password"
-                    placeholder="Confirmar contraseña" class="form-control">
+                <input [type]="passwordVisible() ? 'text' : 'password'" id="confirm-password" name="confirmPassword"
+                    [(ngModel)]="user.confirmPassword" placeholder="Confirmar contraseña" class="form-control" required
+                    #confirmPassword="ngModel">
+                @if (user.confirmPassword && user.password !== user.confirmPassword && confirmPassword.touched) {
+                <span class="validation-error">
+                    Las contraseñas no coinciden
+                </span>
+                }
             </div>
 
             <div class="form-options">
                 <label class="terms">
-                    <input type="checkbox"> Acepto los <a href="#">Términos y Condiciones</a>
+                    <input type="checkbox" name="acceptedTerms" [(ngModel)]="user.acceptedTerms" required
+                        #terms="ngModel"> Acepto los <a href="#">Términos y Condiciones</a>
                 </label>
             </div>
 
-            <button type="submit" class="btn-submit">Registrarse</button>
+            <button type="submit" class="btn-submit"
+                [disabled]="registerForm.invalid || user.password !== user.confirmPassword">Registrarse</button>
         </form>
 
         <div class="divider">

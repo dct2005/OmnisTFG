@@ -11,8 +11,11 @@ import { AuthService } from '../services/auth';
 })
 export class RegisterComponent {
     user = {
+        name: "",
         username: "",
-        password: ""
+        password: "",
+        confirmPassword: "",
+        acceptedTerms: false
     }
     passwordVisible = signal(false);
     constructor(private authService: AuthService, private router: Router) { }
@@ -28,13 +31,10 @@ export class RegisterComponent {
                 this.router.navigate(['/login']);
             },
             error: (err) => {
-                // Esto lo verás en la consola (F12) en rojo
                 console.error('ERROR DEL SERVIDOR:', err);
 
-                // 1. Intentamos sacar el mensaje si viene en formato JSON
                 let mensaje = err.error?.details || err.error?.error || err.error?.message;
 
-                // 2. Si sigue sin haber mensaje, convertimos TODO el objeto a texto
                 if (!mensaje) {
                     mensaje = JSON.stringify(err.error || err.message);
                 }

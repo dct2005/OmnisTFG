@@ -5,21 +5,39 @@
             <p>Juega, Crea, Conecta</p>
         </div>
 
-        <form class="login-form" (ngSubmit)="onLogin()">
+        <form class="login-form" (ngSubmit)="onLogin()" #loginForm="ngForm">
 
             <div class="form-group">
-                <input type="text" id="email" name="email" [(ngModel)]="credentials.username"
-                    placeholder="Email o número de teléfono" class="form-control">
+                <input type="email" id="email" name="email" [(ngModel)]="credentials.username"
+                    placeholder="Email o número de teléfono" class="form-control" required email #email="ngModel">
+                @if (email.invalid && (email.dirty || email.touched)) {
+                <span class="validation-error">
+                    @if (email.errors?.['required']) {
+                    El email es obligatorio
+                    }
+                    @if (email.errors?.['email']) {
+                    Email no válido
+                    }
+                </span>
+                }
             </div>
 
             <div class="form-group password-group">
                 <input [type]="passwordVisible() ? 'text' : 'password'" id="password" name="password"
-                    [(ngModel)]="credentials.password" placeholder="Contraseña" class="form-control">
+                    [(ngModel)]="credentials.password" placeholder="Contraseña" class="form-control" required
+                    #password="ngModel">
 
                 <span class="show-password" (click)="togglePasswordVisibility()"
                     style="cursor: pointer; user-select: none;">
                     {{ passwordVisible() ? 'Ocultar' : 'Mostrar' }}
                 </span>
+                @if (password.invalid && (password.dirty || password.touched)) {
+                <span class="validation-error">
+                    @if (password.errors?.['required']) {
+                    La contraseña es obligatoria
+                    }
+                </span>
+                }
             </div>
 
             <div class="form-options">
@@ -29,7 +47,7 @@
                 </label>
             </div>
 
-            <button type="submit" class="btn-submit">Iniciar Sesión</button>
+            <button type="submit" class="btn-submit" [disabled]="loginForm.invalid">Iniciar Sesión</button>
         </form>
 
         <div class="divider">

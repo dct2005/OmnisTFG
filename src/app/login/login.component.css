@@ -5,7 +5,6 @@
     align-items: center;
     min-height: 100vh;
     padding-top: 80px;
-    /* Space for navbar */
 }
 
 .login-card {
@@ -51,7 +50,6 @@
     outline: none;
     transition: border-color 0.3s;
     box-sizing: border-box;
-    /* Ensure padding doesn't affect width */
 }
 
 .form-control:focus {
@@ -170,4 +168,39 @@
     /* Pinkish accent */
     text-decoration: none;
     font-weight: 600;
+}
+
+/* Validation Styles */
+.form-control.ng-invalid.ng-touched {
+    border-color: #ef4444;
+    /* Red border */
+    box-shadow: 0 0 0 1px #ef4444;
+}
+
+.validation-error {
+    color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    font-family: 'Poppins', sans-serif;
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn-submit:disabled {
+    background-color: #6b7280;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none !important;
 }
