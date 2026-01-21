@@ -10,7 +10,7 @@ module.exports = async function handler(req, res) {
     try {
         const response = await axios.post(
             "https://api.igdb.com/v4/games",
-            "fields name, cover.url, rating; limit 10;",
+            "fields name, cover.url, rating, involved_companies.company.name, involved_companies.developer; where rating > 85 & rating_count > 100 & cover != null; sort popularity desc; limit 10;",
             {
                 headers: {
                     "Client-ID": process.env.TWITCH_CLIENT_ID,

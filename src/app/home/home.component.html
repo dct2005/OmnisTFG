@@ -1,0 +1,52 @@
+<div class="home-container">
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1 class="hero-title">Conoce y puntúa juegos</h1>
+        <p class="hero-subtitle">
+            Descubre nuevos mundos, conecta con jugadores y comparte tus creaciones en Omnis.
+        </p>
+        <a routerLink="/register" class="btn btn-cta">Comencemos</a>
+    </section>
+
+    <!-- Games Section -->
+    <section class="games-section">
+        <div class="section-header">
+            <h2>Recomendado</h2>
+        </div>
+
+        @if (loading) {
+        <div class="loading">Cargando juegos...</div>
+        } @else if (error) {
+        <div class="error">{{ error }}</div>
+        } @else {
+        <div class="games-carousel">
+            <button class="nav-btn prev" aria-label="Previous" (click)="scrollLeft()">&lt;</button>
+
+            <div class="cards-container">
+                @for (game of games; track game.id) {
+                <div class="game-card">
+                    <div class="card-image">
+                        @if (game.cover) {
+                        <img [src]="game.cover.url" [alt]="game.name">
+                        } @else {
+                        <div class="placeholder-image">No Image</div>
+                        }
+                    </div>
+                    <div class="card-info">
+                        <h3>{{ game.name }}</h3>
+                        <h4 class="developer-name">{{ game.developer }}</h4>
+                    </div>
+                </div>
+                }
+            </div>
+
+            <button class="nav-btn next" aria-label="Next" (click)="scrollRight()">&gt;</button>
+        </div>
+        }
+
+        <div class="discover-more">
+            <span>Descubre más</span>
+            <span class="arrow-down">﹀</span>
+        </div>
+    </section>
+</div>
