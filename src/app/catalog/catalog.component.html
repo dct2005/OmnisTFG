@@ -35,7 +35,7 @@
                     <p>{{ error }}</p>
                 </div>
                 } @else {
-                @for (game of filteredGames; track game.id) {
+                @for (game of games; track game.id) {
                 <div class="game-card">
                     <div class="card-image">
                         @if (game.cover) {
@@ -71,30 +71,38 @@
             <div class="loading-more">
                 <p>Cargando más juegos...</p>
             </div>
+            } @else if (reachedEnd && games.length > 0) {
+            <div class="end-of-results">
+                <p>Parece que has llegado al final</p>
+            </div>
             }
         </div>
 
         <aside class="filters-sidebar">
             <div class="filter-group">
                 <h3>CATEGORIAS</h3>
-                @for (cat of categoriesInput; track cat.name) {
-                <label class="checkbox-container">
-                    <input type="checkbox" [(ngModel)]="cat.selected">
-                    <span class="checkmark"></span>
-                    {{ cat.name }}
-                </label>
-                }
+                <div class="scrollable-list">
+                    @for (cat of categoriesInput; track cat.name) {
+                    <label class="checkbox-container">
+                        <input type="checkbox" [(ngModel)]="cat.selected" (change)="onFilterChange()">
+                        <span class="checkmark"></span>
+                        {{ cat.name }}
+                    </label>
+                    }
+                </div>
             </div>
 
             <div class="filter-group">
                 <h3>TEMATICA</h3>
-                @for (theme of themesInput; track theme.name) {
-                <label class="checkbox-container">
-                    <input type="checkbox" [(ngModel)]="theme.selected">
-                    <span class="checkmark"></span>
-                    {{ theme.name }}
-                </label>
-                }
+                <div class="scrollable-list">
+                    @for (theme of themesInput; track theme.name) {
+                    <label class="checkbox-container">
+                        <input type="checkbox" [(ngModel)]="theme.selected" (change)="onFilterChange()">
+                        <span class="checkmark"></span>
+                        {{ theme.name }}
+                    </label>
+                    }
+                </div>
             </div>
         </aside>
     </div>

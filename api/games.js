@@ -8,20 +8,48 @@ module.exports = async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        const { search, offset } = req.query;
-        let body = "fields name, cover.url, rating, involved_companies.company.name, involved_companies.developer; where cover != null;";
+        const { search, offset, genres, themes } = req.query;
+        // Construir la query paso a paso para evitar errores de sintaxis
+        let queryParts = [];
 
+        // Fields
+        queryParts.push("fields name, cover.url, rating, involved_companies.company.name, involved_companies.developer, genres.name, themes.name;");
+
+        // Where conditions
+        let whereConditions = ["cover != null"];
         if (search) {
-            body += ` search "${search}";`;
+            whereConditions.push(`name ~ *"${search}"*`); // Búsqueda más flexible
         } else {
-            body += " sort popularity desc; where rating > 85 & rating_count > 100;";
+            whereConditions.push("rating > 70"); // Filtro base para calidad
+            whereConditions.push("rating_count > 10");
         }
 
-        if (offset) {
-            body += ` offset ${offset};`;
+        // Add Categories (Genres) Filter
+        if (genres) {
+            const genresArr = Array.isArray(genres) ? genres : [genres];
+            const genresString = genresArr.map(g => `"${g}"`).join(",");
+            whereConditions.push(`genres.name = (${genresString})`);
         }
 
-        body += " limit 20;";
+        // Add Themes Filter
+        if (themes) {
+            const themesArr = Array.isArray(themes) ? themes : [themes];
+            const themesString = themesArr.map(t => `"${t}"`).join(",");
+            whereConditions.push(`themes.name = (${themesString})`);
+        }
+
+        queryParts.push(`where ${whereConditions.join(" & ")};`);
+
+        // Sort
+        if (!search) {
+            queryParts.push("sort popularity desc;");
+        }
+
+        // Offset & Limit
+        queryParts.push(`limit 20;`);
+        queryParts.push(`offset ${offset || 0};`); // Asegurar que offset siempre tenga valor
+
+        const body = queryParts.join(" ");
 
         const response = await axios.post(
             "https://api.igdb.com/v4/games",

@@ -25,25 +25,26 @@ export class CatalogComponent implements OnInit, OnDestroy {
     isLoadingMore: boolean = false;
     error: string | null = null;
     offset: number = 0;
+    reachedEnd: boolean = false;
 
     games: CatalogGame[] = [];
 
-    categoriesInput: { name: string, selected: boolean }[] = [
-        { name: 'Indie', selected: false },
-        { name: 'Juegos de Rol', selected: false },
-        { name: 'Estrategia', selected: false },
-        { name: 'Battle Royale', selected: false }
-    ];
-
-    themesInput: { name: string, selected: boolean }[] = [
-        { name: 'Terror', selected: false },
-        { name: 'Accion y Aventura', selected: false },
-        { name: 'Fantasia', selected: false }
-    ];
+    categoriesInput: { name: string, selected: boolean }[] = [];
+    themesInput: { name: string, selected: boolean }[] = [];
 
     ngOnInit() {
         this.loadGames();
+        this.loadFilters();
         window.addEventListener('scroll', this.onScroll.bind(this));
+    }
+
+    loadFilters() {
+        this.gameService.getGenres().subscribe(data => {
+            this.categoriesInput = data.map(g => ({ name: g.name, selected: false }));
+        });
+        this.gameService.getThemes().subscribe(data => {
+            this.themesInput = data.map(t => ({ name: t.name, selected: false }));
+        });
     }
 
     ngOnDestroy() {
@@ -60,13 +61,32 @@ export class CatalogComponent implements OnInit, OnDestroy {
         }
     }
 
+    onFilterChange() {
+        this.offset = 0;
+        this.reachedEnd = false;
+        this.loading = true;
+        this.games = []; // Clear current games
+        this.loadGames();
+    }
+
+    private getSelectedFilters(): { genres: string[], themes: string[] } {
+        const genres = this.categoriesInput.filter(c => c.selected).map(c => c.name);
+        const themes = this.themesInput.filter(t => t.selected).map(t => t.name);
+        return { genres, themes };
+    }
+
     loadGames() {
         this.loading = true;
-        this.offset = 0; // Reset offset logic
-        this.gameService.getGames(this.searchTerm, this.offset).subscribe({
+
+        const filters = this.getSelectedFilters();
+
+        this.gameService.getGames(this.searchTerm, this.offset, filters.genres, filters.themes).subscribe({
             next: (data) => {
-                this.games = this.mapGames(data);
+                this.games = this.mapGames(data); // Replace games instead of appending for first load
                 this.loading = false;
+                if (data.length < 20) {
+                    this.reachedEnd = true;
+                }
             },
             error: (err) => {
                 console.error('Error loading games', err);
@@ -77,13 +97,23 @@ export class CatalogComponent implements OnInit, OnDestroy {
     }
 
     loadMoreGames() {
+        if (this.reachedEnd) return;
+
         this.isLoadingMore = true;
         this.offset += 20;
-        this.gameService.getGames(this.searchTerm, this.offset).subscribe({
+
+        const filters = this.getSelectedFilters();
+
+        this.gameService.getGames(this.searchTerm, this.offset, filters.genres, filters.themes).subscribe({
             next: (data) => {
                 if (data.length > 0) {
                     const newGames = this.mapGames(data);
                     this.games = [...this.games, ...newGames];
+                    if (data.length < 20) {
+                        this.reachedEnd = true;
+                    }
+                } else {
+                    this.reachedEnd = true;
                 }
                 this.isLoadingMore = false;
             },
@@ -99,25 +129,13 @@ export class CatalogComponent implements OnInit, OnDestroy {
             ...g,
             isLibrary: false,
             isFavorite: false,
-            categories: [], // Placeholder until API provides this
-            themes: []
+            categories: g.genres || [],
+            themes: g.themes || []
         }));
     }
 
-    get filteredGames(): CatalogGame[] {
-        return this.games.filter(game => {
-            const selectedCategories = this.categoriesInput.filter(c => c.selected).map(c => c.name);
-            const selectedThemes = this.themesInput.filter(t => t.selected).map(t => t.name);
-
-            const matchesCategory = selectedCategories.length === 0 ||
-                selectedCategories.some(cat => game.categories.includes(cat));
-
-            const matchesTheme = selectedThemes.length === 0 ||
-                selectedThemes.some(theme => game.themes.includes(theme));
-
-            return matchesCategory && matchesTheme;
-        });
-    }
+    // Removed client-side filteredGames since we now filter on backend
+    // Template should use 'games' directly
 
     toggleFavorite(event: Event, game: CatalogGame) {
         event.stopPropagation();

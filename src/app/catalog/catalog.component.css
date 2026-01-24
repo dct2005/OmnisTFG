@@ -359,3 +359,30 @@
         width: 100%;
     }
 }
+
+/* Scrollable Filter List */
+.scrollable-list {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+    /* Prevent scrollbar from overlapping content */
+}
+
+/* Barra de scroll para los filtros de categorias y tematicas porque no veas con la cantidad de categorias que tiene la API */
+.scrollable-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollable-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb {
+    background: #6c5ce7;
+    border-radius: 3px;
+}
+
+.scrollable-list::-webkit-scrollbar-thumb:hover {
+    background: #a29bfe;
+}
