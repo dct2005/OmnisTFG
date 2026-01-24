@@ -18,18 +18,21 @@ export interface Game {
 })
 export class GameService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/games'; // Relative path to the serverless function
+  private apiUrl = '/api/games';
 
-  getGames(): Observable<Game[]> {
-    return this.http.get<Game[]>(this.apiUrl).pipe(
+  getGames(search?: string, offset: number = 0): Observable<Game[]> {
+    const params: any = { offset: offset.toString() };
+    if (search) {
+      params.search = search;
+    }
+    return this.http.get<Game[]>(this.apiUrl, { params }).pipe(
       map(games => games.map(game => ({
         ...game,
         cover: game.cover ? {
           ...game.cover,
-          // Replace 't_thumb' with 't_cover_big' or 't_720p' for better quality
           url: game.cover.url.replace('t_thumb', 't_cover_big')
         } : undefined,
-        // Extract developer
+        // extraer desarrollador
         developer: (game as any).involved_companies?.find((c: any) => c.developer)?.company?.name
       })))
     );

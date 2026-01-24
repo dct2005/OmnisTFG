@@ -1,0 +1,361 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+.catalog-container {
+    padding-top: 100px;
+    /* Offset for fixed navbar */
+    min-height: 100vh;
+    color: white;
+    font-family: 'Audiowide', sans-serif;
+    padding-bottom: 2rem;
+}
+
+/* Header Section */
+.catalog-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.catalog-header h1 {
+    font-size: 3rem;
+    margin: 0;
+    letter-spacing: 2px;
+    font-weight: normal;
+}
+
+.catalog-header p {
+    color: #b2bec3;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    margin-top: 0.5rem;
+}
+
+.btn-publish {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #8e44ad;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 20px;
+    font-family: 'Audiowide', sans-serif;
+    cursor: pointer;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(142, 68, 173, 0.4);
+    transition: all 0.2s;
+}
+
+.btn-publish:hover {
+    background: #9b59b6;
+    transform: translateY(-50%) scale(1.05);
+}
+
+/* Secondary Nav "DESCUBRE" */
+.secondary-nav {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    color: #dfe6e9;
+}
+
+/* Main Content Layout */
+.main-content {
+    display: flex;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    gap: 2rem;
+}
+
+.content-area {
+    flex: 1;
+}
+
+/* Search Bar & Quick Links */
+.search-bar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 300px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 2.5rem;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+}
+
+.search-input:focus {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.7;
+}
+
+.quick-links {
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+}
+
+.quick-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #b2bec3;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.quick-link:hover,
+.quick-link.active {
+    color: #2ecc71;
+    /* Green highlight from image */
+}
+
+/* Filters Sidebar */
+.filters-sidebar {
+    width: 250px;
+    background: rgba(13, 13, 30, 0.8);
+    padding: 1.5rem;
+    border-radius: 15px;
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+    /* Offset for fixed navbar + spacing */
+}
+
+.filter-group {
+    margin-bottom: 2rem;
+}
+
+.filter-group h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+
+.checkbox-container {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: 'Audiowide', sans-serif;
+    user-select: none;
+    color: #dfe6e9;
+}
+
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.checkbox-container:hover input~.checkmark {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.checkbox-container input:checked~.checkmark {
+    background-color: #6c5ce7;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkbox-container input:checked~.checkmark:after {
+    display: block;
+}
+
+.checkbox-container .checkmark:after {
+    left: 7px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+/* Games Grid */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.game-card {
+    background: transparent;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: transform 0.3s;
+    position: relative;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-image {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.8rem;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-info {
+    padding: 0 0.5rem;
+}
+
+.card-info h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: normal;
+}
+
+.card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #b2bec3;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.8rem;
+}
+
+.library-tag {
+    color: #74b9ff;
+}
+
+.price-tag {
+    color: #a29bfe;
+    font-weight: bold;
+}
+
+.btn-favorite {
+    background: none;
+    border: none;
+    color: #dfe6e9;
+    cursor: pointer;
+    padding: 0;
+}
+
+.btn-favorite:hover {
+    color: #e17055;
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    /* Assuming Material Icons are available or will be */
+    font-size: 1.2rem;
+}
+
+/* Fallback for Material Icons if not included */
+
+/* States */
+.loading-state,
+.error-state,
+.no-results,
+.loading-more {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    color: #b2bec3;
+    font-size: 1.2rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.error-state {
+    color: #ff7675;
+}
+
+.no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    color: #636e72;
+    font-size: 0.9rem;
+}
+
+
+@media (max-width: 900px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .filters-sidebar {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        gap: 1rem;
+    }
+
+    .btn-publish {
+        position: static;
+        margin-top: 1rem;
+        transform: none;
+    }
+
+    .search-bar-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .quick-links {
+        justify-content: center;
+    }
+
+    .search-input-wrapper {
+        width: 100%;
+    }
+}

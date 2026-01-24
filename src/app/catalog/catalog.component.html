@@ -1,0 +1,101 @@
+<div class="catalog-container">
+    <header class="catalog-header">
+        <h1>EXPLORAR</h1>
+        <p>Tu próxima aventura comienza aquí.</p>
+        <button class="btn-publish">Publicar contenido</button>
+    </header>
+
+    <div class="secondary-nav">
+        <div class="nav-item active">Descubre</div>
+    </div>
+
+    <div class="main-content">
+        <div class="content-area">
+            <div class="search-bar-container">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="loadGames()" placeholder="Buscar..."
+                        class="search-input">
+                </div>
+
+                <div class="quick-links">
+                    <a href="#" class="quick-link home"><span class="icon">🏠</span> Inicio</a>
+                    <a href="#" class="quick-link"><span class="icon">🎮</span> Mis juegos</a>
+                    <a href="#" class="quick-link active"><span class="icon">🔍</span> Explorar</a>
+                </div>
+            </div>
+
+            <div class="games-grid">
+                @if (loading) {
+                <div class="loading-state">
+                    <p>Cargando catálogo...</p>
+                </div>
+                } @else if (error) {
+                <div class="error-state">
+                    <p>{{ error }}</p>
+                </div>
+                } @else {
+                @for (game of filteredGames; track game.id) {
+                <div class="game-card">
+                    <div class="card-image">
+                        @if (game.cover) {
+                        <img [src]="game.cover.url" [alt]="game.name">
+                        } @else {
+                        <div class="no-image">No Cover</div>
+                        }
+                    </div>
+                    <div class="card-info">
+                        <h3>{{ game.name }}</h3>
+                        <div class="card-meta">
+                            @if (game.isLibrary) {
+                            <span class="library-tag">En la biblioteca</span>
+                            } @else if (game.price) {
+                            <span class="price-tag">{{ game.price }}</span>
+                            }
+                            <button class="btn-favorite" (click)="toggleFavorite($event, game)">
+                                <span class="material-icons">{{ game.isFavorite ? 'bookmark' : 'bookmark_border'
+                                    }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                } @empty {
+                <div class="no-results">
+                    <p>No se encontraron juegos.</p>
+                </div>
+                }
+                }
+            </div>
+
+            @if (isLoadingMore) {
+            <div class="loading-more">
+                <p>Cargando más juegos...</p>
+            </div>
+            }
+        </div>
+
+        <aside class="filters-sidebar">
+            <div class="filter-group">
+                <h3>CATEGORIAS</h3>
+                @for (cat of categoriesInput; track cat.name) {
+                <label class="checkbox-container">
+                    <input type="checkbox" [(ngModel)]="cat.selected">
+                    <span class="checkmark"></span>
+                    {{ cat.name }}
+                </label>
+                }
+            </div>
+
+            <div class="filter-group">
+                <h3>TEMATICA</h3>
+                @for (theme of themesInput; track theme.name) {
+                <label class="checkbox-container">
+                    <input type="checkbox" [(ngModel)]="theme.selected">
+                    <span class="checkmark"></span>
+                    {{ theme.name }}
+                </label>
+                }
+            </div>
+        </aside>
+    </div>
+</div>
