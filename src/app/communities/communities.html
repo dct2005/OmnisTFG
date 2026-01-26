@@ -1,0 +1,22 @@
+<div class="container">
+    <h2>Explorar Comunidades</h2>
+
+    @if (isLoading()) {
+    <p>Cargando comunidades de la base de datos...</p>
+    }
+
+    <div class="grid">
+        @for (community of communities(); track community.id) {
+        <div class="card">
+            <h3>{{ community.name }}</h3>
+            <p>{{ community.description }}</p>
+
+            <button>Unirse</button>
+        </div>
+        } @empty {
+        @if (!isLoading()) {
+        <p>No hay comunidades creadas todavía.</p>
+        }
+        }
+    </div>
+</div>
