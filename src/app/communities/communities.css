@@ -1,116 +1,294 @@
-/* Contenedor principal: centra el contenido y le da aire a los lados */
+/* --- VARIABLES (Efecto Cristal) --- */
+:root {
+    --bg-main: transparent;
+    --bg-card-glass: rgba(30, 32, 40, 0.75);
+    --bg-input-glass: rgba(255, 255, 255, 0.1);
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --accent-purple: #7c4dff;
+    --accent-purple-dark: #6200ea;
+    --border-glass: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- CONTENEDOR GENERAL --- */
 .communities-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
-    padding: 2rem;
-}
+    padding: 20px;
 
-/* Título principal */
-h2 {
-    text-align: center;
-    font-size: 2.5rem;
-    color: #333;
-    /* Un gris oscuro elegante */
-    margin-bottom: 3rem;
-    font-weight: 700;
-}
-
-/* --- La Cuadrícula (Grid) --- */
-/* Esto es lo que hace la magia de que se adapte a móviles y PC */
-.grid {
-    display: grid;
-    /* Crea columnas automáticas. Mínimo 300px de ancho, máximo el espacio disponible */
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2.5rem;
-    /* Espacio entre las tarjetas */
-}
-
-/* --- Diseño de la Tarjeta (Card) --- */
-.card {
-    background-color: #fff;
-    /* Fondo blanco */
-    border-radius: 16px;
-    /* Bordes muy redondeados para un look moderno */
-    overflow: hidden;
-    /* Asegura que nada se salga de los bordes redondeados */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-    /* Sombra suave y elegante */
-    transition: all 0.3s ease;
-    /* Suaviza las animaciones */
+    /* CAMBIO 1: Hacemos que ocupe toda la altura y centre el contenido verticalmente */
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    /* Organiza el contenido verticalmente */
-    border: 1px solid #f0f0f0;
-    /* Un borde sutil */
+    justify-content: center;
+    /* Esto centra todo el bloque en la pantalla */
 }
 
-/* Efecto al pasar el ratón por encima de la tarjeta */
+/* --- LAYOUT (3 COLUMNAS) --- */
+.layout-grid {
+    display: grid;
+    grid-template-columns: 260px 1fr 280px;
+    gap: 30px;
+
+    /* CAMBIO 2: ¡AQUÍ ESTÁ LA CLAVE! */
+    /* 'center' hace que los lados bajen y se alineen al medio, no arriba */
+    align-items: center;
+}
+
+/* --- ESTILOS PANELES LATERALES --- */
+.sidebar-card {
+    background: var(--bg-card-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: var(--border-glass);
+    color: var(--text-secondary);
+}
+
+.sidebar-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* NOTA: He quitado el 'position: sticky' porque al estar centrados 
+   verticalmente (align-items: center), el sticky puede dar problemas. 
+   Ahora flotarán en el centro visualmente. */
+.sidebar-left,
+.sidebar-right {
+    /* position: sticky; <--- ELIMINADO PARA QUE SE CENTREN BIEN */
+}
+
+/* --- RESTO DE ESTILOS (Idénticos al anterior) --- */
+
+.category-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-list li {
+    padding: 10px 12px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.category-list li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.category-list li.active {
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-purple-dark));
+    color: white;
+    box-shadow: 0 4px 15px rgba(124, 77, 255, 0.4);
+}
+
+.header-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header-section h2 {
+    font-size: 3rem;
+    /* Más grande */
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    /* Menos espacio abajo para pegar el subtítulo */
+    font-weight: 800;
+    text-transform: uppercase;
+    /* Mayúsculas como en la foto */
+    letter-spacing: 2px;
+    /* Espacio entre letras para efecto moderno */
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    /* Un poco de brillo */
+}
+
+/* NUEVO ESTILO PARA EL SUBTÍTULO */
+.subtitle {
+    color: var(--text-secondary);
+    /* Gris claro */
+    font-size: 1rem;
+    margin-bottom: 35px;
+    /* Espacio antes de la barra de búsqueda */
+    font-weight: 400;
+    max-width: 600px;
+    /* Para que no se estire demasiado en pantallas anchas */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.search-input {
+    width: 100%;
+    padding: 15px 25px;
+    font-size: 1rem;
+    border: var(--border-glass);
+    border-radius: 50px;
+    background-color: var(--bg-input-glass);
+    backdrop-filter: blur(12px);
+    color: var(--text-primary);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    transform: scale(1.02);
+    border-color: var(--accent-purple);
+    background-color: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 32px rgba(124, 77, 255, 0.3);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.create-card {
+    text-align: center;
+}
+
+.create-card p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.btn-create {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-purple-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s, transform 0.2s;
+    box-shadow: 0 4px 15px rgba(124, 77, 255, 0.4);
+}
+
+.btn-create:hover {
+    filter: brightness(1.2);
+    transform: translateY(-2px);
+}
+
+.info-card p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.card {
+    background-color: var(--bg-card-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: var(--border-glass);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
 .card:hover {
-    transform: translateY(-10px);
-    /* La tarjeta "flota" hacia arriba */
-    box-shadow: 0 15px 30px rgba(98, 0, 234, 0.15);
-    /* Sombra morada al hacer hover */
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    border-color: var(--accent-purple);
+    background-color: rgba(40, 42, 50, 0.85);
 }
 
-/* --- Área de "Imagen Placeholder" (Opcional) --- */
-/* Como ahora mismo no tienes imagen, podemos simular un banner de color arriba */
-/* Estilos para la imagen real de la tarjeta */
 .card-img {
     width: 100%;
-    /* Que ocupe todo el ancho de la tarjeta */
-    height: 200px;
-    /* Altura fija IMPORTANTE para que todas las tarjetas sean iguales */
+    height: 150px;
     object-fit: cover;
-    /* La clave: recorta la imagen para llenar el hueco sin deformarla */
-    display: block;
-    /* Elimina un pequeño espacio extra que a veces sale debajo de las imágenes */
+    opacity: 0.85;
+    transition: opacity 0.3s, transform 0.3s;
 }
 
-/* Tipografía dentro de la tarjeta */
+.card:hover .card-img {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
 .card h3 {
-    font-size: 1.5rem;
-    margin: 1rem 1.5rem 0.5rem;
-    /* Márgenes internos */
-    color: #222;
+    margin: 15px 15px 5px;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .card p {
-    padding: 0 1.5rem;
-    color: #666;
-    /* Texto secundario más claro */
-    line-height: 1.6;
+    margin: 0 15px 15px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
     flex-grow: 1;
-    /* Hace que el párrafo ocupe espacio para empujar el botón abajo */
-    margin-bottom: 2rem;
+    line-height: 1.4;
 }
 
-/* --- Botón --- */
 .card button {
-    margin: 0 1.5rem 1.5rem;
-    /* Margen alrededor del botón */
-    padding: 1rem;
-    background-color: #6200ea;
-    /* Un morado vibrante (puedes cambiarlo) */
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 1rem;
+    margin: 0 15px 20px;
+    padding: 10px;
+    background-color: rgba(124, 77, 255, 0.1);
+    color: var(--accent-purple);
+    border: 1px solid var(--accent-purple);
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    font-weight: 600;
+    transition: all 0.3s;
+    backdrop-filter: blur(5px);
 }
 
 .card button:hover {
-    background-color: #3700b3;
-    /* Morado más oscuro al pasar el ratón */
+    background-color: var(--accent-purple);
+    color: white;
+    box-shadow: 0 0 20px rgba(124, 77, 255, 0.6);
+    border-color: transparent;
 }
 
-/* Mensaje de carga o vacío */
-.grid p {
+.empty-msg {
     grid-column: 1 / -1;
-    /* Que ocupe todo el ancho */
     text-align: center;
-    font-size: 1.2rem;
-    color: #888;
-    padding: 3rem;
+    background-color: var(--bg-card-glass);
+    backdrop-filter: blur(12px);
+    color: var(--text-secondary);
+    padding: 30px;
+    border-radius: 16px;
+    border: var(--border-glass);
+}
+
+@media (max-width: 1024px) {
+    .layout-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .sidebar-left,
+    .sidebar-right {
+        order: 2;
+    }
+
+    .main-content {
+        order: 1;
+    }
 }

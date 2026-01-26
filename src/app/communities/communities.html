@@ -1,18 +1,75 @@
 <div class="communities-container">
-    <h2>Comunidades Disponibles</h2>
 
-    <div class="grid">
-        @for (community of communities(); track community.id) {
-        <div class="card">
-            <img [src]="community.image_url || 'https://placehold.co/600x300?text=Sin+Imagen'"
-                alt="{{ community.name }}" class="card-img">
+    <div class="layout-grid">
 
-            <h3>{{ community.name }}</h3>
-            <p>{{ community.description || 'Sin descripción' }}</p>
-            <button>Unirse</button>
-        </div>
-        } @empty {
-        <p>No hay comunidades disponibles o están cargando...</p>
-        }
+        <aside class="sidebar-left">
+            <div class="sidebar-card">
+                <h3>Categorías</h3>
+                <ul class="category-list">
+                    <li class="active">🌟 Todas</li>
+                    <li>🎮 Videojuegos</li>
+                    <li>💻 Programación</li>
+                    <li>🎵 Música</li>
+                    <li>🎨 Arte y Diseño</li>
+                    <li>⚽ Deportes</li>
+                </ul>
+            </div>
+
+            <div class="sidebar-card">
+                <h3>Explorar</h3>
+                <ul class="category-list">
+                    <li>🔥 Tendencias</li>
+                    <li>🆕 Lo más nuevo</li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="header-section">
+
+                <h2>Comunidades</h2>
+
+                <p class="subtitle">Explora comunidades sobre tus juegos favoritos y conoce gente nueva.</p>
+
+                <div class="search-wrapper">
+                    <input type="text" placeholder="Buscar comunidad..." (input)="onSearch($event)"
+                        class="search-input">
+                </div>
+            </div>
+
+            <div class="grid">
+                @for (community of filteredCommunities(); track community.id) {
+                <div class="card">
+                    <img [src]="community.image_url || 'https://placehold.co/600x300?text=Comunidad'"
+                        alt="{{ community.name }}" class="card-img">
+                    <h3>{{ community.name }}</h3>
+                    <p>{{ community.description || 'Únete para ver más detalles.' }}</p>
+                    <button>Unirse</button>
+                </div>
+                } @empty {
+                <p class="empty-msg">
+                    @if (searchTerm()) {
+                    No se encontraron resultados para "{{ searchTerm() }}".
+                    } @else {
+                    No hay comunidades disponibles.
+                    }
+                </p>
+                }
+            </div>
+        </main>
+
+        <aside class="sidebar-right">
+            <div class="sidebar-card create-card">
+                <h3>¿No encuentras lo que buscas?</h3>
+                <p>Crea tu propia comunidad y reúne a gente con tus mismos intereses.</p>
+                <button class="btn-create">Crear Comunidad</button>
+            </div>
+
+            <div class="sidebar-card info-card">
+                <h3>📢 Novedades</h3>
+                <p>¡Bienvenido a la nueva sección de comunidades de Omnis! Estamos en fase beta.</p>
+            </div>
+        </aside>
+
     </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core'; // <--- OJO: añadir 'computed'
 import { CommonModule } from '@angular/common';
 import { CommunityService } from '../services/community.service';
 
@@ -10,23 +10,36 @@ import { CommunityService } from '../services/community.service';
   styleUrl: './communities.css'
 })
 export class CommunitiesComponent implements OnInit {
-
-  communities = signal<any[]>([]);
-  isLoading = signal(true);
-
   private communityService = inject(CommunityService);
+
+  // 1. La lista original (todos los datos de la base de datos)
+  communities = signal<any[]>([]);
+
+  // 2. El texto que escribe el usuario
+  searchTerm = signal<string>('');
+
+  // 3. La lista FILTRADA (esta es la magia, se calcula sola)
+  filteredCommunities = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    const all = this.communities();
+
+    // Si no hay texto, devolvemos todo. Si hay texto, filtramos.
+    if (!term) return all;
+    return all.filter(c => c.name.toLowerCase().includes(term));
+  });
 
   ngOnInit() {
     this.communityService.getCommunities().subscribe({
       next: (data) => {
-        console.log('Comunidades de la DB:', data);
         this.communities.set(data);
-        this.isLoading.set(false);
       },
-      error: (err) => {
-        console.error('Error:', err);
-        this.isLoading.set(false);
-      }
+      error: (err) => console.error('Error:', err)
     });
+  }
+
+  // Función que se ejecuta al escribir en el input
+  onSearch(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.searchTerm.set(input.value);
   }
 }
