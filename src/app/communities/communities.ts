@@ -6,8 +6,8 @@ import { CommunityService } from '../services/community.service';
   selector: 'app-communities',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './communities.component.html',
-  styleUrl: './communities.component.css'
+  templateUrl: './communities.html',
+  styleUrl: './communities.css'
 })
 export class CommunitiesComponent implements OnInit {
 

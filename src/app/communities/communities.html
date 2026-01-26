@@ -1,22 +1,18 @@
-<div class="container">
-    <h2>Explorar Comunidades</h2>
-
-    @if (isLoading()) {
-    <p>Cargando comunidades de la base de datos...</p>
-    }
+<div class="communities-container">
+    <h2>Comunidades Disponibles</h2>
 
     <div class="grid">
         @for (community of communities(); track community.id) {
         <div class="card">
-            <h3>{{ community.name }}</h3>
-            <p>{{ community.description }}</p>
+            <img [src]="community.image_url || 'https://placehold.co/600x300?text=Sin+Imagen'"
+                alt="{{ community.name }}" class="card-img">
 
+            <h3>{{ community.name }}</h3>
+            <p>{{ community.description || 'Sin descripción' }}</p>
             <button>Unirse</button>
         </div>
         } @empty {
-        @if (!isLoading()) {
-        <p>No hay comunidades creadas todavía.</p>
-        }
+        <p>No hay comunidades disponibles o están cargando...</p>
         }
     </div>
 </div>

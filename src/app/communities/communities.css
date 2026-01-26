@@ -1,0 +1,116 @@
+/* Contenedor principal: centra el contenido y le da aire a los lados */
+.communities-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Título principal */
+h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #333;
+    /* Un gris oscuro elegante */
+    margin-bottom: 3rem;
+    font-weight: 700;
+}
+
+/* --- La Cuadrícula (Grid) --- */
+/* Esto es lo que hace la magia de que se adapte a móviles y PC */
+.grid {
+    display: grid;
+    /* Crea columnas automáticas. Mínimo 300px de ancho, máximo el espacio disponible */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2.5rem;
+    /* Espacio entre las tarjetas */
+}
+
+/* --- Diseño de la Tarjeta (Card) --- */
+.card {
+    background-color: #fff;
+    /* Fondo blanco */
+    border-radius: 16px;
+    /* Bordes muy redondeados para un look moderno */
+    overflow: hidden;
+    /* Asegura que nada se salga de los bordes redondeados */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    /* Sombra suave y elegante */
+    transition: all 0.3s ease;
+    /* Suaviza las animaciones */
+    display: flex;
+    flex-direction: column;
+    /* Organiza el contenido verticalmente */
+    border: 1px solid #f0f0f0;
+    /* Un borde sutil */
+}
+
+/* Efecto al pasar el ratón por encima de la tarjeta */
+.card:hover {
+    transform: translateY(-10px);
+    /* La tarjeta "flota" hacia arriba */
+    box-shadow: 0 15px 30px rgba(98, 0, 234, 0.15);
+    /* Sombra morada al hacer hover */
+}
+
+/* --- Área de "Imagen Placeholder" (Opcional) --- */
+/* Como ahora mismo no tienes imagen, podemos simular un banner de color arriba */
+/* Estilos para la imagen real de la tarjeta */
+.card-img {
+    width: 100%;
+    /* Que ocupe todo el ancho de la tarjeta */
+    height: 200px;
+    /* Altura fija IMPORTANTE para que todas las tarjetas sean iguales */
+    object-fit: cover;
+    /* La clave: recorta la imagen para llenar el hueco sin deformarla */
+    display: block;
+    /* Elimina un pequeño espacio extra que a veces sale debajo de las imágenes */
+}
+
+/* Tipografía dentro de la tarjeta */
+.card h3 {
+    font-size: 1.5rem;
+    margin: 1rem 1.5rem 0.5rem;
+    /* Márgenes internos */
+    color: #222;
+}
+
+.card p {
+    padding: 0 1.5rem;
+    color: #666;
+    /* Texto secundario más claro */
+    line-height: 1.6;
+    flex-grow: 1;
+    /* Hace que el párrafo ocupe espacio para empujar el botón abajo */
+    margin-bottom: 2rem;
+}
+
+/* --- Botón --- */
+.card button {
+    margin: 0 1.5rem 1.5rem;
+    /* Margen alrededor del botón */
+    padding: 1rem;
+    background-color: #6200ea;
+    /* Un morado vibrante (puedes cambiarlo) */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.card button:hover {
+    background-color: #3700b3;
+    /* Morado más oscuro al pasar el ratón */
+}
+
+/* Mensaje de carga o vacío */
+.grid p {
+    grid-column: 1 / -1;
+    /* Que ocupe todo el ancho */
+    text-align: center;
+    font-size: 1.2rem;
+    color: #888;
+    padding: 3rem;
+}
