@@ -1,75 +1,75 @@
 <div class="communities-container">
 
-    <div class="layout-grid">
+    <div class="communities-header">
+        <h1>COMUNIDADES</h1>
+        <p>Explora comunidades sobre tus juegos favoritos y conoce gente nueva.</p>
+        <button class="btn-publish">Crear Comunidad</button>
+    </div>
 
-        <aside class="sidebar-left">
-            <div class="sidebar-card">
-                <h3>Categorías</h3>
-                <ul class="category-list">
-                    <li class="active">🌟 Todas</li>
-                    <li>🎮 Videojuegos</li>
-                    <li>💻 Programación</li>
-                    <li>🎵 Música</li>
-                    <li>🎨 Arte y Diseño</li>
-                    <li>⚽ Deportes</li>
-                </ul>
-            </div>
+    <div class="main-content">
 
-            <div class="sidebar-card">
-                <h3>Explorar</h3>
-                <ul class="category-list">
-                    <li>🔥 Tendencias</li>
-                    <li>🆕 Lo más nuevo</li>
-                </ul>
+        <aside class="filters-sidebar">
+            <div class="filter-group">
+                <h3>CATEGORÍAS</h3>
+                <div class="scrollable-list">
+
+                    @for (category of availableCategories; track category) {
+                    <label class="checkbox-container">{{ category }}
+                        <input type="checkbox" (change)="toggleCategory(category, $event)">
+                        <span class="checkmark"></span>
+                    </label>
+                    }
+
+                </div>
             </div>
         </aside>
 
-        <main class="main-content">
-            <div class="header-section">
+        <div class="content-area">
 
-                <h2>Comunidades</h2>
-
-                <p class="subtitle">Explora comunidades sobre tus juegos favoritos y conoce gente nueva.</p>
-
-                <div class="search-wrapper">
-                    <input type="text" placeholder="Buscar comunidad..." (input)="onSearch($event)"
-                        class="search-input">
+            <div class="search-bar-container">
+                <div class="search-input-wrapper">
+                    <span class="material-icons search-icon">search</span>
+                    <input type="text" class="search-input" placeholder="Buscar comunidad..."
+                        (input)="onSearch($event)">
+                </div>
+                <div class="quick-links">
+                    <a class="quick-link active" style="cursor: pointer;">Todas</a>
+                    <a class="quick-link" style="cursor: pointer;">Mis Comunidades</a>
                 </div>
             </div>
 
-            <div class="grid">
+            <div class="communities-grid">
+
                 @for (community of filteredCommunities(); track community.id) {
-                <div class="card">
-                    <img [src]="community.image_url || 'https://placehold.co/600x300?text=Comunidad'"
-                        alt="{{ community.name }}" class="card-img">
-                    <h3>{{ community.name }}</h3>
-                    <p>{{ community.description || 'Únete para ver más detalles.' }}</p>
-                    <button>Unirse</button>
+                <div class="community-card">
+                    <div class="card-image" [routerLink]="['/informacion-communities', community.id]"
+                        style="cursor: pointer;">
+                        <img [src]="community.image_url || 'https://placehold.co/600x338'" alt="{{ community.name }}">
+                    </div>
+
+                    <div class="card-info">
+                        <h3>{{ community.name }}</h3>
+                        <div class="card-meta">
+                            <span class="library-tag">{{ community.description || 'Sin descripción' }}</span>
+
+                            <button class="btn-favorite" title="Unirse">
+                                <span class="material-icons">group_add</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 } @empty {
-                <p class="empty-msg">
-                    @if (searchTerm()) {
-                    No se encontraron resultados para "{{ searchTerm() }}".
+                <div class="no-results">
+                    @if (searchTerm() || selectedCategories().length > 0) {
+                    No se encontraron comunidades con esos filtros.
                     } @else {
-                    No hay comunidades disponibles.
+                    No hay comunidades disponibles en este momento.
                     }
-                </p>
+                </div>
                 }
-            </div>
-        </main>
 
-        <aside class="sidebar-right">
-            <div class="sidebar-card create-card">
-                <h3>¿No encuentras lo que buscas?</h3>
-                <p>Crea tu propia comunidad y reúne a gente con tus mismos intereses.</p>
-                <button class="btn-create">Crear Comunidad</button>
             </div>
 
-            <div class="sidebar-card info-card">
-                <h3>📢 Novedades</h3>
-                <p>¡Bienvenido a la nueva sección de comunidades de Omnis! Estamos en fase beta.</p>
-            </div>
-        </aside>
-
+        </div>
     </div>
 </div>

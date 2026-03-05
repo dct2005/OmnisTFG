@@ -1,6 +1,5 @@
-// api/register.js
 const { neon } = require('@neondatabase/serverless');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs'); // <-- ¡IMPORTANTE! Usamos bcryptjs para evitar errores en Vercel
 
 module.exports = async function handler(req, res) {
     // Configuración CORS
@@ -15,21 +14,20 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const { username, password } = req.body;
+        // 1. Ahora también sacamos el 'name' (Nombre real) del frontend
+        // Nota: tu frontend usa 'username' para enviar el correo
+        const { name, username, password } = req.body;
 
-        if (!username || !password) {
+        if (!username || !password || !name) {
             return res.status(400).json({ error: 'Faltan datos' });
         }
 
-        // Conexión a DB
         const dbUrl = process.env.DATABASE_URL;
-        if (!dbUrl) {
-            throw new Error('Falta la variable DATABASE_URL');
-        }
+        if (!dbUrl) throw new Error('Falta la variable DATABASE_URL');
 
         const sql = neon(dbUrl);
 
-        // Verificar si existe
+        // 2. Comprobamos si el correo (username) ya existe
         const userCheck = await sql`SELECT * FROM users WHERE email = ${username}`;
 
         if (userCheck.length > 0) {
@@ -38,8 +36,11 @@ module.exports = async function handler(req, res) {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Insertar
-        await sql`INSERT INTO users (email, password) VALUES (${username}, ${hashedPassword})`;
+        // 3. ¡LA MAGIA! Guardamos el 'name' en su columna, y el 'username' en el 'email'
+        await sql`
+            INSERT INTO users (name, email, password) 
+            VALUES (${name}, ${username}, ${hashedPassword})
+        `;
 
         return res.status(201).json({ message: 'Usuario registrado correctamente' });
 

@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { CommunitiesComponent } from './communities/communities';
+import { InformacionCommunities } from './informacion-communities/informacion-communities';
+
 
 export const routes: Routes = [
     { path: 'home', loadComponent: () => import('./home/home.component').then(m => m.HomeComponent) },
@@ -9,5 +11,6 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: '', redirectTo: '/home', pathMatch: 'full' },
-    { path: 'communities', component: CommunitiesComponent }
+    { path: 'communities', component: CommunitiesComponent },
+    { path: 'informacion-communities/:id', component: InformacionCommunities },
 ];

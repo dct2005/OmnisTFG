@@ -1,45 +1,65 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core'; // <--- OJO: añadir 'computed'
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CommunityService } from '../services/community.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-communities',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './communities.html',
   styleUrl: './communities.css'
 })
 export class CommunitiesComponent implements OnInit {
   private communityService = inject(CommunityService);
 
-  // 1. La lista original (todos los datos de la base de datos)
   communities = signal<any[]>([]);
-
-  // 2. El texto que escribe el usuario
   searchTerm = signal<string>('');
+  availableCategories: string[] = [];
+  selectedCategories = signal<string[]>([]);
 
-  // 3. La lista FILTRADA (esta es la magia, se calcula sola)
   filteredCommunities = computed(() => {
     const term = this.searchTerm().toLowerCase();
+    const selected = this.selectedCategories();
     const all = this.communities();
 
-    // Si no hay texto, devolvemos todo. Si hay texto, filtramos.
-    if (!term) return all;
-    return all.filter(c => c.name.toLowerCase().includes(term));
+    return all.filter(community => {
+      const matchesSearch = community.name.toLowerCase().includes(term);
+      const matchesCategory = selected.length === 0 || selected.includes(community.categoria);
+
+      return matchesSearch && matchesCategory;
+    });
   });
 
   ngOnInit() {
     this.communityService.getCommunities().subscribe({
       next: (data) => {
         this.communities.set(data);
+
+        const categoriasUnicas = new Set(
+          data.map((c: any) => c.categoria).filter((c: any) => c !== null && c !== undefined)
+        );
+
+        this.availableCategories = Array.from(categoriasUnicas).sort();
       },
-      error: (err) => console.error('Error:', err)
+      error: (err) => console.error(err)
     });
   }
 
-  // Función que se ejecuta al escribir en el input
   onSearch(event: Event) {
     const input = event.target as HTMLInputElement;
     this.searchTerm.set(input.value);
+  }
+
+  toggleCategory(category: string, event: Event) {
+    const isChecked = (event.target as HTMLInputElement).checked;
+
+    this.selectedCategories.update(current => {
+      if (isChecked) {
+        return [...current, category];
+      } else {
+        return current.filter(c => c !== category);
+      }
+    });
   }
 }

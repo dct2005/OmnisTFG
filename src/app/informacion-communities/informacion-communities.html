@@ -1,0 +1,120 @@
+<main class="container">
+    <div class="banner">
+        <img [alt]="communityData?.name" class="banner-img"
+            [src]="communityData?.image_url || 'https://placehold.co/1200x400'" />
+        <div class="banner-overlay"></div>
+        <div class="banner-content">
+            <div class="banner-profile">
+                <div class="avatar-container">
+                    <img [alt]="communityData?.name" class="avatar-img" [src]="communityData?.image_url" />
+                </div>
+                <div class="community-info">
+                    <h1>{{ communityData?.name }}</h1>
+                    <p class="verified-tag">
+                        @if (communityData?.is_official) {
+                        <span class="material-icons-round text-sm"
+                            style="color: var(--primary); font-size: 1rem;">verified</span>
+                        }
+                        {{ communityData?.verified_text || 'Comunidad Omnis' }}
+                    </p>
+                </div>
+            </div>
+            <div class="banner-actions">
+                <button class="btn-join" (click)="toggleJoin()"
+                    [ngStyle]="{'background': isMember ? '#334155' : 'var(--primary)'}">
+                    {{ isMember ? 'Abandonar' : 'Unirse' }}
+                </button>
+                <button class="btn-icon"><span class="material-icons-round">share</span></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <aside class="sidebar-left">
+            <div class="glass-panel p-6">
+                <h3 class="section-title">Canales</h3>
+                <nav class="channel-nav">
+                    <a class="channel-link active" href="#"><span class="material-icons-round">forum</span> General</a>
+                    <a class="channel-link" href="#"><span class="material-icons-round">image</span> Media</a>
+                </nav>
+            </div>
+        </aside>
+
+        <section class="content-main">
+            <div class="glass-panel about-card">
+                <h2>Sobre nosotros</h2>
+                <p>{{ communityData?.description }}</p>
+            </div>
+
+            <div class="feed-header" style="margin-top: 2rem;">
+                <h2>Actividad Reciente</h2>
+            </div>
+
+            @if (isMember) {
+            <div class="glass-panel" style="padding: 1rem; margin-bottom: 1.5rem; display: flex; gap: 1rem;">
+                <img src="https://placehold.co/100" class="author-avatar" alt="Tu avatar"
+                    style="width: 2.5rem; height: 2.5rem;">
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <textarea [(ngModel)]="newMessage" placeholder="Escribe algo a la comunidad..."
+                        style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-white); border-radius: 0.5rem; padding: 0.75rem; color: white; resize: vertical; min-height: 60px; outline: none; font-family: inherit;">
+                        </textarea>
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button class="btn-join" style="padding: 0.5rem 1.5rem; font-size: 0.8rem;"
+                            (click)="sendMessage()">Enviar</button>
+                    </div>
+                </div>
+            </div>
+            } @else {
+            <div class="glass-panel"
+                style="padding: 1.5rem; text-align: center; margin-bottom: 1.5rem; color: var(--text-muted);">
+                <span class="material-icons-round" style="font-size: 2rem; margin-bottom: 0.5rem;">lock</span>
+                <p>Únete a la comunidad para poder participar en la conversación.</p>
+            </div>
+            }
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                @for (post of posts; track post.id) {
+                <div class="glass-panel post-card">
+                    <div class="post-author">
+                        <div class="author-info">
+                            <img [src]="post.avatar" class="author-avatar" alt="Avatar">
+                            <div class="author-name">
+                                <h4 style="margin: 0; color: white;">{{ post.author }}</h4>
+                                <span class="post-time">{{ post.time }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="post-body">
+                        {{ post.content }}
+                    </div>
+                </div>
+                } @empty {
+                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    No hay mensajes aún. ¡Sé el primero en saludar!
+                </div>
+                }
+            </div>
+        </section>
+
+        <aside class="sidebar-right">
+            <div class="glass-panel p-6 relative">
+                <h3 class="section-title">Estadísticas</h3>
+                <div class="stats-grid">
+                    <div>
+                        <p class="stat-value">{{ communityData?.member_count | number }}</p>
+                        <p class="stat-label">Miembros</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p class="stat-value text-green">{{ communityData?.online_count | number }}</p>
+                        <p class="stat-label">En línea</p>
+                    </div>
+                </div>
+                <div
+                    style="padding-top: 1rem; border-top: 1px solid var(--border-white); display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">Mensajes totales</span>
+                    <span style="font-weight: 700;">{{ communityData?.total_messages | number }}</span>
+                </div>
+            </div>
+        </aside>
+    </div>
+</main>
