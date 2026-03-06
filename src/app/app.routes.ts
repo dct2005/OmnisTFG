@@ -3,6 +3,7 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { CommunitiesComponent } from './communities/communities';
 import { InformacionCommunities } from './informacion-communities/informacion-communities';
+import { CreateCommunity } from './create-community/create-community';
 
 
 export const routes: Routes = [
@@ -13,4 +14,5 @@ export const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'communities', component: CommunitiesComponent },
     { path: 'informacion-communities/:id', component: InformacionCommunities },
+    { path: 'crear-comunidad', component: CreateCommunity }
 ];

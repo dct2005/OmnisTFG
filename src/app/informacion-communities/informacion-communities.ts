@@ -28,6 +28,17 @@ export class InformacionCommunities implements OnInit {
       this.communityId = id;
       this.getCommunityDetails(id);
       this.loadMessages(id);
+
+
+      const userId = this.getUserIdFromToken();
+      if (userId) {
+        this.communityService.checkMembership(id, userId).subscribe({
+          next: (res) => {
+            this.isMember = res.isMember;
+          },
+          error: (err) => console.error('Error comprobando si es miembro:', err)
+        });
+      }
     }
   }
 

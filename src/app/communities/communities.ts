@@ -36,11 +36,15 @@ export class CommunitiesComponent implements OnInit {
       next: (data) => {
         this.communities.set(data);
 
-        const categoriasUnicas = new Set(
-          data.map((c: any) => c.categoria).filter((c: any) => c !== null && c !== undefined)
-        );
-
-        this.availableCategories = Array.from(categoriasUnicas).sort();
+        this.availableCategories = [
+          'Arte y Diseño',
+          'Deportes',
+          'Entretenimiento',
+          'Gaming',
+          'General',
+          'Música',
+          'Tecnología'
+        ].sort();
       },
       error: (err) => console.error(err)
     });

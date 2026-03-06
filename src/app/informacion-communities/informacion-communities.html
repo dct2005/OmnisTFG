@@ -80,7 +80,7 @@
                             <img [src]="post.avatar" class="author-avatar" alt="Avatar">
                             <div class="author-name">
                                 <h4 style="margin: 0; color: white;">{{ post.author }}</h4>
-                                <span class="post-time">{{ post.time }}</span>
+                                <span>{{ post.time | date:'dd/MM/yyyy' }}</span>
                             </div>
                         </div>
                     </div>

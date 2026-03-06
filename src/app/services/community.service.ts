@@ -28,4 +28,10 @@ export class CommunityService {
     sendMessage(communityId: string, userId: number, content: string): Observable<any> {
         return this.http.post<any>(`/api/communities/${communityId}/messages`, { userId, content });
     }
+    createCommunity(data: any): Observable<any> {
+        return this.http.post<any>('/api/communities', data);
+    }
+    checkMembership(communityId: string, userId: number): Observable<any> {
+        return this.http.get<any>(`/api/communities/${communityId}/join?userId=${userId}`);
+    }
 }
