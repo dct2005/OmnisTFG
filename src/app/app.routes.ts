@@ -11,7 +11,7 @@ export const routes: Routes = [
     { path: 'catalogo', loadComponent: () => import('./catalog/catalog.component').then(m => m.CatalogComponent) },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
-    { path: '', redirectTo: '/home', pathMatch: 'full' },
+    { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: 'communities', component: CommunitiesComponent },
     { path: 'informacion-communities/:id', component: InformacionCommunities },
     { path: 'crear-comunidad', component: CreateCommunity }

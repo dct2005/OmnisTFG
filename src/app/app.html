@@ -1,3 +1,7 @@
-<app-navbar></app-navbar>
+@if (showNavbar()) {
+<nav class="tu-clase-de-navbar">
+    <app-navbar></app-navbar>
+</nav>
+}
 
 <router-outlet></router-outlet>

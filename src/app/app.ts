@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, signal, inject } from '@angular/core';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -11,4 +12,27 @@ import { NavbarComponent } from './navbar/navbar.component';
 })
 export class App {
   protected readonly title = signal('Login');
+
+  // Señal que controla si la navbar se ve o no (por defecto true)
+  showNavbar = signal(true);
+
+  private router = inject(Router);
+
+  constructor() {
+    // Escuchamos cada vez que la navegación termina
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+
+      const currentUrl = event.urlAfterRedirects || event.url;
+
+      // Si la URL tiene /login o /registro, ocultamos la navbar
+      if (currentUrl.includes('/login') || currentUrl.includes('/registro')) {
+        this.showNavbar.set(false);
+      } else {
+        this.showNavbar.set(true);
+      }
+
+    });
+  }
 }

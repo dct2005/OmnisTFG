@@ -37,9 +37,8 @@ export class LoginComponent {
 
                 alert('¡Bienvenido de nuevo!');
 
-                // Aquí redirigirías a la página principal. 
-                // Como no sé cuál es tu página de inicio, por ahora redirijo al mismo sitio o a donde quieras.
-                // this.router.navigate(['/dashboard']); 
+
+                this.router.navigate(['/catalogo']);
             },
             error: (error) => {
                 console.error('Error login:', error);
