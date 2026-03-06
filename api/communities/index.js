@@ -11,17 +11,26 @@ module.exports = async function handler(req, res) {
     try {
         const sql = neon(process.env.DATABASE_URL);
 
-        // ==========================================
-        // GET: MOSTRAR TODAS LAS COMUNIDADES
-        // ==========================================
+
         if (req.method === 'GET') {
-            const communities = await sql`SELECT * FROM communities ORDER BY id DESC`;
-            return res.status(200).json(communities);
+            const { userId, myCommunities } = req.query;
+
+            // Si nos piden "Mis Comunidades" y nos dan el ID del usuario
+            if (userId && myCommunities === 'true') {
+                const myComms = await sql`
+                    SELECT c.* FROM communities c
+                    JOIN community_members cm ON c.id = cm.community_id
+                    WHERE cm.user_id = ${userId}
+                    ORDER BY c.id DESC
+                `;
+                return res.status(200).json(myComms);
+            }
+
+            // Si no, devolvemos TODAS las comunidades normales
+            const allComms = await sql`SELECT * FROM communities ORDER BY id DESC`;
+            return res.status(200).json(allComms);
         }
 
-        // ==========================================
-        // POST: CREAR UNA NUEVA COMUNIDAD
-        // ==========================================
         if (req.method === 'POST') {
             const { name, description, categoria, image_url } = req.body;
 

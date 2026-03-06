@@ -33,8 +33,11 @@
                         (input)="onSearch($event)">
                 </div>
                 <div class="quick-links">
-                    <a class="quick-link active" style="cursor: pointer;">Todas</a>
-                    <a class="quick-link" style="cursor: pointer;">Mis Comunidades</a>
+                    <a class="quick-link" [class.active]="activeTab() === 'all'" (click)="setTab('all')"
+                        style="cursor: pointer;">Todas</a>
+
+                    <a class="quick-link" [class.active]="activeTab() === 'mine'" (click)="setTab('mine')"
+                        style="cursor: pointer;">Mis Comunidades</a>
                 </div>
             </div>
 

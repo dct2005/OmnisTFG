@@ -11,8 +11,16 @@ export class CommunityService {
 
     private apiUrl = '/api/communities';
 
-    getCommunities(): Observable<any[]> {
-        return this.http.get<any[]>(this.apiUrl);
+
+    getCommunities(userId?: number | null, myCommunities: boolean = false): Observable<any[]> {
+        let url = '/api/communities';
+
+
+        if (userId && myCommunities) {
+            url += `?userId=${userId}&myCommunities=true`;
+        }
+
+        return this.http.get<any[]>(url);
     }
     getCommunityById(id: String): Observable<any> {
         return this.http.get<any>(`${this.apiUrl}/${id}`);
