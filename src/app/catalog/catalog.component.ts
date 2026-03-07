@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GameService, Game } from '../services/game.service';
 import { Router, RouterLink } from '@angular/router';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 interface CatalogGame extends Game {
     isLibrary: boolean;
@@ -30,6 +32,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
     reachedEnd: boolean = false;
 
     games: CatalogGame[] = [];
+    private searchSubject = new Subject<string>();
 
     categoriesInput: { name: string, selected: boolean }[] = [];
     themesInput: { name: string, selected: boolean }[] = [];
@@ -38,6 +41,17 @@ export class CatalogComponent implements OnInit, OnDestroy {
         this.loadGames();
         this.loadFilters();
         window.addEventListener('scroll', this.onScroll.bind(this));
+
+        this.searchSubject.pipe(
+            debounceTime(400),
+            distinctUntilChanged()
+        ).subscribe(searchTerm => {
+            this.searchTerm = searchTerm;
+            this.offset = 0;
+            this.reachedEnd = false;
+            this.games = [];
+            this.loadGames();
+        });
     }
 
     loadFilters() {
@@ -61,6 +75,10 @@ export class CatalogComponent implements OnInit, OnDestroy {
         if (position > height - threshold && !this.isLoadingMore && !this.loading) {
             this.loadMoreGames();
         }
+    }
+
+    onSearchTermChange(term: string) {
+        this.searchSubject.next(term);
     }
 
     onFilterChange() {

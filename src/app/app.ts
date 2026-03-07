@@ -25,14 +25,7 @@ export class App {
     ).subscribe((event: any) => {
 
       const currentUrl = event.urlAfterRedirects || event.url;
-
-      // Si la URL tiene /login o /registro, ocultamos la navbar
-      if (currentUrl.includes('/login') || currentUrl.includes('/registro')) {
-        this.showNavbar.set(false);
-      } else {
-        this.showNavbar.set(true);
-      }
-
+      this.showNavbar.set(true);
     });
   }
 }

@@ -64,7 +64,28 @@ module.exports = async function handler(req, res) {
             }
         );
 
-        res.json(response.data);
+        let processedData = response.data;
+
+        // Si consultamos un juego en concreto (id existe) y tiene resumen, lo traducimos
+        if (id && processedData.length > 0 && processedData[0].summary) {
+            try {
+                const game = processedData[0];
+                const url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=es&dt=t&q=" + encodeURIComponent(game.summary);
+                const translateResponse = await axios.get(url);
+
+                if (translateResponse.data && Array.isArray(translateResponse.data[0])) {
+                    const translatedText = translateResponse.data[0].map(item => item[0]).join('');
+                    if (translatedText) {
+                        game.summary = translatedText;
+                    }
+                }
+            } catch (translateErr) {
+                console.error("Translation Error (Google Translate):", translateErr.message);
+                // Si la traducción falla (servidor caído, límite de uso), pasamos silenciosamente y devolvemos texto en inglés
+            }
+        }
+
+        res.json(processedData);
     } catch (err) {
         console.error("IGDB Error:", err.message);
         res.status(500).json({

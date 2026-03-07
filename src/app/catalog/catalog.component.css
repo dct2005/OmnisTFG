@@ -1,8 +1,7 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 .catalog-container {
-    padding-top: 100px;
-    /* Offset for fixed navbar */
+    padding-top: 10px;
     min-height: 100vh;
     color: white;
     font-family: 'Audiowide', sans-serif;
@@ -145,8 +144,7 @@
     border-radius: 15px;
     height: fit-content;
     position: sticky;
-    top: 100px;
-    /* Offset for fixed navbar + spacing */
+    top: 20px;
 }
 
 .filter-group {

@@ -17,7 +17,8 @@ export class GameDetailsComponent implements OnInit {
   private location = inject(Location);
 
   game: Game | null = null;
-  similarGames: Game[] = [];
+  allSimilarGames: Game[] = [];
+  scrollIndex = 0;
   loading = true;
   error: string | null = null;
   loadingSimilar = false;
@@ -51,14 +52,15 @@ export class GameDetailsComponent implements OnInit {
   loadSimilarGames() {
     if (!this.game) return;
     this.loadingSimilar = true;
+    this.scrollIndex = 0;
     
     const genres = this.game.genres?.slice(0, 2);
     const themes = this.game.themes?.slice(0, 2);
     
     this.gameService.getGames(undefined, 0, genres, themes).subscribe({
       next: (games) => {
-        // Exclude the current game from similar games
-        this.similarGames = games.filter(g => g.id !== this.game?.id).slice(0, 3);
+        // Exclude the current game from similar games. Get up to 12.
+        this.allSimilarGames = games.filter(g => g.id !== this.game?.id).slice(0, 12);
         this.loadingSimilar = false;
       },
       error: (err) => {
@@ -66,6 +68,16 @@ export class GameDetailsComponent implements OnInit {
         this.loadingSimilar = false;
       }
     });
+  }
+
+  scrollDown() {
+    const maxScroll = Math.max(0, this.allSimilarGames.length - 3);
+    if (this.scrollIndex < maxScroll) {
+      this.scrollIndex = Math.min(maxScroll, this.scrollIndex + 3);
+    } else {
+      // Loop back to start if reached the end
+      this.scrollIndex = 0;
+    }
   }
 
   goBack() {

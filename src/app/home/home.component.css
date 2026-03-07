@@ -1,8 +1,7 @@
 .home-container {
     color: white;
     text-align: center;
-    padding-top: 130px;
-    /* Increased to clear the fixed navbar */
+    padding-top: 30px;
     /* Ensure it takes full height if content is short, but allows scrolling */
     min-height: calc(100vh - 80px);
     /* Adjust based on navbar height */

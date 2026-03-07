@@ -14,7 +14,7 @@
             <div class="search-bar-container">
                 <div class="search-input-wrapper">
                     <span class="search-icon">🔍</span>
-                    <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="loadGames()" placeholder="Buscar..."
+                    <input type="text" [ngModel]="searchTerm" (ngModelChange)="onSearchTermChange($event)" placeholder="Buscar..."
                         class="search-input">
                 </div>
 
