@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GameService, Game } from '../services/game.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 interface CatalogGame extends Game {
     isLibrary: boolean;
@@ -15,7 +15,7 @@ interface CatalogGame extends Game {
 @Component({
     selector: 'app-catalog',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, RouterLink],
     templateUrl: './catalog.component.html',
     styleUrls: ['./catalog.component.css']
 })
