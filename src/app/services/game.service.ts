@@ -5,6 +5,7 @@ import { Observable, map } from 'rxjs';
 export interface Game {
   id: number;
   name: string;
+  summary?: string;
   cover?: {
     id: number;
     url: string;
@@ -54,6 +55,28 @@ export class GameService {
         genres: (game as any).genres?.map((g: any) => g.name) || [],
         themes: (game as any).themes?.map((t: any) => t.name) || []
       })))
+    );
+  }
+
+  getGameById(id: string | number): Observable<Game> {
+    const params = { id: id.toString() };
+    return this.http.get<Game[]>(this.apiUrl, { params }).pipe(
+      map(games => {
+        if (!games || games.length === 0) {
+          throw new Error('Game not found');
+        }
+        const game = games[0];
+        return {
+          ...game,
+          cover: game.cover ? {
+            ...game.cover,
+            url: game.cover.url.replace('t_thumb', 't_cover_big')
+          } : undefined,
+          developer: (game as any).involved_companies?.find((c: any) => c.developer)?.company?.name,
+          genres: (game as any).genres?.map((g: any) => g.name) || [],
+          themes: (game as any).themes?.map((t: any) => t.name) || []
+        };
+      })
     );
   }
 

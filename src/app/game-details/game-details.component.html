@@ -1,0 +1,73 @@
+<div class="page-container">
+  @if (loading) {
+  <div class="loading-state">
+    <p>Cargando detalles...</p>
+  </div>
+  } @else if (error) {
+  <div class="error-state">
+    <p>{{ error }}</p>
+    <button (click)="goBack()" class="btn-back">Volver</button>
+  </div>
+  } @else if (game) {
+  <div class="game-details-wrapper">
+    <div class="main-column">
+      <h1 class="game-title">{{ game.name }}</h1>
+      
+      <div class="game-info-block">
+        <div class="game-cover">
+          @if (game.cover) {
+          <img [src]="game.cover.url" [alt]="game.name" />
+          } @else {
+          <div class="no-cover">No Cover</div>
+          }
+        </div>
+        <div class="game-summary">
+          <p>{{ game.summary || 'Durante las dos últimas décadas, Counter-Strike ha proporcionado una experiencia competitiva de primer nivel para los millones de jugadores de todo el mundo que contribuyeron a darle forma. Ahora el próximo capítulo en la historia de CS está a punto de comenzar. Hablamos de Counter-Strike 2.' }}</p>
+        </div>
+      </div>
+
+      <div class="purchase-options">
+        <div class="purchase-card">
+          <span class="purchase-title">COMPRA {{ game.name }}</span>
+          <div class="purchase-action">
+            <span class="price">Gratis! <span class="coin-icon"></span></span>
+            <button class="btn-obtain">Obtener</button>
+          </div>
+        </div>
+
+        <div class="purchase-card">
+          <span class="purchase-title">COMPRA {{ game.name }} Status prime</span>
+          <div class="purchase-action">
+            <span class="price">Gratis! <span class="coin-icon"></span></span>
+            <button class="btn-obtain">Obtener</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="similar-games-sidebar">
+      <h3>PRODUCTOS SIMILARES</h3>
+      @if (loadingSimilar) {
+      <p class="loading-similar">Cargando...</p>
+      } @else {
+        <div class="similar-list">
+          @for (sGame of similarGames; track sGame.id) {
+          <div class="similar-card" (click)="goToSimilar(sGame.id)">
+            @if (sGame.cover) {
+            <img [src]="sGame.cover.url" [alt]="sGame.name">
+            } @else {
+            <div class="no-cover-small">No Image</div>
+            }
+          </div>
+          } @empty {
+          <p class="no-similar">No hay productos similares.</p>
+          }
+          <div class="show-more">
+             <span class="arrow-down">﹀</span>
+          </div>
+        </div>
+      }
+    </aside>
+  </div>
+  }
+</div>

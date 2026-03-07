@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GameService, Game } from '../services/game.service';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 
 @Component({
     selector: 'app-home',
@@ -12,6 +12,7 @@ import { RouterLink } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
     private gameService = inject(GameService);
+    private router = inject(Router);
     games: Game[] = [];
     loading = true;
     error = '';
@@ -42,5 +43,9 @@ export class HomeComponent implements OnInit {
         if (container) {
             container.scrollBy({ left: 300, behavior: 'smooth' });
         }
+    }
+
+    goToGame(id: number) {
+        this.router.navigate(['/game', id]);
     }
 }

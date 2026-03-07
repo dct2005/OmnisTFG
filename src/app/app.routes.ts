@@ -9,6 +9,7 @@ import { CreateCommunity } from './create-community/create-community';
 export const routes: Routes = [
     { path: 'home', loadComponent: () => import('./home/home.component').then(m => m.HomeComponent) },
     { path: 'catalogo', loadComponent: () => import('./catalog/catalog.component').then(m => m.CatalogComponent) },
+    { path: 'game/:id', loadComponent: () => import('./game-details/game-details.component').then(m => m.GameDetailsComponent) },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: '', redirectTo: '/login', pathMatch: 'full' },

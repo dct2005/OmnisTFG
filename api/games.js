@@ -8,16 +8,18 @@ module.exports = async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        const { search, offset, genres, themes } = req.query;
+        const { search, offset, genres, themes, id } = req.query;
         // Construir la query paso a paso para evitar errores de sintaxis
         let queryParts = [];
 
         // Fields
-        queryParts.push("fields name, cover.url, rating, involved_companies.company.name, involved_companies.developer, genres.name, themes.name;");
+        queryParts.push("fields name, summary, cover.url, rating, involved_companies.company.name, involved_companies.developer, genres.name, themes.name;");
 
         // Where conditions
         let whereConditions = ["cover != null"];
-        if (search) {
+        if (id) {
+            whereConditions.push(`id = ${id}`);
+        } else if (search) {
             whereConditions.push(`name ~ *"${search}"*`); // Búsqueda más flexible
         } else {
             whereConditions.push("rating > 70"); // Filtro base para calidad
@@ -41,7 +43,7 @@ module.exports = async function handler(req, res) {
         queryParts.push(`where ${whereConditions.join(" & ")};`);
 
         // Sort
-        if (!search) {
+        if (!search && !id) {
             queryParts.push("sort popularity desc;");
         }
 

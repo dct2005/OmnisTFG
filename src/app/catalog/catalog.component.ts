@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GameService, Game } from '../services/game.service';
+import { Router } from '@angular/router';
 
 interface CatalogGame extends Game {
     isLibrary: boolean;
@@ -20,6 +21,7 @@ interface CatalogGame extends Game {
 })
 export class CatalogComponent implements OnInit, OnDestroy {
     private gameService = inject(GameService);
+    private router = inject(Router);
     searchTerm: string = '';
     loading: boolean = true;
     isLoadingMore: boolean = false;
@@ -141,4 +143,9 @@ export class CatalogComponent implements OnInit, OnDestroy {
         event.stopPropagation();
         game.isFavorite = !game.isFavorite;
     }
+
+    goToGame(id: number) {
+        this.router.navigate(['/game', id]);
+    }
 }
+

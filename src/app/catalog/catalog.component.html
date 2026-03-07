@@ -36,7 +36,7 @@
                 </div>
                 } @else {
                 @for (game of games; track game.id) {
-                <div class="game-card">
+                <div class="game-card" (click)="goToGame(game.id)" style="cursor: pointer;">
                     <div class="card-image">
                         @if (game.cover) {
                         <img [src]="game.cover.url" [alt]="game.name">
