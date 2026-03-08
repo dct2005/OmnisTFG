@@ -13,13 +13,13 @@ import { RouterModule } from '@angular/router';
 export class CommunitiesComponent implements OnInit {
   private communityService = inject(CommunityService);
 
-  // Señales para el estado de la vista
+
   communities = signal<any[]>([]);
   searchTerm = signal<string>('');
   selectedCategories = signal<string[]>([]);
-  activeTab = signal<'all' | 'mine'>('all'); // Pestaña actual por defecto
+  activeTab = signal<'all' | 'mine'>('all');
 
-  // Lista FIJA de categorías para que siempre aparezcan en el menú lateral
+
   availableCategories: string[] = [
     'Arte y Diseño',
     'Deportes',
@@ -30,7 +30,7 @@ export class CommunitiesComponent implements OnInit {
     'Tecnología'
   ];
 
-  // Calculamos las comunidades que se muestran filtrando por búsqueda y categorías
+
   filteredCommunities = computed(() => {
     const term = this.searchTerm().toLowerCase();
     const selected = this.selectedCategories();
