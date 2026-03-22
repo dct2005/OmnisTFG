@@ -1,0 +1,56 @@
+.support-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  color: white;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+h1 {
+  font-size: 2.2rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #b0b0b0;
+  margin-bottom: 50px;
+}
+
+.support-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.support-card {
+  background: rgba(50, 48, 68, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 24px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #e0e0e0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  backdrop-filter: blur(8px);
+  text-align: left;
+  outline: none;
+}
+
+.support-card:hover {
+  background: rgba(68, 65, 90, 0.6);
+  transform: translateY(-2px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.support-card .icon {
+  font-size: 0.8rem;
+  color: #fff;
+  opacity: 0.9;
+}

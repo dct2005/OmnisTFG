@@ -15,5 +15,6 @@ export const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: 'communities', component: CommunitiesComponent },
     { path: 'informacion-communities/:id', component: InformacionCommunities },
-    { path: 'crear-comunidad', component: CreateCommunity }
+    { path: 'crear-comunidad', component: CreateCommunity },
+    { path: 'soporte', loadComponent: () => import('./support/support.component').then(m => m.SupportComponent) }
 ];
