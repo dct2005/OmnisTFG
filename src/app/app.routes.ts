@@ -7,14 +7,14 @@ import { CreateCommunity } from './create-community/create-community';
 
 
 export const routes: Routes = [
-    { path: 'home', loadComponent: () => import('./home/home.component').then(m => m.HomeComponent) },
-    { path: 'catalogo', loadComponent: () => import('./catalog/catalog.component').then(m => m.CatalogComponent) },
-    { path: 'game/:id', loadComponent: () => import('./game-details/game-details.component').then(m => m.GameDetailsComponent) },
-    { path: 'login', component: LoginComponent },
-    { path: 'register', component: RegisterComponent },
+    { path: 'home', title: 'Inicio', loadComponent: () => import('./home/home.component').then(m => m.HomeComponent) },
+    { path: 'catalogo', title: 'Catálogo', loadComponent: () => import('./catalog/catalog.component').then(m => m.CatalogComponent) },
+    { path: 'game/:id', title: 'Detalles del Juego', loadComponent: () => import('./game-details/game-details.component').then(m => m.GameDetailsComponent) },
+    { path: 'login', title: 'Iniciar Sesión', component: LoginComponent },
+    { path: 'register', title: 'Registro', component: RegisterComponent },
     { path: '', redirectTo: '/login', pathMatch: 'full' },
-    { path: 'communities', component: CommunitiesComponent },
-    { path: 'informacion-communities/:id', component: InformacionCommunities },
-    { path: 'crear-comunidad', component: CreateCommunity },
-    { path: 'soporte', loadComponent: () => import('./support/support.component').then(m => m.SupportComponent) }
+    { path: 'communities', title: 'Comunidades', component: CommunitiesComponent },
+    { path: 'informacion-communities/:id', title: 'Información de la Comunidad', component: InformacionCommunities },
+    { path: 'crear-comunidad', title: 'Crear Comunidad', component: CreateCommunity },
+    { path: 'soporte', title: 'Soporte', loadComponent: () => import('./support/support.component').then(m => m.SupportComponent) }
 ];
