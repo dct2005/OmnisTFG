@@ -6,14 +6,23 @@
     </div>
 
     <div class="nav-links">
-        <a routerLink="/" class="nav-link" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active">Inicio</a>
+        <a routerLink="/" class="nav-link" [routerLinkActiveOptions]="{exact: true}"
+            routerLinkActive="active">Inicio</a>
         <a routerLink="/catalogo" class="nav-link" routerLinkActive="active">Catálogo</a>
         <a routerLink="/communities" class="nav-link" routerLinkActive="active">Comunidad</a>
         <a routerLink="/soporte" class="nav-link" routerLinkActive="active">Soporte</a>
     </div>
 
     <div class="auth-buttons">
+        @if (authService.currentUser()) {
+        <div class="user-info">
+            <span class="username">{{ authService.currentUser().name }}</span>
+            <button (click)="logout()" class="btn btn-outline">Cerrar Sesión</button>
+        </div>
+        }
+        @else {
         <a routerLink="/login" class="btn btn-primary" routerLinkActive="active">Iniciar Sesión</a>
         <a routerLink="/register" class="btn btn-text" routerLinkActive="active">Registrarse</a>
+        }
     </div>
 </nav>

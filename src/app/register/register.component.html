@@ -8,13 +8,11 @@
         <form class="register-form" (ngSubmit)="onSubmit()" #registerForm="ngForm">
 
             <div class="form-group">
-                <input type="text" id="name" name="name" [(ngModel)]="user.name" placeholder="Nombre completo"
-                    class="form-control" required #name="ngModel">
+                <input type="text" id="name" name="name" [(ngModel)]="user.name"
+                    placeholder="Nombre completo (Ej: Javier)" class="form-control" required #name="ngModel">
                 @if (name.invalid && (name.dirty || name.touched)) {
                 <span class="validation-error">
-                    @if (name.errors?.['required']) {
                     El nombre es obligatorio
-                    }
                 </span>
                 }
             </div>
@@ -24,12 +22,8 @@
                     class="form-control" required email #email="ngModel">
                 @if (email.invalid && (email.dirty || email.touched)) {
                 <span class="validation-error">
-                    @if (email.errors?.['required']) {
-                    El email es obligatorio
-                    }
-                    @if (email.errors?.['email']) {
-                    El email no es válido
-                    }
+                    @if (email.errors?.['required']) { El email es obligatorio }
+                    @if (email.errors?.['email']) { El email no es válido }
                 </span>
                 }
             </div>
@@ -45,12 +39,8 @@
                 </span>
                 @if (password.invalid && (password.dirty || password.touched)) {
                 <span class="validation-error">
-                    @if (password.errors?.['required']) {
-                    La contraseña es obligatoria
-                    }
-                    @if (password.errors?.['minlength']) {
-                    Mínimo 6 caracteres
-                    }
+                    @if (password.errors?.['required']) { La contraseña es obligatoria }
+                    @if (password.errors?.['minlength']) { Mínimo 6 caracteres }
                 </span>
                 }
             </div>
@@ -68,13 +58,15 @@
 
             <div class="form-options">
                 <label class="terms">
-                    <input type="checkbox" name="acceptedTerms" [(ngModel)]="user.acceptedTerms" required
-                        #terms="ngModel"> Acepto los <a href="#">Términos y Condiciones</a>
+                    <input type="checkbox" name="acceptedTerms" [(ngModel)]="user.acceptedTerms" required>
+                    Acepto los <a href="#">Términos y Condiciones</a>
                 </label>
             </div>
 
             <button type="submit" class="btn-submit"
-                [disabled]="registerForm.invalid || user.password !== user.confirmPassword">Registrarse</button>
+                [disabled]="registerForm.invalid || user.password !== user.confirmPassword">
+                Registrarse
+            </button>
         </form>
 
         <div class="divider">
@@ -82,11 +74,11 @@
         </div>
 
         <div class="social-login">
-            <button class="btn-social google">
+            <button type="button" class="btn-social google">
                 <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google" width="20">
                 Google
             </button>
-            <button class="btn-social apple">
+            <button type="button" class="btn-social apple">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple"
                     width="20">
                 Apple

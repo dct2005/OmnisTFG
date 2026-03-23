@@ -1,7 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../services/auth';
+import { AuthService } from '../services/auth'; // Ajusta la ruta si es necesario
+
 @Component({
     selector: 'app-register',
     standalone: true,
@@ -10,36 +11,53 @@ import { AuthService } from '../services/auth';
     styleUrl: './register.component.css'
 })
 export class RegisterComponent {
+    // Estructura exacta que espera tu Backend (api/register.js)
     user = {
-        name: "",
-        username: "",
+        name: "",            // Nombre completo (irá a 'username' en la BD)
+        username: "",        // Email (el backend lo recibe como 'username')
         password: "",
         confirmPassword: "",
         acceptedTerms: false
     }
+
     passwordVisible = signal(false);
+
     constructor(private authService: AuthService, private router: Router) { }
+
     togglePasswordVisibility() {
         this.passwordVisible.update(value => !value);
     }
+
     onSubmit() {
-        console.log('Enviando...', this.user);
+        console.log('Iniciando registro...', this.user);
 
         this.authService.register(this.user).subscribe({
-            next: (res) => {
-                alert('¡Registro exitoso!');
-                this.router.navigate(['/login']);
+            next: (res: any) => {
+                alert('¡Registro exitoso! Bienvenido a Omnis.');
+
+                // --- ESTA ES LA CLAVE PARA QUE LA NAVBAR CAMBIE ---
+                // Si tu API devuelve el usuario creado, lo guardamos en el servicio.
+                // Si no lo devuelve, creamos un objeto temporal con los datos del form.
+                const userLogged = res.user || {
+                    username: this.user.name,
+                    email: this.user.username
+                };
+
+                this.authService.currentUser.set(userLogged);
+                // --------------------------------------------------
+
+                // Redirigimos al inicio; la Navbar ya mostrará el avatar
+                this.router.navigate(['/']);
             },
             error: (err) => {
                 console.error('ERROR DEL SERVIDOR:', err);
 
                 let mensaje = err.error?.details || err.error?.error || err.error?.message;
-
                 if (!mensaje) {
-                    mensaje = JSON.stringify(err.error || err.message);
+                    mensaje = typeof err.error === 'string' ? err.error : 'Error desconocido de conexión';
                 }
 
-                alert('Fallo: ' + mensaje);
+                alert('Fallo en el registro: ' + mensaje);
             }
         });
     }
