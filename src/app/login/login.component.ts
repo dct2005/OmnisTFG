@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth';
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-login',
@@ -24,7 +25,14 @@ export class LoginComponent {
         console.log('Intentando iniciar sesión...', this.credentials);
 
         if (!this.credentials.username || !this.credentials.password) {
-            alert('Por favor, introduce email y contraseña');
+            Swal.fire({
+                title: 'Atención',
+                text: 'Por favor, introduce email y contraseña',
+                icon: 'warning',
+                background: '#1a103c',
+                color: '#ffffff',
+                confirmButtonColor: '#7c3aed'
+            });
             return;
         }
 
@@ -35,14 +43,28 @@ export class LoginComponent {
                 // GUARDAR EL TOKEN: Esto es vital para saber que estás logueado
                 localStorage.setItem('token', response.token);
 
-                alert('¡Bienvenido de nuevo!');
-
-
-                this.router.navigate(['/catalogo']);
+                Swal.fire({
+                    title: '¡Bienvenido de nuevo!',
+                    icon: 'success',
+                    background: '#1a103c',
+                    color: '#ffffff',
+                    confirmButtonColor: '#7c3aed',
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    this.router.navigate(['/catalogo']);
+                });
             },
             error: (error) => {
                 console.error('Error login:', error);
-                alert('Error: ' + (error.error?.error || 'Credenciales incorrectas'));
+                Swal.fire({
+                    title: 'Error',
+                    text: error.error?.error || 'Credenciales incorrectas',
+                    icon: 'error',
+                    background: '#1a103c',
+                    color: '#ffffff',
+                    confirmButtonColor: '#7c3aed'
+                });
             }
         });
     }

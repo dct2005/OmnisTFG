@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth'; // Ajusta la ruta si es necesario
+import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-register',
@@ -33,7 +34,14 @@ export class RegisterComponent {
 
         this.authService.register(this.user).subscribe({
             next: (res: any) => {
-                alert('¡Registro exitoso! Bienvenido a Omnis.');
+                Swal.fire({
+                    title: '¡Registro exitoso!',
+                    text: 'Bienvenido a Omnis.',
+                    icon: 'success',
+                    background: '#1a103c',
+                    color: '#ffffff',
+                    confirmButtonColor: '#7c3aed'
+                });
 
                 // --- ESTA ES LA CLAVE PARA QUE LA NAVBAR CAMBIE ---
                 // Si tu API devuelve el usuario creado, lo guardamos en el servicio.
@@ -57,7 +65,14 @@ export class RegisterComponent {
                     mensaje = typeof err.error === 'string' ? err.error : 'Error desconocido de conexión';
                 }
 
-                alert('Fallo en el registro: ' + mensaje);
+                Swal.fire({
+                    title: 'Fallo en el registro',
+                    text: mensaje,
+                    icon: 'error',
+                    background: '#1a103c',
+                    color: '#ffffff',
+                    confirmButtonColor: '#7c3aed'
+                });
             }
         });
     }

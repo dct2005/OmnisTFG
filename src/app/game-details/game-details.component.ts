@@ -3,6 +3,7 @@ import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameService, Game } from '../services/game.service';
 import { AuthService } from '../services/auth';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-game-details',
@@ -131,11 +132,43 @@ export class GameDetailsComponent implements OnInit {
     this.router.navigate(['/game', id]);
   }
 
-  onObtenerClick() {
-    if (!this.currentUser()) {
+  onObtenerClick(priceStr: string | number) {
+    const user = this.currentUser();
+    if (!user) {
       this.router.navigate(['/login']);
+      return;
+    }
+
+    const price = parseInt(priceStr.toString().replace(/\./g, ''), 10);
+    const currentPeppix = typeof user.peppix === 'string' ? parseInt(user.peppix.toString().replace(/\./g, ''), 10) : (user.peppix || 0);
+
+    if (currentPeppix >= price) {
+      this.authService.addPeppix(-price);
+      Swal.fire({
+        title: '¡Gracias por tu compra!',
+        text: 'El producto se ha añadido a tu cuenta.',
+        icon: 'success',
+        background: '#1a103c',
+        color: '#ffffff',
+        confirmButtonColor: '#7c3aed'
+      });
     } else {
-      alert('¡Gracias por tu compra! El producto se ha añadido a tu cuenta.');
+      Swal.fire({
+        title: 'Saldo insuficiente',
+        text: '¿Deseas recargar Peppix en la tienda?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Recargar',
+        cancelButtonText: 'Cancelar',
+        background: '#1a103c',
+        color: '#ffffff',
+        confirmButtonColor: '#7c3aed',
+        cancelButtonColor: '#d33'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/compras']);
+        }
+      });
     }
   }
 }

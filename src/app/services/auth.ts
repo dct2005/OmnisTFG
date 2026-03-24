@@ -92,7 +92,7 @@ export class AuthService {
       this.http.post(`${this.apiUrl}/user`, {
         action: 'update-peppix',
         email: userEmail,
-        peppix: newPeppix
+        amount: amount
       }).subscribe({
         next: (res: any) => console.log('Peppix añadido en BD:', res.user?.peppix || newPeppix),
         error: (err) => console.error('Error al actualizar Peppix:', err)

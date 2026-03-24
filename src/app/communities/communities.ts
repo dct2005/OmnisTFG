@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CommunityService } from '../services/community.service';
 import { RouterModule } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-communities',
@@ -70,7 +71,14 @@ export class CommunitiesComponent implements OnInit {
 
 
     if (isMine && !userId) {
-      alert('Debes iniciar sesión para ver tus comunidades');
+      Swal.fire({
+        title: 'Error',
+        text: 'Debes iniciar sesión para ver tus comunidades',
+        icon: 'error',
+        background: '#1a103c',
+        color: '#ffffff',
+        confirmButtonColor: '#7c3aed'
+      });
       this.activeTab.set('all');
       return;
     }

@@ -40,6 +40,7 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.2",
     "rxjs": "~7.8.0",
+    "sweetalert2": "^11.26.24",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },

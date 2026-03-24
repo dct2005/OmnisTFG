@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommunityService } from '../services/community.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-create-community',
@@ -35,7 +36,14 @@ export class CreateCommunity {
 
   onSubmit() {
     if (!this.community.name || !this.community.categoria) {
-      alert('Por favor, rellena los campos obligatorios.');
+      Swal.fire({
+        title: 'Atención',
+        text: 'Por favor, rellena los campos obligatorios.',
+        icon: 'warning',
+        background: '#1a103c',
+        color: '#ffffff',
+        confirmButtonColor: '#7c3aed'
+      });
       return;
     }
 
@@ -50,12 +58,27 @@ export class CreateCommunity {
 
     this.communityService.createCommunity(newCommunityData).subscribe({
       next: (response) => {
-        alert('¡Comunidad creada con éxito!');
-        this.router.navigate(['/']);
+        Swal.fire({
+          title: '¡Éxito!',
+          text: '¡Comunidad creada con éxito!',
+          icon: 'success',
+          background: '#1a103c',
+          color: '#ffffff',
+          confirmButtonColor: '#7c3aed'
+        }).then(() => {
+          this.router.navigate(['/']);
+        });
       },
       error: (err) => {
         console.error('Error creando comunidad:', err);
-        alert('Hubo un error al crear la comunidad.');
+        Swal.fire({
+          title: 'Error',
+          text: 'Hubo un error al crear la comunidad.',
+          icon: 'error',
+          background: '#1a103c',
+          color: '#ffffff',
+          confirmButtonColor: '#7c3aed'
+        });
       }
     });
   }

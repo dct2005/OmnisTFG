@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CommunityService } from '../services/community.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-informacion-communities',
@@ -77,7 +78,14 @@ export class InformacionCommunities implements OnInit {
   toggleJoin() {
     const userId = this.getUserIdFromToken();
     if (!userId) {
-      alert('Debes iniciar sesión para unirte a la comunidad.');
+      Swal.fire({
+        title: 'Aviso',
+        text: 'Debes iniciar sesión para unirte a la comunidad.',
+        icon: 'warning',
+        background: '#1a103c',
+        color: '#ffffff',
+        confirmButtonColor: '#7c3aed'
+      });
       return;
     }
 
@@ -94,7 +102,14 @@ export class InformacionCommunities implements OnInit {
     const userId = this.getUserIdFromToken();
 
     if (!userId) {
-      alert('Debes iniciar sesión para escribir.');
+      Swal.fire({
+        title: 'Aviso',
+        text: 'Debes iniciar sesión para escribir.',
+        icon: 'warning',
+        background: '#1a103c',
+        color: '#ffffff',
+        confirmButtonColor: '#7c3aed'
+      });
       return;
     }
 
@@ -107,7 +122,14 @@ export class InformacionCommunities implements OnInit {
       },
       error: (err) => {
         console.error('Error enviando mensaje:', err);
-        alert('Hubo un error al enviar tu mensaje.');
+        Swal.fire({
+          title: 'Error',
+          text: 'Hubo un error al enviar tu mensaje.',
+          icon: 'error',
+          background: '#1a103c',
+          color: '#ffffff',
+          confirmButtonColor: '#7c3aed'
+        });
       }
     });
   }

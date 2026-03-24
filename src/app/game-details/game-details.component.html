@@ -36,7 +36,7 @@
           <span class="purchase-title">COMPRA {{ game.name }}</span>
           <div class="purchase-action">
             <span class="price">{{ game.peppixPrice || '4999' }} <span class="peppix-icon"></span></span>
-            <button class="btn-obtain" (click)="onObtenerClick()">{{ currentUser() ? 'Comprar' : 'Obtener' }}</button>
+            <button class="btn-obtain" (click)="onObtenerClick(game.peppixPrice || '4999')">{{ currentUser() ? 'Comprar' : 'Obtener' }}</button>
           </div>
         </div>
 
@@ -45,7 +45,7 @@
           <span class="purchase-title">COMPRA {{ edition.name }}</span>
           <div class="purchase-action">
             <span class="price">{{ edition.peppixPrice || '1999' }} <span class="peppix-icon"></span></span>
-            <button class="btn-obtain" (click)="onObtenerClick()">{{ currentUser() ? 'Comprar' : 'Obtener' }}</button>
+            <button class="btn-obtain" (click)="onObtenerClick(edition.peppixPrice || '1999')">{{ currentUser() ? 'Comprar' : 'Obtener' }}</button>
           </div>
         </div>
         }
