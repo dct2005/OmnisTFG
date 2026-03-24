@@ -21,8 +21,13 @@
           <div class="no-cover">No Cover</div>
           }
         </div>
-        <div class="game-summary">
-          <p>{{ game.summary || 'Durante las dos últimas décadas, Counter-Strike ha proporcionado una experiencia competitiva de primer nivel para los millones de jugadores de todo el mundo que contribuyeron a darle forma. Ahora el próximo capítulo en la historia de CS está a punto de comenzar. Hablamos de Counter-Strike 2.' }}</p>
+        <div class="game-summary" [class.expanded]="isDescriptionExpanded">
+          <p class="summary-text">{{ truncatedSummary }}</p>
+          @if ((game?.summary?.length || 0) > 840) {
+            <button class="btn-read-more" (click)="toggleDescription()">
+              {{ isDescriptionExpanded ? 'Ver menos' : 'Ver más' }}
+            </button>
+          }
         </div>
       </div>
 
@@ -31,7 +36,7 @@
           <span class="purchase-title">COMPRA {{ game.name }}</span>
           <div class="purchase-action">
             <span class="price">Gratis! <span class="coin-icon"></span></span>
-            <button class="btn-obtain">Obtener</button>
+            <button class="btn-obtain" (click)="onObtenerClick()">Obtener</button>
           </div>
         </div>
 
@@ -39,7 +44,7 @@
           <span class="purchase-title">COMPRA {{ game.name }} Status prime</span>
           <div class="purchase-action">
             <span class="price">Gratis! <span class="coin-icon"></span></span>
-            <button class="btn-obtain">Obtener</button>
+            <button class="btn-obtain" (click)="onObtenerClick()">Obtener</button>
           </div>
         </div>
       </div>
@@ -47,8 +52,8 @@
       @if (additionalContent.length > 0) {
       <div class="additional-content-section">
         <h2 class="section-title">CONTENIDO ADICIONAL</h2>
-        <div class="dlc-grid">
-          @for (dlc of additionalContent; track dlc.id) {
+        <div class="dlc-grid" [class.expanded]="isDlcsExpanded">
+          @for (dlc of displayedDlcs; track dlc.id) {
           <div class="dlc-card" (click)="goToSimilar(dlc.id)">
             <div class="dlc-image">
               @if (dlc.cover) {
@@ -63,6 +68,11 @@
           </div>
           }
         </div>
+        @if (additionalContent.length > 4) {
+          <button class="btn-read-more dlc-more-btn" (click)="toggleDlcs()">
+            {{ isDlcsExpanded ? 'Ver menos' : 'Ver más' }}
+          </button>
+        }
       </div>
       }
     </div>

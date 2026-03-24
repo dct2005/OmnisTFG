@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameService, Game } from '../services/game.service';
+import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-game-details',
@@ -14,7 +15,10 @@ export class GameDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private gameService = inject(GameService);
+  private authService = inject(AuthService);
   private location = inject(Location);
+
+  currentUser = this.authService.currentUser;
 
   game: Game | null = null;
   additionalContent: any[] = [];
@@ -23,6 +27,29 @@ export class GameDetailsComponent implements OnInit {
   loading = true;
   error: string | null = null;
   loadingSimilar = false;
+
+  isDescriptionExpanded = false;
+  isDlcsExpanded = false;
+
+  get truncatedSummary(): string {
+    const summary = this.game?.summary || 'Durante las dos últimas décadas, Counter-Strike ha proporcionado una experiencia competitiva de primer nivel para los millones de jugadores de todo el mundo que contribuyeron a darle forma. Ahora el próximo capítulo en la historia de CS está a punto de comenzar. Hablamos de Counter-Strike 2.';
+    if (this.isDescriptionExpanded || summary.length <= 840) {
+      return summary;
+    }
+    return summary.substring(0, 840) + '...';
+  }
+
+  get displayedDlcs() {
+    return this.isDlcsExpanded ? this.additionalContent : this.additionalContent.slice(0, 4);
+  }
+
+  toggleDescription() {
+    this.isDescriptionExpanded = !this.isDescriptionExpanded;
+  }
+
+  toggleDlcs() {
+    this.isDlcsExpanded = !this.isDlcsExpanded;
+  }
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -88,5 +115,13 @@ export class GameDetailsComponent implements OnInit {
 
   goToSimilar(id: number) {
     this.router.navigate(['/game', id]);
+  }
+
+  onObtenerClick() {
+    if (!this.currentUser()) {
+      this.router.navigate(['/login']);
+    } else {
+      alert('¡Gracias por tu compra! El producto se ha añadido a tu cuenta.');
+    }
   }
 }

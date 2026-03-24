@@ -1,7 +1,4 @@
--- Cuando un usuario no logueado intente commprar un juego se le redireccione a la pantalla de login.
+-- HCuando un usuario no logueado intente commprar un juego se le redireccione a la pantalla de login.
 -- Capar los detalles de un juego a 840 caracteres para que no rompa la estetica y hacerlo responsive en la medida de lo posible.
 -- HECHO: Ahora el catalogo reconoce juegos y dlcs. Si un juego tiene DLCs, saldrán en la pantalla de detalles del juego.
 -- Vistas de usuario
--- HECHO: Dentro del catalogo, si el usuario no esta logueado no debe ver el boton "mis juegos".
--- HECHO: Quitar boton inicio dentro del catalogo.
--- HECHO: Dentro de las comunidades si el usuario no esta logueado no debe ver el boton "mis comunidades" ni crear comunidad.
