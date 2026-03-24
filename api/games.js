@@ -12,28 +12,30 @@ module.exports = async function handler(req, res) {
         // Construir la query paso a paso para evitar errores de sintaxis
         let queryParts = [];
 
-        // Fields
-        queryParts.push("fields name, summary, cover.url, rating, involved_companies.company.name, involved_companies.developer, genres.name, themes.name;");
+        // Campos
+        queryParts.push("fields name, summary, cover.url, rating, involved_companies.company.name, involved_companies.developer, genres.name, themes.name, dlcs.name, dlcs.cover.url, expansions.name, expansions.cover.url;");
 
-        // Where conditions
+        // Condiciones
         let whereConditions = ["cover != null"];
         if (id) {
             whereConditions.push(`id = ${id}`);
         } else if (search) {
+            whereConditions.push("game_type = (0, 8, 9, 11)"); //Juego base, remake, remaster, port
             whereConditions.push(`name ~ *"${search}"*`); // Búsqueda más flexible
         } else {
+            whereConditions.push("game_type = (0, 8, 9, 11)"); //Juego base, remake, remaster, port
             whereConditions.push("rating > 70"); // Filtro base para calidad
             whereConditions.push("rating_count > 10");
         }
 
-        // Add Categories (Genres) Filter
+        // Filtro de generos
         if (genres) {
             const genresArr = Array.isArray(genres) ? genres : [genres];
             const genresString = genresArr.map(g => `"${g}"`).join(",");
             whereConditions.push(`genres.name = (${genresString})`);
         }
 
-        // Add Themes Filter
+        // Filtro de tematicas
         if (themes) {
             const themesArr = Array.isArray(themes) ? themes : [themes];
             const themesString = themesArr.map(t => `"${t}"`).join(",");
@@ -42,12 +44,12 @@ module.exports = async function handler(req, res) {
 
         queryParts.push(`where ${whereConditions.join(" & ")};`);
 
-        // Sort
+        // Ordenar
         if (!search && !id) {
             queryParts.push("sort popularity desc;");
         }
 
-        // Offset & Limit
+        // Limite y paginacion
         queryParts.push(`limit 20;`);
         queryParts.push(`offset ${offset || 0};`); // Asegurar que offset siempre tenga valor
 

@@ -1,8 +1,7 @@
 -- Cuando un usuario no logueado intente commprar un juego se le redireccione a la pantalla de login.
 -- Capar los detalles de un juego a 840 caracteres para que no rompa la estetica y hacerlo responsive en la medida de lo posible.
--- Que el catalogo sea capaz de distinguir entre juegos, dlcs, expansiones, standalone_extensions, bundles y dlc_bundles.
+-- HECHO: Ahora el catalogo reconoce juegos y dlcs. Si un juego tiene DLCs, saldrán en la pantalla de detalles del juego.
 -- Vistas de usuario
 -- Dentro del catalogo, si el usuario no esta logueado no debe ver el boton "mis juegos".
 -- Quitar boton inicio dentro del catalogo.
 -- Dentro de las comunidades si el usuario no esta logueado no debe ver el boton "mis comunidades" ni crear comunidad.
-Hand of Fate 2 es un juego de exploración de mazmorras ambientado en un mundo de fantasía oscura. ¡Domina un juego de mesa viviente donde cada etapa de la aventura se extrae de un mazo de encuentros legendarios elegidos por ti! Elige sabiamente: tu oponente, el enigmático crupier, no se andará con rodeos mientras te convierte en el instrumento de su venganza. La situación ha cambiado, pero lo que está en juego sigue siendo el mismo: ¡vida o muerte! CARACTERÍSTICAS CLAVE DEL JUEGO Un mundo transformado: han pasado 100 años desde que el Dealer fue usurpado y el Juego de la Vida y la Muerte obtuvo un nuevo maestro. 22 nuevos y emocionantes desafíos que llevarán tus habilidades de construcción de mazos al límite: ¡caza asesinos diabólicos, reúne a amantes desamparados o construye una fortaleza para resistir el asalto de un asaltante!

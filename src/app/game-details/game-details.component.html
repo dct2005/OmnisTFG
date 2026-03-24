@@ -43,6 +43,28 @@
           </div>
         </div>
       </div>
+
+      @if (additionalContent.length > 0) {
+      <div class="additional-content-section">
+        <h2 class="section-title">CONTENIDO ADICIONAL</h2>
+        <div class="dlc-grid">
+          @for (dlc of additionalContent; track dlc.id) {
+          <div class="dlc-card" (click)="goToSimilar(dlc.id)">
+            <div class="dlc-image">
+              @if (dlc.cover) {
+              <img [src]="dlc.cover.url" [alt]="dlc.name">
+              } @else {
+              <div class="no-cover-dlc">Sin Imagen</div>
+              }
+            </div>
+            <div class="dlc-info">
+              <span class="dlc-name">{{ dlc.name }}</span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
     </div>
 
     <aside class="similar-games-sidebar">

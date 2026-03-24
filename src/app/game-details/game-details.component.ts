@@ -17,6 +17,7 @@ export class GameDetailsComponent implements OnInit {
   private location = inject(Location);
 
   game: Game | null = null;
+  additionalContent: any[] = [];
   allSimilarGames: Game[] = [];
   scrollIndex = 0;
   loading = true;
@@ -38,6 +39,7 @@ export class GameDetailsComponent implements OnInit {
     this.gameService.getGameById(id).subscribe({
       next: (game) => {
         this.game = game;
+        this.additionalContent = [...(game.dlcs || []), ...(game.expansions || [])];
         this.loading = false;
         this.loadSimilarGames();
       },

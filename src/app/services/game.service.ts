@@ -14,6 +14,8 @@ export interface Game {
   developer?: string;
   genres?: string[];
   themes?: string[];
+  dlcs?: any[];
+  expansions?: any[];
 }
 
 @Injectable({
@@ -53,7 +55,9 @@ export class GameService {
         // extraer desarrollador
         developer: (game as any).involved_companies?.find((c: any) => c.developer)?.company?.name,
         genres: (game as any).genres?.map((g: any) => g.name) || [],
-        themes: (game as any).themes?.map((t: any) => t.name) || []
+        themes: (game as any).themes?.map((t: any) => t.name) || [],
+        dlcs: (game as any).dlcs?.map((d: any) => ({ ...d, cover: d.cover ? { ...d.cover, url: d.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || [],
+        expansions: (game as any).expansions?.map((e: any) => ({ ...e, cover: e.cover ? { ...e.cover, url: e.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || []
       })))
     );
   }
@@ -74,7 +78,9 @@ export class GameService {
           } : undefined,
           developer: (game as any).involved_companies?.find((c: any) => c.developer)?.company?.name,
           genres: (game as any).genres?.map((g: any) => g.name) || [],
-          themes: (game as any).themes?.map((t: any) => t.name) || []
+          themes: (game as any).themes?.map((t: any) => t.name) || [],
+          dlcs: (game as any).dlcs?.map((d: any) => ({ ...d, cover: d.cover ? { ...d.cover, url: d.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || [],
+          expansions: (game as any).expansions?.map((e: any) => ({ ...e, cover: e.cover ? { ...e.cover, url: e.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || []
         };
       })
     );
