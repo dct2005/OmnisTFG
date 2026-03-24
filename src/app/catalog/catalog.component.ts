@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GameService, Game } from '../services/game.service';
+import { AuthService } from '../services/auth';
 import { Router, RouterLink } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -23,7 +24,10 @@ interface CatalogGame extends Game {
 })
 export class CatalogComponent implements OnInit, OnDestroy {
     private gameService = inject(GameService);
+    private authService = inject(AuthService);
     private router = inject(Router);
+    
+    currentUser = this.authService.currentUser;
     searchTerm: string = '';
     loading: boolean = true;
     isLoadingMore: boolean = false;

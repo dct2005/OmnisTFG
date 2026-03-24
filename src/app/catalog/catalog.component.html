@@ -22,8 +22,9 @@
                 </div>
 
                 <div class="quick-links">
-                    <a href="#" class="quick-link home"><span class="icon">🏠</span> Inicio</a>
+                    @if (currentUser()) {
                     <a href="#" class="quick-link"><span class="icon">🎮</span> Mis juegos</a>
+                    }
                     <a href="#" class="quick-link active"><span class="icon">🔍</span> Explorar</a>
                 </div>
             </div>
