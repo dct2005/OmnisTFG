@@ -18,6 +18,7 @@ export class CommunitiesComponent implements OnInit {
   searchTerm = signal<string>('');
   selectedCategories = signal<string[]>([]);
   activeTab = signal<'all' | 'mine'>('all');
+  isLoggedIn = signal<boolean>(false);
 
 
   availableCategories: string[] = [
@@ -45,6 +46,7 @@ export class CommunitiesComponent implements OnInit {
   });
 
   ngOnInit() {
+    this.isLoggedIn.set(!!this.getUserIdFromToken());
     this.loadCommunities();
   }
 
