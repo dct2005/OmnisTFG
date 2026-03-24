@@ -149,4 +149,217 @@
     gap: 1rem;
     margin-top: 1rem;
   }
+
+}
+
+/* --- ESTILOS DE PEPPIX --- */
+.peppix-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.peppix-container:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.peppix-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(103, 193, 245, 0.4));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.peppix-container:hover .peppix-icon {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.8));
+}
+
+.peppix-amount {
+  color: #ffffff;
+  font-family: 'Audiowide', cursive;
+  font-size: 1.15rem; /* Reducido para que sea más pequeño */
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-shadow: 0 0 6px rgba(103, 193, 245, 0.4);
+  display: inline-block; /* Necesario para que el transform funcione en el span */
+  transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+.peppix-container:hover .peppix-amount {
+  transform: scale(1.05);
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+}
+
+/* --- ESTILO PARA PERFIL DE USUARIO --- */
+
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  background-color: #0d1b2a;
+  /* Fondo original azul oscuro por defecto */
+  border-radius: 20px;
+  height: 48px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
+  overflow: hidden;
+  /* Recorta la imagen del avatar en el borde curvo */
+  padding-right: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Modificadores de Estado (Más Notorios) */
+.user-profile-btn.conectado {
+  background-color: #0d3821; /* Verde esmeralda oscuro / Conectado */
+  border-color: rgba(30, 215, 96, 0.4); 
+}
+.user-profile-btn.conectado:hover {
+  background-color: #124d2e;
+  box-shadow: 0 4px 12px rgba(30, 215, 96, 0.25);
+}
+
+.user-profile-btn.desconectado {
+  background-color: #2b3036; /* Gris ceniza / Desconectado */
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.user-profile-btn.desconectado:hover {
+  background-color: #383e45;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+.user-profile-btn.ausente {
+  background-color: #5c4113; /* Naranja-Dorado / Ausente */
+  border-color: rgba(255, 180, 50, 0.4);
+}
+.user-profile-btn.ausente:hover {
+  background-color: #7a581a;
+  box-shadow: 0 4px 12px rgba(255, 180, 50, 0.25);
+}
+
+.user-profile-btn.ocupado {
+  background-color: #5e1818; /* Rojo carmesí / Ocupado */
+  border-color: rgba(255, 50, 50, 0.4);
+}
+.user-profile-btn.ocupado:hover {
+  background-color: #802020;
+  box-shadow: 0 4px 12px rgba(255, 50, 50, 0.25);
+}
+
+.user-avatar-wrapper {
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+}
+
+.user-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.user-info-wrapper {
+  display: flex;
+  align-items: center;
+  padding-left: 14px;
+  gap: 14px;
+}
+
+.user-name {
+  color: white;
+  font-family: 'Audiowide', cursive;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.chevron-icon {
+  color: white;
+  transition: transform 0.2s ease;
+}
+
+.user-profile-btn:active .chevron-icon {
+  transform: translateY(2px);
+}
+
+.user-profile-btn {
+  /* Hacemos relativo para anclar el dropdown */
+  position: relative;
+}
+
+.chevron-icon.rotated {
+  transform: rotate(180deg);
+}
+
+/* --- ESTILOS DEL DROPDOWN DE ESTADO --- */
+.status-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 220px;
+  background-color: #0b141e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 8px 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  z-index: 100;
+  animation: fadeInDown 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.status-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  color: #e2e8f0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.status-option:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentcolor;
+}
+
+.status-dot.conectado { background-color: #1ed760; color: #1ed760; }
+.status-dot.ausente { background-color: #ffb432; color: #ffb432; }
+.status-dot.ocupado { background-color: #ff3232; color: #ff3232; }
+
+.status-divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.08);
+  margin: 6px 0;
+}
+
+.status-option.logout {
+  color: #ff5555;
+  margin-top: 4px;
+}
+.status-option.logout:hover {
+  background-color: rgba(255, 85, 85, 0.1);
 }

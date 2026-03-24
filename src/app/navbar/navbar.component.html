@@ -14,15 +14,49 @@
     </div>
 
     <div class="auth-buttons">
-        @if (authService.currentUser()) {
-        <div class="user-info">
-            <span class="username">{{ authService.currentUser().name }}</span>
-            <button (click)="logout()" class="btn btn-outline">Cerrar Sesión</button>
+        @if (isLoggedIn()) {
+        <!-- Sección Peppix -->
+        <div class="peppix-container" title="Tus Peppix" routerLink="/catalogo">
+            <img src="images/peppix.webp" alt="Peppix Coin" class="peppix-icon">
+            <span class="peppix-amount">{{ authService.currentUser()?.peppix || 0 }}</span>
+        </div>
+
+        <div class="user-profile-btn" [ngClass]="userEstado" (click)="toggleDropdown()" title="Perfil">
+            <div class="user-avatar-wrapper">
+                <img [src]="authService.currentUser()?.avatar || authService.currentUser()?.profile_picture || 'https://ui-avatars.com/api/?name=' + usernameValue() + '&background=0d1b2a&color=fff'"
+                    class="user-avatar" [alt]="usernameValue()">
+            </div>
+            <div class="user-info-wrapper">
+                <span class="user-name">{{ usernameValue() }}</span>
+                <svg class="chevron-icon" [class.rotated]="isDropdownOpen()" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </div>
+
+            <!-- Menú Desplegable -->
+            @if (isDropdownOpen()) {
+            <div class="status-dropdown">
+                <div class="status-option" (click)="changeStatus('conectado', $event)">
+                    <span class="status-dot conectado"></span> Conectado
+                </div>
+                <div class="status-option" (click)="changeStatus('ausente', $event)">
+                    <span class="status-dot ausente"></span> Ausente
+                </div>
+                <div class="status-option" (click)="changeStatus('ocupado', $event)">
+                    <span class="status-dot ocupado"></span> Ocupado
+                </div>
+                <div class="status-divider"></div>
+                <div class="status-option logout" (click)="logout($event)">
+                    <span>Cerrar Sesión</span>
+                </div>
+            </div>
+            }
         </div>
         }
         @else {
-        <a routerLink="/login" class="btn btn-primary" routerLinkActive="active">Iniciar Sesión</a>
-        <a routerLink="/register" class="btn btn-text" routerLinkActive="active">Registrarse</a>
+        <a routerLink="/login" class="btn btn-primary">Iniciar Sesión</a>
+        <a routerLink="/register" class="btn btn-text">Registrarse</a>
         }
     </div>
 </nav>
