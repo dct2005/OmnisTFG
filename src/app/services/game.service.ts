@@ -18,6 +18,7 @@ export interface Game {
   expansions?: any[];
   versions?: any[];
   bundles?: any[];
+  peppixPrice?: number;
 }
 
 @Injectable({
@@ -58,10 +59,10 @@ export class GameService {
         developer: (game as any).involved_companies?.find((c: any) => c.developer)?.company?.name,
         genres: (game as any).genres?.map((g: any) => g.name) || [],
         themes: (game as any).themes?.map((t: any) => t.name) || [],
-        dlcs: (game as any).dlcs?.map((d: any) => ({ ...d, cover: d.cover ? { ...d.cover, url: d.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || [],
-        expansions: (game as any).expansions?.map((e: any) => ({ ...e, cover: e.cover ? { ...e.cover, url: e.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || [],
+        dlcs: (game as any).dlcs?.map((d: any) => ({ ...d, peppixPrice: d.peppixPrice, cover: d.cover ? { ...d.cover, url: d.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || [],
+        expansions: (game as any).expansions?.map((e: any) => ({ ...e, peppixPrice: e.peppixPrice, cover: e.cover ? { ...e.cover, url: e.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || [],
         versions: [],
-        bundles: (game as any).bundles?.map((b: any) => ({ ...b, cover: b.cover ? { ...b.cover, url: b.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || []
+        bundles: (game as any).bundles?.map((b: any) => ({ ...b, peppixPrice: b.peppixPrice, cover: b.cover ? { ...b.cover, url: b.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || []
       })))
     );
   }
@@ -83,10 +84,10 @@ export class GameService {
           developer: (game as any).involved_companies?.find((c: any) => c.developer)?.company?.name,
           genres: (game as any).genres?.map((g: any) => g.name) || [],
           themes: (game as any).themes?.map((t: any) => t.name) || [],
-          dlcs: (game as any).dlcs?.map((d: any) => ({ ...d, cover: d.cover ? { ...d.cover, url: d.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || [],
-          expansions: (game as any).expansions?.map((e: any) => ({ ...e, cover: e.cover ? { ...e.cover, url: e.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || [],
+          dlcs: (game as any).dlcs?.map((d: any) => ({ ...d, peppixPrice: d.peppixPrice, cover: d.cover ? { ...d.cover, url: d.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || [],
+          expansions: (game as any).expansions?.map((e: any) => ({ ...e, peppixPrice: e.peppixPrice, cover: e.cover ? { ...e.cover, url: e.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || [],
           versions: [],
-          bundles: (game as any).bundles?.map((b: any) => ({ ...b, cover: b.cover ? { ...b.cover, url: b.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || []
+          bundles: (game as any).bundles?.map((b: any) => ({ ...b, peppixPrice: b.peppixPrice, cover: b.cover ? { ...b.cover, url: b.cover.url.replace('t_thumb', 't_cover_big') } : undefined })) || []
         };
       })
     );

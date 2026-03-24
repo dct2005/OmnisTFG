@@ -13,7 +13,7 @@ module.exports = async function handler(req, res) {
         let queryParts = [];
 
         // Campos
-        queryParts.push("fields name, summary, cover.url, rating, involved_companies.company.name, involved_companies.developer, genres.name, themes.name, dlcs.name, dlcs.cover.url, expansions.name, expansions.cover.url, bundles.name, bundles.cover.url;");
+        queryParts.push("fields name, summary, cover.url, rating, rating_count, involved_companies.company.name, involved_companies.developer, genres.name, themes.name, dlcs.name, dlcs.cover.url, expansions.name, expansions.cover.url, bundles.name, bundles.cover.url;");
 
         // Condiciones
         let whereConditions = ["cover != null"];
@@ -67,6 +67,31 @@ module.exports = async function handler(req, res) {
         );
 
         let processedData = response.data;
+
+        // Función auxiliar para calcular precios en Peppix
+        const calculatePeppixPrice = (game, isNested = false) => {
+            if (isNested) {
+                // Para DLCs/Expansiones, precio base menor
+                return 1499 + Math.floor(Math.random() * 1500);
+            }
+            const rating = game.rating || 60;
+            const ratingCount = game.rating_count || 0;
+            const basePrice = (rating * 45) + (ratingCount / 10);
+            // Redondear al 99 mas cercano (ej: 4999)
+            return Math.max(999, Math.floor(basePrice / 100) * 100 + 99);
+        };
+
+        // Procesar cada juego para añadir el precio
+        processedData = processedData.map(game => {
+            game.peppixPrice = calculatePeppixPrice(game);
+            
+            // También a contenido adicional si existe
+            if (game.dlcs) game.dlcs = game.dlcs.map(d => ({ ...d, peppixPrice: calculatePeppixPrice(d, true) }));
+            if (game.expansions) game.expansions = game.expansions.map(e => ({ ...e, peppixPrice: calculatePeppixPrice(e, true) }));
+            if (game.bundles) game.bundles = game.bundles.map(b => ({ ...b, peppixPrice: calculatePeppixPrice(b, true) * 1.2 })); // Bundles algo más caros
+
+            return game;
+        });
 
         // Si consultamos un juego en concreto (id existe) y tiene resumen, lo traducimos
         if (id && processedData.length > 0 && processedData[0].summary) {

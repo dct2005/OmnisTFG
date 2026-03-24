@@ -53,8 +53,8 @@
                         <div class="card-meta">
                             @if (game.isLibrary) {
                             <span class="library-tag">En la biblioteca</span>
-                            } @else if (game.price) {
-                            <span class="price-tag">{{ game.price }}</span>
+                            } @else if (game.peppixPrice) {
+                            <span class="price-tag">{{ game.peppixPrice }} <span class="peppix-icon"></span></span>
                             }
                             <button class="btn-favorite" (click)="toggleFavorite($event, game)">
                                 <span class="material-icons">{{ game.isFavorite ? 'bookmark' : 'bookmark_border'

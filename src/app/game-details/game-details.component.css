@@ -142,14 +142,6 @@
   gap: 8px;
 }
 
-.coin-icon {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #b15dff, #4e1dff); /* Fake coin icon */
-}
-
 .btn-obtain {
   background: linear-gradient(90deg, #4b6bfb, #3b5aec); 
   color: white;

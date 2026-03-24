@@ -19,3 +19,19 @@ body {
 * {
     box-sizing: border-box;
 }
+
+/* Global Peppix Icon Style */
+.peppix-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-image: url('/images/peppix.webp');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+    vertical-align: middle;
+    margin-left: 10px;
+}

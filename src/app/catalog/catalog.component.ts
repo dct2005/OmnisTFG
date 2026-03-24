@@ -12,7 +12,7 @@ interface CatalogGame extends Game {
     isFavorite: boolean;
     categories: string[];
     themes: string[];
-    price?: number;
+    peppixPrice?: number;
 }
 
 @Component({
