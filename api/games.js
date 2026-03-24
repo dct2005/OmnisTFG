@@ -13,7 +13,7 @@ module.exports = async function handler(req, res) {
         let queryParts = [];
 
         // Campos
-        queryParts.push("fields name, summary, cover.url, rating, involved_companies.company.name, involved_companies.developer, genres.name, themes.name, dlcs.name, dlcs.cover.url, expansions.name, expansions.cover.url;");
+        queryParts.push("fields name, summary, cover.url, rating, involved_companies.company.name, involved_companies.developer, genres.name, themes.name, dlcs.name, dlcs.cover.url, expansions.name, expansions.cover.url, bundles.name, bundles.cover.url;");
 
         // Condiciones
         let whereConditions = ["cover != null"];

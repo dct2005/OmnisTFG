@@ -22,6 +22,7 @@ export class GameDetailsComponent implements OnInit {
 
   game: Game | null = null;
   additionalContent: any[] = [];
+  specialEditions: any[] = [];
   allSimilarGames: Game[] = [];
   scrollIndex = 0;
   loading = true;
@@ -67,6 +68,19 @@ export class GameDetailsComponent implements OnInit {
       next: (game) => {
         this.game = game;
         this.additionalContent = [...(game.dlcs || []), ...(game.expansions || [])];
+        
+        // Buscar ediciones especiales en DLCs, expansiones y bundles del juego
+        const allRelated = [
+          ...(game.dlcs || []),
+          ...(game.expansions || []),
+          ...(game.bundles || [])
+        ];
+        const specialKeywords = ['edition', 'edición', 'gold', 'platinum', 'premium', 'deluxe', 'ultimate', 'definitive', 'goty', 'game of the year', "director's cut", 'complete', 'enhanced', 'remaster', 'collection'];
+        this.specialEditions = allRelated.filter(item => {
+          const lowerName = (item.name || '').toLowerCase();
+          return specialKeywords.some(kw => lowerName.includes(kw));
+        });
+        
         this.loading = false;
         this.loadSimilarGames();
       },

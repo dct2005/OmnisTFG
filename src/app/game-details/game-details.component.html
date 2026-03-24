@@ -40,13 +40,15 @@
           </div>
         </div>
 
+        @for (edition of specialEditions; track edition.id) {
         <div class="purchase-card">
-          <span class="purchase-title">COMPRA {{ game.name }} Status prime</span>
+          <span class="purchase-title">COMPRA {{ edition.name }}</span>
           <div class="purchase-action">
             <span class="price">Gratis! <span class="coin-icon"></span></span>
             <button class="btn-obtain" (click)="onObtenerClick()">Obtener</button>
           </div>
         </div>
+        }
       </div>
 
       @if (additionalContent.length > 0) {
