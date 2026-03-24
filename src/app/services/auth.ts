@@ -79,6 +79,27 @@ export class AuthService {
     }
   }
 
+  addPeppix(amount: number) {
+    const user = this.currentUser();
+    const userEmail = user?.email;
+
+    if (userEmail && user) {
+      const currentPeppix = typeof user.peppix === 'string' ? parseInt(user.peppix.replace(/\./g, ''), 10) : (user.peppix || 0);
+      const newPeppix = currentPeppix + amount;
+
+      this.currentUser.set({ ...user, peppix: newPeppix });
+
+      this.http.post(`${this.apiUrl}/user`, {
+        action: 'update-peppix',
+        email: userEmail,
+        peppix: newPeppix
+      }).subscribe({
+        next: (res: any) => console.log('Peppix añadido en BD:', res.user?.peppix || newPeppix),
+        error: (err) => console.error('Error al actualizar Peppix:', err)
+      });
+    }
+  }
+
   fetchCurrentUser() {
     const user = this.currentUser();
     const userEmail = user?.email;

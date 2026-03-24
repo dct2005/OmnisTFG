@@ -4,7 +4,8 @@ import { RegisterComponent } from './register/register.component';
 import { CommunitiesComponent } from './communities/communities';
 import { InformacionCommunities } from './informacion-communities/informacion-communities';
 import { CreateCommunity } from './create-community/create-community';
-
+import { Pagos } from './pagos/pagos';
+import { Compras } from './compras/compras';
 
 export const routes: Routes = [
     { path: 'home', title: 'Inicio', loadComponent: () => import('./home/home.component').then(m => m.HomeComponent) },
@@ -16,5 +17,7 @@ export const routes: Routes = [
     { path: 'communities', title: 'Comunidades', component: CommunitiesComponent },
     { path: 'informacion-communities/:id', title: 'Información de la Comunidad', component: InformacionCommunities },
     { path: 'crear-comunidad', title: 'Crear Comunidad', component: CreateCommunity },
-    { path: 'soporte', title: 'Soporte', loadComponent: () => import('./support/support.component').then(m => m.SupportComponent) }
+    { path: 'soporte', title: 'Soporte', loadComponent: () => import('./support/support.component').then(m => m.SupportComponent) },
+    { path: 'pagos', title: 'Pagos', component: Pagos },
+    { path: 'compras', title: 'Compras', component: Compras }
 ];

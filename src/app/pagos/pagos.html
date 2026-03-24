@@ -1,0 +1,55 @@
+<div class="checkout-page">
+    <div class="character left-char">
+        <img src="images/dinero_pagos.webp" alt="Character Left">
+    </div>
+
+    <div class="checkout-card">
+        <h2 class="checkout-title">Finalizar Compra</h2>
+
+        <div class="product-info">
+            <p>Artículo: <span>Paquete peppix ({{ peppix }} monedas)</span></p>
+            <p>Total: <span class="price">{{ precio }}€</span></p>
+        </div>
+
+        <div class="payment-methods">
+            <div class="method active">
+                <img src="images/tarjeta-jeta.webp" alt="Card">
+                <span>Tarjeta de crédito/débito</span>
+            </div>
+            <div class="method">
+                <img src="images/payo-pal.webp" alt="PayPal">
+                <span>Pagar con PayPal</span>
+            </div>
+            <div class="method">
+                <img src="images/biti.webp" alt="Crypto">
+                <span>Pagar con Criptomonedas</span>
+            </div>
+        </div>
+
+        <form class="card-form">
+            <div class="form-row">
+                <input type="text" placeholder="Numero de tarjeta">
+                <input type="text" placeholder="Caducidad">
+            </div>
+            <div class="form-row">
+                <input type="text" placeholder="Nombre en tarjeta">
+                <input type="text" placeholder="CVV">
+            </div>
+
+            <div class="save-card">
+                <input type="checkbox" id="save">
+                <label for="save">Guardar para futuras compras</label>
+            </div>
+
+            <button type="button" class="btn-pay" (click)="pagar()">Pagar {{ precio }}€</button>
+        </form>
+
+        <div class="payment-logos">
+            <img src="images/mastercard-visa.png" alt="Logos">
+        </div>
+    </div>
+
+    <div class="character right-char">
+        <img src="images/tarjeta-pagos.webp" alt="Character Right">
+    </div>
+</div>

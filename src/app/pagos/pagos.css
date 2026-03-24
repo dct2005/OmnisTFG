@@ -1,0 +1,221 @@
+/* --- CONTENEDOR PRINCIPAL CON FONDO GALÁCTICO --- */
+.checkout-page {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 40px 20px;
+
+    /* Tu fondo galáctico característico */
+    background-color: #0b0222;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 40%);
+    background-attachment: fixed;
+}
+
+/* --- PERSONAJES LATERALES --- */
+.character {
+    position: absolute;
+    bottom: 0;
+    width: 35%;
+    /* Ajusta según el tamaño de tus imágenes */
+    z-index: 1;
+    pointer-events: none;
+    /* Para que no molesten al hacer clic en el centro */
+}
+
+.left-char {
+    left: 0;
+    transform: translateX(-5%);
+    /* Un poco hacia afuera */
+}
+
+.right-char {
+    right: 0;
+    transform: translateX(5%);
+}
+
+.character img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.8));
+}
+
+/* --- TARJETA DE COMPRA (ESTILO CRISTAL) --- */
+.checkout-card {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 720px;
+    padding: 40px 50px 70px 50px;
+    background: rgba(43, 43, 46, 0.8);
+    /* Fondo translúcido gris oscuro */
+    backdrop-filter: blur(15px);
+    /* Efecto Glassmorphism */
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    color: white;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    text-align: center;
+}
+
+.checkout-title {
+    font-size: 2.2rem;
+    font-weight: 300;
+    margin-bottom: 35px;
+    letter-spacing: 1.5px;
+}
+
+/* --- INFORMACIÓN DEL PRODUCTO --- */
+.product-info {
+    text-align: left;
+    margin-bottom: 35px;
+    font-size: 1.1rem;
+}
+
+.product-info p {
+    margin: 8px 0;
+    color: #ffffff;
+}
+
+.product-info span {
+    color: #ffffff;
+}
+
+.product-info .price {
+    font-weight: 700;
+    color: #ffffff;
+}
+
+/* --- MÉTODOS DE PAGO --- */
+.payment-methods {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 35px;
+}
+
+.method {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 20px 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.method img {
+    height: 35px;
+    margin-bottom: 12px;
+    filter: grayscale(0.2);
+}
+
+.method span {
+    font-size: 0.75rem;
+    color: #cccccc;
+    line-height: 1.2;
+}
+
+/* El seleccionado (Cian brillante como en la captura) */
+.method.active {
+    border-color: #00e5ff;
+    background: rgba(0, 229, 255, 0.05);
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.15);
+}
+
+.method.active span {
+    color: #ffffff;
+}
+
+/* --- FORMULARIO DE PAGO --- */
+.card-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 15px;
+}
+
+input[type="text"] {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 14px 18px;
+    color: white;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+input[type="text"]:focus {
+    border-color: #00e5ff;
+}
+
+.save-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: #ffffff;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.save-card input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* --- BOTÓN DE PAGO (PÚRPURA OMNIS) --- */
+.btn-pay {
+    background: #7c3aed;
+    /* El púrpura de Omnis */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 35px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: fit-content;
+    margin: 20px auto 0;
+}
+
+.btn-pay:hover {
+    background: #6d28d9;
+    box-shadow: 0 0 25px rgba(124, 58, 237, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Logos inferiores (Visa, MC, etc.) */
+.payment-logos {
+    position: absolute;
+    bottom: 20px;
+    right: 25px;
+    opacity: 0.9;
+}
+
+.payment-logos img {
+    height: 30px;
+    object-fit: contain;
+}
