@@ -120,6 +120,21 @@ export class AuthService {
     }
   }
 
+  updateProfileBackground(background: string): Observable<any> {
+    const user = this.currentUser();
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'update-profile-background',
+      email: user?.email,
+      background
+    }).pipe(
+      tap((res: any) => {
+        if (res.user) {
+          this.currentUser.set(res.user);
+        }
+      })
+    );
+  }
+
   fetchCurrentUser() {
     const user = this.currentUser();
     const userEmail = user?.email;
