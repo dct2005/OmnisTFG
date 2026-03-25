@@ -6,7 +6,7 @@
     </div>
 
     <div class="nav-links">
-        <a routerLink="/" class="nav-link" [routerLinkActiveOptions]="{exact: true}"
+        <a routerLink="/home" class="nav-link" [routerLinkActiveOptions]="{exact: true}"
             routerLinkActive="active">Inicio</a>
         <a routerLink="/catalogo" class="nav-link" routerLinkActive="active">Catálogo</a>
         <a routerLink="/communities" class="nav-link" routerLinkActive="active">Comunidad</a>
@@ -37,13 +37,15 @@
             <!-- Menú Desplegable -->
             @if (isDropdownOpen()) {
             <div class="status-dropdown" (click)="$event.stopPropagation()">
-                <div class="status-option" [routerLink]="['/perfil', usernameValue()]" (click)="isDropdownOpen.set(false)">
+                <div class="status-option" [routerLink]="['/perfil', usernameValue()]"
+                    (click)="isDropdownOpen.set(false)">
                     <span>Ver mi perfil</span>
                 </div>
                 <div class="status-option" routerLink="/account" (click)="isDropdownOpen.set(false)">
                     <span>Detalles de la cuenta</span>
                 </div>
-                <div class="status-option" [routerLink]="['/catalogo']" [queryParams]="{tab: 'mine'}" (click)="isDropdownOpen.set(false)">
+                <div class="status-option" [routerLink]="['/catalogo']" [queryParams]="{tab: 'mine'}"
+                    (click)="isDropdownOpen.set(false)">
                     <span>Mis Juegos</span>
                 </div>
                 <div class="status-divider"></div>
