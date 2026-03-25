@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, effect } from '@angular/core';
+import { Component, inject, signal, OnInit, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth';
@@ -57,6 +57,20 @@ export class ProfileComponent {
 
   comments = signal<any[]>([]);
 
+  userLevel = computed(() => {
+    const user = this.authService.currentUser();
+    const xp = user?.xp || 0;
+    return Math.floor(xp / 1000);
+  });
+
+  levelTier = computed(() => {
+    return Math.floor(this.userLevel() / 10);
+  });
+
+  profileBackground = computed(() => {
+    return this.authService.currentUser()?.profile_background;
+  });
+
   constructor() {
     this.loadInitialData();
     // Reaccionamos cuando el usuario esté disponible para personalizar
@@ -90,7 +104,9 @@ export class ProfileComponent {
     // Refinar con datos del usuario
     this.authService.getUserGames().subscribe({
       next: (res: any) => {
-        const gameIds = res.games || [];
+        const games = res.games || [];
+        const gameIds = games.map((g: any) => g.game_api_id);
+        
         if (gameIds.length > 0) {
           this.updateRecentActivity(gameIds[0]);
         }
@@ -188,6 +204,23 @@ export class ProfileComponent {
           // El signal ya se actualiza en el service via tap
         },
         error: (err) => console.error('Error subiendo imagen:', err)
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onBackgroundSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64Image = reader.result as string;
+      this.authService.updateProfileBackground(base64Image).subscribe({
+        next: (res) => {
+          console.log('Fondo actualizado');
+        },
+        error: (err) => console.error('Error subiendo fondo:', err)
       });
     };
     reader.readAsDataURL(file);

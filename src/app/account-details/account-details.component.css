@@ -321,3 +321,24 @@
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+.game-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.history-game-cover {
+    width: 40px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.game-name {
+    font-weight: 600;
+    color: #fff;
+    font-size: 0.95rem;
+}

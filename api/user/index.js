@@ -59,11 +59,11 @@ module.exports = async function handler(req, res) {
                 const userCheck = await sql`SELECT id FROM users WHERE email = ${email}`;
                 if (userCheck.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
-                const games = await sql`SELECT game_api_id FROM user_games WHERE user_id = ${userCheck[0].id} ORDER BY purchase_date DESC`;
-                return res.status(200).json({ games: games.map(g => g.game_api_id) });
+                const games = await sql`SELECT game_api_id, purchase_date FROM user_games WHERE user_id = ${userCheck[0].id} ORDER BY purchase_date DESC`;
+                return res.status(200).json({ games });
             }
 
-            const users = await sql`SELECT * FROM users WHERE email = ${email}`;
+            const users = await sql`SELECT id, email, username, peppix, xp, estado, profile_image, profile_background, location, created_at FROM users WHERE email = ${email}`;
             if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
             const user = users[0];
@@ -163,7 +163,7 @@ module.exports = async function handler(req, res) {
                     VALUES (${userId}, ${amount}, ${price || 0}, ${method || 'tarjeta'}, NOW())
                 `;
 
-                const updated = await sql`SELECT id, username, email, peppix, estado FROM users WHERE email = ${email}`;
+                const updated = await sql`SELECT id, username, email, peppix, xp, estado, profile_background FROM users WHERE email = ${email}`;
                 return res.status(200).json({ message: 'Peppix actualizados y transacción registrada', user: updated[0] });
             }
 
@@ -179,8 +179,8 @@ module.exports = async function handler(req, res) {
                 const user = userCheck[0];
                 if (user.peppix < price) return res.status(400).json({ error: 'Saldo insuficiente' });
 
-                // Actualizar peppix
-                const updated = await sql`UPDATE users SET peppix = peppix - ${price} WHERE email = ${email} RETURNING id, username, email, peppix, estado`;
+                // Actualizar peppix y sumar XP
+                const updated = await sql`UPDATE users SET peppix = peppix - ${price}, xp = xp + ${price} WHERE email = ${email} RETURNING id, username, email, peppix, xp, estado, profile_background`;
 
                 // Registrar compra
                 await sql`
@@ -201,7 +201,7 @@ module.exports = async function handler(req, res) {
                     UPDATE users 
                     SET profile_image = ${profileImage} 
                     WHERE email = ${email} 
-                    RETURNING id, username, email, peppix, estado, profile_image
+                    RETURNING id, username, email, peppix, xp, estado, profile_image, profile_background
                 `;
 
                 if (updated.length === 0) return res.status(404).json({ error: 'User no encontrado' });
@@ -220,13 +220,32 @@ module.exports = async function handler(req, res) {
                     UPDATE users 
                     SET location = ${location} 
                     WHERE email = ${email} 
-                    RETURNING id, username, email, peppix, estado, profile_image, location
+                    RETURNING id, username, email, peppix, xp, estado, profile_image, profile_background, location
                 `;
 
                 if (updated.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
                 return res.status(200).json({ 
                     message: 'Localización actualizada con éxito', 
+                    user: updated[0] 
+                });
+            }
+
+            if (action === 'update-profile-background') {
+                const { background } = req.body;
+                if (!email || !background) return res.status(400).json({ error: 'Faltan datos' });
+
+                const updated = await sql`
+                    UPDATE users 
+                    SET profile_background = ${background} 
+                    WHERE email = ${email} 
+                    RETURNING id, username, email, peppix, xp, estado, profile_image, profile_background, location
+                `;
+
+                if (updated.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+
+                return res.status(200).json({ 
+                    message: 'Fondo de perfil actualizado', 
                     user: updated[0] 
                 });
             }

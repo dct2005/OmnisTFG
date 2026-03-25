@@ -1,5 +1,12 @@
-<div class="profile-container">
+<div class="profile-container" [style.background-image]="profileBackground() ? 'url(' + profileBackground() + ')' : ''">
   <div class="profile-header">
+    <div class="header-actions">
+      <button class="btn-change-bg" (click)="bgInput.click()">
+        <span class="material-icons-outline">image</span> Cambiar Fondo
+      </button>
+      <input #bgInput type="file" (change)="onBackgroundSelected($event)" accept="image/*" style="display: none;">
+    </div>
+
     <div class="user-avatar-section" (click)="triggerFileInput(fileInput)">
       <div class="avatar-wrapper">
         <img [src]="user?.profile_image || user?.avatar || user?.profile_picture || 'https://ui-avatars.com/api/?name=' + user?.username + '&background=0d1b2a&color=fff'" 
@@ -22,9 +29,9 @@
       </div>
     </div>
     <div class="level-section">
-      <div class="level-circle">
+      <div class="level-circle" [ngClass]="'tier-' + levelTier()">
         <span class="level-label">NIVEL</span>
-        <span class="level-number">{{ profileData().level }}</span>
+        <span class="level-number">{{ userLevel() }}</span>
       </div>
     </div>
   </div>

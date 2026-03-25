@@ -126,7 +126,8 @@ export class CatalogComponent implements OnInit, OnDestroy {
         if (this.activeTab() === 'mine') {
             this.authService.getUserGames().pipe(
                 switchMap((res: any) => {
-                    const ids = res.games || [];
+                    const games = res.games || [];
+                    const ids = games.map((g: any) => g.game_api_id);
                     if (ids.length === 0) return of([]);
                     // En "Mis Juegos", cargamos todos de una vez por ahora (o paginados si implementamos después)
                     return this.gameService.getGames(this.searchTerm(), 0, [], [], ids);
