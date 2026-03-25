@@ -56,10 +56,19 @@ export class LoginComponent {
                 });
             },
             error: (error) => {
-                console.error('Error login:', error);
+                console.error('Error completo del login:', error);
+
+                // Intentamos extraer un mensaje legible del error
+                let mensaje = error.error?.error || error.error?.message || error.message;
+                
+                // Si el error es un objeto pero no tiene las propiedades anteriores (e.g. Vercel error)
+                if (typeof mensaje === 'object') {
+                    mensaje = JSON.stringify(mensaje);
+                }
+
                 Swal.fire({
-                    title: 'Error',
-                    text: error.error?.error || 'Credenciales incorrectas',
+                    title: 'Error de acceso',
+                    text: mensaje || 'No se pudo conectar con el servidor',
                     icon: 'error',
                     background: '#1a103c',
                     color: '#ffffff',
