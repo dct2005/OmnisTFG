@@ -219,3 +219,19 @@ input[type="text"]:focus {
     height: 30px;
     object-fit: contain;
 }
+
+.paypal-section, .crypto-section {
+    padding: 30px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.paypal-section p, .crypto-section p {
+    margin-bottom: 25px;
+    color: #ffffff;
+    font-size: 1.1rem;
+    line-height: 1.5;
+}

@@ -12,28 +12,29 @@
         </div>
 
         <div class="payment-methods">
-            <div class="method active">
+            <div class="method" [class.active]="metodoSeleccionado === 'tarjeta'" (click)="seleccionarMetodo('tarjeta')">
                 <img src="images/tarjeta-jeta.webp" alt="Card">
                 <span>Tarjeta de crédito/débito</span>
             </div>
-            <div class="method">
+            <div class="method" [class.active]="metodoSeleccionado === 'paypal'" (click)="seleccionarMetodo('paypal')">
                 <img src="images/payo-pal.webp" alt="PayPal">
                 <span>Pagar con PayPal</span>
             </div>
-            <div class="method">
+            <div class="method" [class.active]="metodoSeleccionado === 'crypto'" (click)="seleccionarMetodo('crypto')">
                 <img src="images/biti.webp" alt="Crypto">
                 <span>Pagar con Criptomonedas</span>
             </div>
         </div>
 
-        <form class="card-form">
+        <!-- Formulario de Tarjeta -->
+        <form class="card-form" *ngIf="metodoSeleccionado === 'tarjeta'">
             <div class="form-row">
-                <input type="text" placeholder="Numero de tarjeta">
-                <input type="text" placeholder="Caducidad">
+                <input type="text" placeholder="Numero de tarjeta" [(ngModel)]="numTarjeta" name="numTarjeta">
+                <input type="text" placeholder="Caducidad (MM/YY)" [(ngModel)]="caducidad" name="caducidad">
             </div>
             <div class="form-row">
-                <input type="text" placeholder="Nombre en tarjeta">
-                <input type="text" placeholder="CVV">
+                <input type="text" placeholder="Nombre en tarjeta" [(ngModel)]="nombreTarjeta" name="nombreTarjeta">
+                <input type="text" placeholder="CVV" [(ngModel)]="cvv" name="cvv">
             </div>
 
             <div class="save-card">
@@ -43,6 +44,18 @@
 
             <button type="button" class="btn-pay" (click)="pagar()">Pagar {{ precio }}€</button>
         </form>
+
+        <!-- Sección PayPal -->
+        <div class="paypal-section" *ngIf="metodoSeleccionado === 'paypal'">
+            <p>Serás redirigido a la plataforma segura de PayPal para completar tu compra.</p>
+            <button type="button" class="btn-pay" (click)="pagar()">Continuar con PayPal</button>
+        </div>
+
+        <!-- Sección Crypto -->
+        <div class="crypto-section" *ngIf="metodoSeleccionado === 'crypto'">
+            <p>Se generará una dirección de pago para completar la transacción en BTC/ETH.</p>
+            <button type="button" class="btn-pay" (click)="pagar()">Pagar con Cripto</button>
+        </div>
 
         <div class="payment-logos">
             <img src="images/mastercard-visa.png" alt="Logos">
