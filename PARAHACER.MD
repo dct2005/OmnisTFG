@@ -14,9 +14,12 @@
 
 -- pestaña "editar perfil" donde el usuario pueda cambiar su foto, el fondo del perfil, grupo favorito, juego favorito (de los que tiene compradosa). Que se muestre la banderita del pais del usuario ademas de que pueda seleccionar pais, comunidad autonoma/ estado y ciudad. Gestionar quien puede ver tu perfil, tus juegos, quien puede comentar en tu perfil, etc...
 
+-- En la modificacion del perfil podremos cambiar el estado de nuestra cuenta (conectado, desconectado, etc...) y que se muestre en el perfil. Ademas del fondo, la foto de perfil, la insignia que se muestra en el perfil, la opacidad y color de los containers de grupo favorito, actividad reciente, seccion de comentarios, el container de la sidebar
+
 -- Que en el perfil de cada usuario, otros usuarios puedan hacer comentarios. Quitar la seccion de comentarios en comunidades del perfil de usuario. Que el usuario pueda eliminar sus propios comentarios. 
 
 -- Quitar fondos negros a las fotos de las insignias.
 
 -- Hacer el sistema de amistades funcional. Que puedas enviar solicitudes de amistad, aceptarlas, rechazarlas, eliminarlas, etc...
 
+-- Al hacer un pago, antes de poner los datos de la tarjeta de credito, que el sistema te pida nombre,  apellidos, direccion y nummero de telefono. Esa informacion quedara guarrdada en detalles de la cuenta.
