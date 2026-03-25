@@ -8,8 +8,8 @@
         <form class="register-form" (ngSubmit)="onSubmit()" #registerForm="ngForm">
 
             <div class="form-group">
-                <input type="text" id="name" name="name" [(ngModel)]="user.name"
-                    placeholder="Nombre completo (Ej: Javier)" class="form-control" required #name="ngModel">
+                <input type="text" id="name" name="name" [(ngModel)]="user.name" placeholder="Nombre completo "
+                    class="form-control" required #name="ngModel">
                 @if (name.invalid && (name.dirty || name.touched)) {
                 <span class="validation-error">
                     El nombre es obligatorio

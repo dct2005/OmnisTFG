@@ -12,7 +12,23 @@ export class AuthService {
   currentUser = signal<any>(null);
   private http = inject(HttpClient);
 
-  constructor() { }
+  constructor() {
+    this.initializeFromToken();
+  }
+
+  private initializeFromToken() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        // Seteamos lo mínimo necesario para que fetchCurrentUser pueda funcionar
+        this.currentUser.set({ email: payload.email, id: payload.id });
+        this.fetchCurrentUser(); // Sincronizamos con el servidor
+      } catch (e) {
+        localStorage.removeItem('token');
+      }
+    }
+  }
 
   register(userData: any): Observable<any> {
     // IMPORTANTE: Asegúrate de que tu backend espera el objeto con { action: 'register', ... }
@@ -57,6 +73,7 @@ export class AuthService {
       });
     }
 
+    localStorage.removeItem('token'); // LIMPIEZA
     this.currentUser.set(null);
   }
 
