@@ -1,6 +1,6 @@
 -- Hecho, ahora si inicias sesion te redirige a /catalogo.
 -- Hecho, ahora si un usuario logueado intenta acceder a /login o /register, se le redirige a /home.
-
+-- Hecho, quitado fondo negro de las insignias.
 
 
 
@@ -22,8 +22,6 @@
 -- En la modificacion del perfil podremos cambiar el estado de nuestra cuenta (conectado, desconectado, etc...) y que se muestre en el perfil. Ademas del fondo, la foto de perfil, la insignia que se muestra en el perfil, la opacidad y color de los containers de grupo favorito, actividad reciente, seccion de comentarios, el container de la sidebar
 
 -- Que en el perfil de cada usuario, otros usuarios puedan hacer comentarios. Quitar la seccion de comentarios en comunidades del perfil de usuario. Que el usuario pueda eliminar sus propios comentarios. 
-
--- Quitar fondos negros a las fotos de las insignias.
 
 -- Hacer el sistema de amistades funcional. Que puedas enviar solicitudes de amistad, aceptarlas, rechazarlas, eliminarlas, etc...
 

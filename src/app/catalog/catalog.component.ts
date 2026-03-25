@@ -18,7 +18,7 @@ interface CatalogGame extends Game {
 @Component({
     selector: 'app-catalog',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterLink],
+    imports: [CommonModule, FormsModule],
     templateUrl: './catalog.component.html',
     styleUrls: ['./catalog.component.css']
 })
@@ -26,10 +26,10 @@ export class CatalogComponent implements OnInit, OnDestroy {
     private gameService = inject(GameService);
     private authService = inject(AuthService);
     private router = inject(Router);
-    
+
     currentUser = this.authService.currentUser;
     activeTab = signal<'explore' | 'mine'>('explore');
-    
+
     searchTerm = signal<string>('');
     loading = signal<boolean>(true);
     isLoadingMore = signal<boolean>(false);

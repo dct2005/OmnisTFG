@@ -25,7 +25,7 @@ export class ProfileComponent {
     currentBadge: {
       name: 'Novato de Élite',
       exp: 1000,
-      icon: 'images/ins_nonecesito.webp'
+      icon: 'images/ins_nonecesito.png'
     },
     favoriteGroup: {
       name: 'Frozen Mind PEEK',

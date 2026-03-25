@@ -73,14 +73,14 @@ module.exports = async function handler(req, res) {
             const gamesCount = parseInt(gamesCountQuery[0].count, 10);
 
             const badges = [];
-            if (gamesCount >= 1) badges.push({ name: 'Novato de Élite', icon: 'images/ins_nonecesito.webp', tier: 1 });
-            if (gamesCount >= 3) badges.push({ name: 'Borracho de Época', icon: 'images/ins_borracho.webp', tier: 2 });
-            if (gamesCount >= 5) badges.push({ name: 'Cuñao Honorario', icon: 'images/ins_cunado.webp', tier: 3 });
+            if (gamesCount >= 1) badges.push({ name: 'Novato de Élite', icon: 'images/ins_nonecesito.png', tier: 1 });
+            if (gamesCount >= 3) badges.push({ name: 'Borracho de Época', icon: 'images/ins_borracho.png', tier: 2 });
+            if (gamesCount >= 5) badges.push({ name: 'Cuñao Honorario', icon: 'images/ins_cunado.png', tier: 3 });
             if (gamesCount >= 7) badges.push({ name: 'Cállese y Tome mi Dinero', icon: 'images/ins_callese.png', tier: 4 });
             if (gamesCount >= 10) badges.push({ name: 'Frozen Mind Legend', icon: 'images/ins_frozenmind.png', tier: 5 });
 
             // Identificar la insignia principal (la de mayor tier)
-            const currentBadge = badges.length > 0 ? badges[badges.length - 1] : { name: 'Sin Insignias', icon: 'images/ins_bronce.webp', tier: 0 };
+            const currentBadge = badges.length > 0 ? badges[badges.length - 1] : { name: 'Sin Insignias', icon: 'images/ins_nonecesito.png', tier: 0 };
 
             // Remove password for security
             const { password: _, ...userWithoutPassword } = user;
