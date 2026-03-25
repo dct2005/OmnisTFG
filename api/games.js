@@ -18,7 +18,10 @@ module.exports = async function handler(req, res) {
         // Condiciones
         let whereConditions = ["cover != null"];
         if (id) {
-            whereConditions.push(`id = ${id}`);
+            const ids = Array.isArray(id) ? id : [id];
+            if (ids.length > 0) {
+                whereConditions.push(`id = (${ids.join(",")})`);
+            }
         } else if (search) {
             whereConditions.push("game_type = (0, 8, 9, 11)"); //Juego base, remake, remaster, port
             whereConditions.push(`name ~ *"${search}"*`); // Búsqueda más flexible

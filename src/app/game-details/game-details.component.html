@@ -12,7 +12,7 @@
   <div class="game-details-wrapper">
     <div class="main-column">
       <h1 class="game-title">{{ game.name }}</h1>
-      
+
       <div class="game-info-block">
         <div class="game-cover">
           @if (game.cover) {
@@ -24,9 +24,9 @@
         <div class="game-summary" [class.expanded]="isDescriptionExpanded">
           <p class="summary-text">{{ truncatedSummary }}</p>
           @if ((game?.summary?.length || 0) > 840) {
-            <button class="btn-read-more" (click)="toggleDescription()">
-              {{ isDescriptionExpanded ? 'Ver menos' : 'Ver más' }}
-            </button>
+          <button class="btn-read-more" (click)="toggleDescription()">
+            {{ isDescriptionExpanded ? 'Ver menos' : 'Ver más' }}
+          </button>
           }
         </div>
       </div>
@@ -36,7 +36,8 @@
           <span class="purchase-title">COMPRA {{ game.name }}</span>
           <div class="purchase-action">
             <span class="price">{{ game.peppixPrice || '4999' }} <span class="peppix-icon"></span></span>
-            <button class="btn-obtain" (click)="onObtenerClick(game.peppixPrice || '4999')">{{ currentUser() ? 'Comprar' : 'Obtener' }}</button>
+            <button class="btn-obtain" (click)="onObtenerClick(game.peppixPrice || '4999')">{{ currentUser() ? 'Comprar'
+              : 'Obtener' }}</button>
           </div>
         </div>
 
@@ -45,7 +46,8 @@
           <span class="purchase-title">COMPRA {{ edition.name }}</span>
           <div class="purchase-action">
             <span class="price">{{ edition.peppixPrice || '1999' }} <span class="peppix-icon"></span></span>
-            <button class="btn-obtain" (click)="onObtenerClick(edition.peppixPrice || '1999')">{{ currentUser() ? 'Comprar' : 'Obtener' }}</button>
+            <button class="btn-obtain" (click)="onObtenerClick(edition.peppixPrice || '1999')">{{ currentUser() ?
+              'Comprar' : 'Obtener' }}</button>
           </div>
         </div>
         }
@@ -71,9 +73,9 @@
           }
         </div>
         @if (additionalContent.length > 4) {
-          <button class="btn-read-more dlc-more-btn" (click)="toggleDlcs()">
-            {{ isDlcsExpanded ? 'Ver menos' : 'Ver más' }}
-          </button>
+        <button class="btn-read-more dlc-more-btn" (click)="toggleDlcs()">
+          {{ isDlcsExpanded ? 'Ver menos' : 'Ver más' }}
+        </button>
         }
       </div>
       }
@@ -84,34 +86,35 @@
       @if (loadingSimilar) {
       <p class="loading-similar">Cargando...</p>
       } @else {
-        <div class="similar-window">
-          <div class="similar-list-track" [style.transform]="'translateY(-' + scrollIndex * 184 + 'px)'">
-            @for (sGame of allSimilarGames; track sGame.id) {
-            <div class="similar-card" (click)="goToSimilar(sGame.id)">
-              <div class="card-img-wrapper">
-                @if (sGame.cover) {
-                <img [src]="sGame.cover.url" [alt]="sGame.name">
-                } @else {
-                <div class="no-cover-small">No Image</div>
-                }
-              </div>
-              <div class="similar-card-name">{{ sGame.name }}</div>
+      <div class="similar-window">
+        <div class="similar-list-track" [style.transform]="'translateY(-' + scrollIndex * 184 + 'px)'">
+          @for (sGame of allSimilarGames; track sGame.id) {
+          <div class="similar-card" (click)="goToSimilar(sGame.id)">
+            <div class="card-img-wrapper">
+              @if (sGame.cover) {
+              <img [src]="sGame.cover.url" [alt]="sGame.name">
+              } @else {
+              <div class="no-cover-small">No Image</div>
+              }
             </div>
-            } @empty {
-            <p class="no-similar">No hay productos similares.</p>
-            }
+            <div class="similar-card-name">{{ sGame.name }}</div>
           </div>
+          } @empty {
+          <p class="no-similar">No hay productos similares.</p>
+          }
         </div>
-        
-        @if (allSimilarGames.length > 3) {
-        <div class="show-more-container">
-          <div class="show-more-arrow" (click)="scrollDown()">
-              <svg width="40" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-          </div>
+      </div>
+
+      @if (allSimilarGames.length > 3) {
+      <div class="show-more-container">
+        <div class="show-more-arrow" (click)="scrollDown()">
+          <svg width="40" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
         </div>
-        }
+      </div>
+      }
       }
     </aside>
   </div>

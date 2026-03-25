@@ -3,40 +3,37 @@
 </head>
 <div class="catalog-container">
     <header class="catalog-header">
-        <h1>EXPLORAR</h1>
-        <p>Tu próxima aventura comienza aquí.</p>
+        <h1>{{ activeTab() === 'explore' ? 'EXPLORAR' : 'MIS JUEGOS' }}</h1>
+        <p>{{ activeTab() === 'explore' ? 'Tu próxima aventura comienza aquí.' : 'Tu biblioteca personal de juegos adquiridos.' }}</p>
         <button class="btn-publish">Publicar contenido</button>
     </header>
 
-    <div class="secondary-nav">
-        <div class="nav-item active">Descubre</div>
-    </div>
 
     <div class="main-content">
         <div class="content-area">
             <div class="search-bar-container">
                 <div class="search-input-wrapper">
                     <span class="search-icon">🔍</span>
-                    <input type="text" [ngModel]="searchTerm" (ngModelChange)="onSearchTermChange($event)"
+                    <input type="text" [ngModel]="searchTerm()" (ngModelChange)="onSearchTermChange($event)"
                         placeholder="Buscar..." class="search-input">
                 </div>
 
                 <div class="quick-links">
                     @if (currentUser()) {
-                    <a href="#" class="quick-link"><span class="icon">🎮</span> Mis juegos</a>
+                    <a (click)="setTab('mine')" class="quick-link" [class.active]="activeTab() === 'mine'" style="cursor: pointer;"><span class="icon">🎮</span> Mis juegos</a>
                     }
-                    <a href="#" class="quick-link active"><span class="icon">🔍</span> Explorar</a>
+                    <a (click)="setTab('explore')" class="quick-link" [class.active]="activeTab() === 'explore'" style="cursor: pointer;"><span class="icon">🔍</span> Explorar</a>
                 </div>
             </div>
 
             <div class="games-grid">
-                @if (loading) {
+                @if (loading()) {
                 <div class="loading-state">
                     <p>Cargando catálogo...</p>
                 </div>
-                } @else if (error) {
+                } @else if (error()) {
                 <div class="error-state">
-                    <p>{{ error }}</p>
+                    <p>{{ error() }}</p>
                 </div>
                 } @else {
                 @for (game of games; track game.id) {
@@ -71,7 +68,7 @@
                 }
             </div>
 
-            @if (isLoadingMore) {
+            @if (isLoadingMore()) {
             <div class="loading-more">
                 <p>Cargando más juegos...</p>
             </div>
@@ -82,7 +79,7 @@
             }
         </div>
 
-        <aside class="filters-sidebar">
+        <aside class="filters-sidebar" *ngIf="activeTab() === 'explore'">
             <div class="filter-group">
                 <h3>CATEGORIAS</h3>
                 <div class="scrollable-list">

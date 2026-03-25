@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GameService, Game } from '../services/game.service';
 import { AuthService } from '../services/auth';
-import { Router, RouterLink } from '@angular/router';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { Subject, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 interface CatalogGame extends Game {
     isLibrary: boolean;
@@ -28,12 +28,14 @@ export class CatalogComponent implements OnInit, OnDestroy {
     private router = inject(Router);
     
     currentUser = this.authService.currentUser;
-    searchTerm: string = '';
-    loading: boolean = true;
-    isLoadingMore: boolean = false;
-    error: string | null = null;
-    offset: number = 0;
-    reachedEnd: boolean = false;
+    activeTab = signal<'explore' | 'mine'>('explore');
+    
+    searchTerm = signal<string>('');
+    loading = signal<boolean>(true);
+    isLoadingMore = signal<boolean>(false);
+    error = signal<string | null>(null);
+    offset = 0;
+    reachedEnd = false;
 
     games: CatalogGame[] = [];
     private searchSubject = new Subject<string>();
@@ -41,8 +43,18 @@ export class CatalogComponent implements OnInit, OnDestroy {
     categoriesInput: { name: string, selected: boolean }[] = [];
     themesInput: { name: string, selected: boolean }[] = [];
 
+    private route = inject(ActivatedRoute);
+
     ngOnInit() {
-        this.loadGames();
+        this.route.queryParams.subscribe((params: any) => {
+            if (params['tab'] === 'mine' && this.currentUser()) {
+                this.activeTab.set('mine');
+            } else {
+                this.activeTab.set('explore');
+            }
+            this.resetAndLoad();
+        });
+
         this.loadFilters();
         window.addEventListener('scroll', this.onScroll.bind(this));
 
@@ -50,11 +62,8 @@ export class CatalogComponent implements OnInit, OnDestroy {
             debounceTime(400),
             distinctUntilChanged()
         ).subscribe(searchTerm => {
-            this.searchTerm = searchTerm;
-            this.offset = 0;
-            this.reachedEnd = false;
-            this.games = [];
-            this.loadGames();
+            this.searchTerm.set(searchTerm);
+            this.resetAndLoad();
         });
     }
 
@@ -76,7 +85,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
         const position = window.scrollY + window.innerHeight;
         const height = document.body.offsetHeight;
 
-        if (position > height - threshold && !this.isLoadingMore && !this.loading) {
+        if (position > height - threshold && !this.isLoadingMore() && !this.loading()) {
             this.loadMoreGames();
         }
     }
@@ -86,10 +95,19 @@ export class CatalogComponent implements OnInit, OnDestroy {
     }
 
     onFilterChange() {
+        this.resetAndLoad();
+    }
+
+    setTab(tab: 'explore' | 'mine') {
+        if (this.activeTab() === tab) return;
+        this.activeTab.set(tab);
+        this.resetAndLoad();
+    }
+
+    private resetAndLoad() {
         this.offset = 0;
         this.reachedEnd = false;
-        this.loading = true;
-        this.games = []; // Clear current games
+        this.games = [];
         this.loadGames();
     }
 
@@ -100,35 +118,58 @@ export class CatalogComponent implements OnInit, OnDestroy {
     }
 
     loadGames() {
-        this.loading = true;
+        this.loading.set(true);
+        this.error.set(null);
 
         const filters = this.getSelectedFilters();
 
-        this.gameService.getGames(this.searchTerm, this.offset, filters.genres, filters.themes).subscribe({
-            next: (data) => {
-                this.games = this.mapGames(data); // Replace games instead of appending for first load
-                this.loading = false;
-                if (data.length < 20) {
-                    this.reachedEnd = true;
+        if (this.activeTab() === 'mine') {
+            this.authService.getUserGames().pipe(
+                switchMap((res: any) => {
+                    const ids = res.games || [];
+                    if (ids.length === 0) return of([]);
+                    // En "Mis Juegos", cargamos todos de una vez por ahora (o paginados si implementamos después)
+                    return this.gameService.getGames(this.searchTerm(), 0, [], [], ids);
+                })
+            ).subscribe({
+                next: (data) => {
+                    this.games = this.mapGames(data, true);
+                    this.loading.set(false);
+                    this.reachedEnd = true; // Por ahora no paginamos "Mis Juegos"
+                },
+                error: (err) => {
+                    console.error('Error loading my games', err);
+                    this.error.set('Error al cargar tus juegos.');
+                    this.loading.set(false);
                 }
-            },
-            error: (err) => {
-                console.error('Error loading games', err);
-                this.error = 'Failed to load games.';
-                this.loading = false;
-            }
-        });
+            });
+        } else {
+            this.gameService.getGames(this.searchTerm(), this.offset, filters.genres, filters.themes).subscribe({
+                next: (data) => {
+                    this.games = this.mapGames(data);
+                    this.loading.set(false);
+                    if (data.length < 20) {
+                        this.reachedEnd = true;
+                    }
+                },
+                error: (err) => {
+                    console.error('Error loading games', err);
+                    this.error.set('Error al cargar el catálogo.');
+                    this.loading.set(false);
+                }
+            });
+        }
     }
 
     loadMoreGames() {
-        if (this.reachedEnd) return;
+        if (this.reachedEnd || this.activeTab() === 'mine') return;
 
-        this.isLoadingMore = true;
+        this.isLoadingMore.set(true);
         this.offset += 20;
 
         const filters = this.getSelectedFilters();
 
-        this.gameService.getGames(this.searchTerm, this.offset, filters.genres, filters.themes).subscribe({
+        this.gameService.getGames(this.searchTerm(), this.offset, filters.genres, filters.themes).subscribe({
             next: (data) => {
                 if (data.length > 0) {
                     const newGames = this.mapGames(data);
@@ -139,27 +180,24 @@ export class CatalogComponent implements OnInit, OnDestroy {
                 } else {
                     this.reachedEnd = true;
                 }
-                this.isLoadingMore = false;
+                this.isLoadingMore.set(false);
             },
             error: (err) => {
                 console.error('Error loading more games', err);
-                this.isLoadingMore = false;
+                this.isLoadingMore.set(false);
             }
         });
     }
 
-    private mapGames(data: Game[]): CatalogGame[] {
+    private mapGames(data: Game[], isLibrary = false): CatalogGame[] {
         return data.map(g => ({
             ...g,
-            isLibrary: false,
+            isLibrary: isLibrary,
             isFavorite: false,
             categories: g.genres || [],
             themes: g.themes || []
         }));
     }
-
-    // Removed client-side filteredGames since we now filter on backend
-    // Template should use 'games' directly
 
     toggleFavorite(event: Event, game: CatalogGame) {
         event.stopPropagation();

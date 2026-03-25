@@ -69,7 +69,7 @@ export class GameDetailsComponent implements OnInit {
       next: (game) => {
         this.game = game;
         this.additionalContent = [...(game.dlcs || []), ...(game.expansions || [])];
-        
+
         // Buscar ediciones especiales en DLCs, expansiones y bundles del juego
         const allRelated = [
           ...(game.dlcs || []),
@@ -81,7 +81,7 @@ export class GameDetailsComponent implements OnInit {
           const lowerName = (item.name || '').toLowerCase();
           return specialKeywords.some(kw => lowerName.includes(kw));
         });
-        
+
         this.loading = false;
         this.loadSimilarGames();
       },
@@ -97,10 +97,10 @@ export class GameDetailsComponent implements OnInit {
     if (!this.game) return;
     this.loadingSimilar = true;
     this.scrollIndex = 0;
-    
+
     const genres = this.game.genres?.slice(0, 2);
     const themes = this.game.themes?.slice(0, 2);
-    
+
     this.gameService.getGames(undefined, 0, genres, themes).subscribe({
       next: (games) => {
         // Exclude the current game from similar games. Get up to 12.
@@ -135,22 +135,38 @@ export class GameDetailsComponent implements OnInit {
   onObtenerClick(priceStr: string | number) {
     const user = this.currentUser();
     if (!user) {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/catalogo'], { queryParams: { tab: 'mine' } });
       return;
     }
+
+    if (!this.game) return;
 
     const price = parseInt(priceStr.toString().replace(/\./g, ''), 10);
     const currentPeppix = typeof user.peppix === 'string' ? parseInt(user.peppix.toString().replace(/\./g, ''), 10) : (user.peppix || 0);
 
     if (currentPeppix >= price) {
-      this.authService.addPeppix(-price);
-      Swal.fire({
-        title: '¡Gracias por tu compra!',
-        text: 'El producto se ha añadido a tu cuenta.',
-        icon: 'success',
-        background: '#1a103c',
-        color: '#ffffff',
-        confirmButtonColor: '#7c3aed'
+      this.authService.purchaseGame(this.game.id, price).subscribe({
+        next: () => {
+          Swal.fire({
+            title: '¡Gracias por tu compra!',
+            text: 'El juego se ha añadido a tu biblioteca.',
+            icon: 'success',
+            background: '#1a103c',
+            color: '#ffffff',
+            confirmButtonColor: '#7c3aed'
+          });
+        },
+        error: (err: any) => {
+          console.error('Error en la compra:', err);
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo completar la compra. Inténtalo de nuevo.',
+            icon: 'error',
+            background: '#1a103c',
+            color: '#ffffff',
+            confirmButtonColor: '#7c3aed'
+          });
+        }
       });
     } else {
       Swal.fire({
