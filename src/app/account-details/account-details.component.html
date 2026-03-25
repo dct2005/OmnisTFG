@@ -11,7 +11,7 @@
       </div>
       <div class="section-body grid-content">
         <div class="column">
-          <a class="action-link">+ Añadir fondos a tu cartera Peppix</a>
+          <a class="action-link" routerLink="/compras">+ Añadir fondos a tu cartera Peppix</a>
           <div class="peppix-balance">
             <img src="images/peppix.webp" alt="Peppix" class="peppix-icon">
             <span class="balance-amount">{{ authService.currentUser()?.peppix || 0 }}</span>
@@ -28,9 +28,9 @@
             <a class="action-link">Ver historial de la tienda</a>
         </div>
         <div class="column">
-            <span class="label">País: <strong class="highlight">Andorra</strong></span>
+            <span class="label">País: <strong class="highlight">{{ selectedCountry() }}</strong></span>
             <p class="info-text">Si te has mudado a otro país, es posible que se te permita actualizar tu cartera de Omnis y la forma en la que ves la tienda de Omnis</p>
-            <a class="action-link">Actualizar país de la tienda</a>
+            <a class="action-link" (click)="changeCountry()">Actualizar país de la tienda</a>
         </div>
       </div>
     </section>
@@ -46,12 +46,12 @@
             <span class="label">Dirección de email: <span class="masked-value">{{ maskedEmail }}</span></span>
             <span class="label">Estado: <span class="status-verified">Verificado</span></span>
           </div>
-          <a class="action-link">Cambiar dirección de email</a>
+          <a class="action-link" (click)="changeEmail()">Cambiar dirección de email</a>
         </div>
         <div class="column">
-          <a class="action-link">Gestionar tu número de teléfono</a>
+          <a class="action-link" (click)="changePhone()">Gestionar tu número de teléfono</a>
           <div class="info-group">
-            <span class="phone-value">{{ maskedPhone }}</span>
+            <span class="phone-value">{{ currentPrefix }} {{ maskedPhone }}</span>
             <img src="https://img.icons8.com/material-rounded/24/ffffff/smartphone.png" alt="phone icon" class="phone-icon">
           </div>
         </div>
