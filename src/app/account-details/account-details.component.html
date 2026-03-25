@@ -5,7 +5,7 @@
 
     </header>
 
-    <ng-container *ngIf="!showHistory()">
+    <ng-container *ngIf="viewMode() === 'main'">
       <section class="account-section">
         <div class="section-header">
           <h2>Historial de la tienda y compras</h2>
@@ -26,8 +26,8 @@
             <a class="action-link">+ Añadir método de pago</a>
           </div>
           <div class="column">
-            <a class="action-link" (click)="toggleHistory()" style="cursor: pointer;">Ver historial de compras</a>
-            <a class="action-link">Ver historial de la tienda</a>
+            <a class="action-link" (click)="togglePeppixHistory()" style="cursor: pointer;">Ver historial de compras</a>
+            <a class="action-link" (click)="toggleGameHistory()" style="cursor: pointer;">Ver historial de la tienda</a>
           </div>
           <div class="column">
             <span class="label">País: <strong class="highlight">{{ selectedCountry() }}</strong></span>
@@ -63,12 +63,12 @@
       </section>
     </ng-container>
 
-    <!-- VISTA DE HISTORIAL -->
-    <ng-container *ngIf="showHistory()">
+    <!-- VISTA DE HISTORIAL PEPPIX -->
+    <ng-container *ngIf="viewMode() === 'peppix'">
       <section class="account-section history-view">
         <div class="section-header history-header">
           <h2>Historial de Compras de Peppix</h2>
-          <button class="back-button" (click)="toggleHistory()">
+          <button class="back-button" (click)="togglePeppixHistory()">
             <span class="material-icons-round">arrow_back</span> Volver
           </button>
         </div>
@@ -101,6 +101,50 @@
             <span class="material-icons-round">receipt_long</span>
             <p>Aún no has realizado ninguna compra de Peppix.</p>
             <a class="action-link" routerLink="/compras">Ir a la tienda</a>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+
+    <!-- VISTA DE HISTORIAL DE TIENDA (JUEGOS) -->
+    <ng-container *ngIf="viewMode() === 'games'">
+      <section class="account-section history-view">
+        <div class="section-header history-header">
+          <h2>Historial de Adquisición de Juegos</h2>
+          <button class="back-button" (click)="toggleGameHistory()">
+            <span class="material-icons-round">arrow_back</span> Volver
+          </button>
+        </div>
+
+        <div class="history-container">
+          <table class="history-table" *ngIf="gamePurchases().length > 0">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Juego</th>
+                <th>Concepto</th>
+                <th>Precio</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let g of gamePurchases()">
+                <td class="date-cell">{{ g.purchase_date | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td class="game-cell">
+                  <div class="game-info-cell">
+                    <img [src]="g.cover?.url || 'images/default-game.jpg'" alt="Cover" class="history-game-cover">
+                    <span class="game-name">{{ g.name }}</span>
+                  </div>
+                </td>
+                <td>Compra en Tienda</td>
+                <td class="price-cell">{{ g.peppixPrice | number }} PX</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="no-history" *ngIf="gamePurchases().length === 0">
+            <span class="material-icons-round">sports_esports</span>
+            <p>Aún no has comprado ningún juego en la tienda.</p>
+            <a class="action-link" routerLink="/catalogo">Ir al catálogo</a>
           </div>
         </div>
       </section>

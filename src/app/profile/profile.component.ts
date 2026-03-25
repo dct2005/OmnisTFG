@@ -90,7 +90,9 @@ export class ProfileComponent {
     // Refinar con datos del usuario
     this.authService.getUserGames().subscribe({
       next: (res: any) => {
-        const gameIds = res.games || [];
+        const games = res.games || [];
+        const gameIds = games.map((g: any) => g.game_api_id);
+        
         if (gameIds.length > 0) {
           this.updateRecentActivity(gameIds[0]);
         }

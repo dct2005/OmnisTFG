@@ -58,8 +58,8 @@ module.exports = async function handler(req, res) {
                 const userCheck = await sql`SELECT id FROM users WHERE email = ${email}`;
                 if (userCheck.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
-                const games = await sql`SELECT game_api_id FROM user_games WHERE user_id = ${userCheck[0].id} ORDER BY purchase_date DESC`;
-                return res.status(200).json({ games: games.map(g => g.game_api_id) });
+                const games = await sql`SELECT game_api_id, purchase_date FROM user_games WHERE user_id = ${userCheck[0].id} ORDER BY purchase_date DESC`;
+                return res.status(200).json({ games });
             }
 
             const users = await sql`SELECT * FROM users WHERE email = ${email}`;
