@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CommunityService } from '../services/community.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import Swal from 'sweetalert2';
+declare var Swal: any;
 
 @Component({
   selector: 'app-informacion-communities',

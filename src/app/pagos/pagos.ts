@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import Swal from 'sweetalert2';
+declare var Swal: any;
 
 @Component({
   selector: 'app-pagos',

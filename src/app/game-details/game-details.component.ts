@@ -3,7 +3,7 @@ import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameService, Game } from '../services/game.service';
 import { AuthService } from '../services/auth';
-import Swal from 'sweetalert2';
+declare var Swal: any;
 
 @Component({
   selector: 'app-game-details',
@@ -164,7 +164,7 @@ export class GameDetailsComponent implements OnInit {
         color: '#ffffff',
         confirmButtonColor: '#7c3aed',
         cancelButtonColor: '#d33'
-      }).then((result) => {
+      }).then((result: any) => {
         if (result.isConfirmed) {
           this.router.navigate(['/compras']);
         }

@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CommunityService } from '../services/community.service';
 import { RouterModule } from '@angular/router';
-import Swal from 'sweetalert2';
+declare var Swal: any;
 
 @Component({
   selector: 'app-communities',
