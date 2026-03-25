@@ -37,7 +37,7 @@
             <!-- Menú Desplegable -->
             @if (isDropdownOpen()) {
             <div class="status-dropdown" (click)="$event.stopPropagation()">
-                <div class="status-option" (click)="isDropdownOpen.set(false)">
+                <div class="status-option" [routerLink]="['/perfil', usernameValue()]" (click)="isDropdownOpen.set(false)">
                     <span>Ver mi perfil</span>
                 </div>
                 <div class="status-option" routerLink="/account" (click)="isDropdownOpen.set(false)">

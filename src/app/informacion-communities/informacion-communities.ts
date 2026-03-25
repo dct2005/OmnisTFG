@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommunityService } from '../services/community.service';
+import { AuthService } from '../services/auth';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 declare var Swal: any;
@@ -15,6 +16,7 @@ declare var Swal: any;
 export class InformacionCommunities implements OnInit {
   private route = inject(ActivatedRoute);
   private communityService = inject(CommunityService);
+  private authService = inject(AuthService);
 
   communityData: any = null;
   communityId: string = '';
@@ -22,6 +24,8 @@ export class InformacionCommunities implements OnInit {
   isMember: boolean = false;
   newMessage: string = '';
   posts: any[] = [];
+
+  currentUser = this.authService.currentUser;
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -34,10 +38,10 @@ export class InformacionCommunities implements OnInit {
       const userId = this.getUserIdFromToken();
       if (userId) {
         this.communityService.checkMembership(id, userId).subscribe({
-          next: (res) => {
+          next: (res: any) => {
             this.isMember = res.isMember;
           },
-          error: (err) => console.error('Error comprobando si es miembro:', err)
+          error: (err: any) => console.error('Error comprobando si es miembro:', err)
         });
       }
     }
@@ -58,19 +62,22 @@ export class InformacionCommunities implements OnInit {
 
   getCommunityDetails(id: string) {
     this.communityService.getCommunities().subscribe({
-      next: (data) => {
+      next: (data: any[]) => {
         this.communityData = data.find((c: any) => c.id.toString() === id.toString());
       },
-      error: (err) => console.error(err)
+      error: (err: any) => console.error(err)
     });
   }
 
   loadMessages(id: string) {
     this.communityService.getMessages(id).subscribe({
-      next: (data) => {
-        this.posts = data;
+      next: (data: any[]) => {
+        this.posts = data.map(m => ({
+          ...m,
+          avatar: m.profile_image || `https://ui-avatars.com/api/?name=${m.author}&background=0d1b2a&color=fff`
+        }));
       },
-      error: (err) => console.error('Error cargando mensajes:', err)
+      error: (err: any) => console.error('Error cargando mensajes:', err)
     });
   }
 
@@ -90,11 +97,11 @@ export class InformacionCommunities implements OnInit {
     }
 
     this.communityService.joinCommunity(this.communityId, userId).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.isMember = response.isMember;
         console.log(response.message);
       },
-      error: (err) => console.error('Error al unirse:', err)
+      error: (err: any) => console.error('Error al unirse:', err)
     });
   }
 
@@ -116,11 +123,11 @@ export class InformacionCommunities implements OnInit {
     if (this.newMessage.trim() === '') return;
 
     this.communityService.sendMessage(this.communityId, userId, this.newMessage).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.loadMessages(this.communityId);
         this.newMessage = '';
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error enviando mensaje:', err);
         Swal.fire({
           title: 'Error',

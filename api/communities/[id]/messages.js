@@ -14,7 +14,7 @@ module.exports = async function handler(req, res) {
 
         if (req.method === 'GET') {
             const messages = await sql`
-                SELECT m.id, m.content, m.created_at as time, u.username as author
+                SELECT m.id, m.content, m.created_at as time, u.username as author, u.profile_image
                 FROM community_messages m
                 JOIN users u ON m.user_id = u.id
                 WHERE m.community_id = ${communityId}

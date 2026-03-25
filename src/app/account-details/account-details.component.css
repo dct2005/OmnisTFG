@@ -207,3 +207,117 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* HISTORIAL DE COMPRAS */
+.history-view {
+    animation: fadeIn 0.3s ease;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.back-button {
+    background: rgba(124, 58, 237, 0.1);
+    border: 1px solid #7c3aed;
+    color: #7c3aed;
+    padding: 8px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.back-button:hover {
+    background: #7c3aed;
+    color: white;
+    box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+}
+
+.history-container {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+}
+
+.history-table th {
+    background: rgba(124, 58, 237, 0.2);
+    text-align: left;
+    padding: 15px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #7c3aed;
+}
+
+.history-table td {
+    padding: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.95rem;
+}
+
+.date-cell {
+    color: #b2bec3;
+}
+
+.method-tag {
+    background: rgba(0, 242, 255, 0.1);
+    color: #00f2ff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    border: 1px solid rgba(0, 242, 255, 0.3);
+}
+
+.price-cell {
+    font-weight: 700;
+}
+
+.amount-cell {
+    color: #10b981;
+    font-weight: 800;
+}
+
+.status-tag {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-tag.completado {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.no-history {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px;
+    color: #b2bec3;
+    gap: 15px;
+}
+
+.no-history .material-icons-round {
+    font-size: 4rem;
+    opacity: 0.3;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

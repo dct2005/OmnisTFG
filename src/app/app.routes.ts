@@ -20,5 +20,7 @@ export const routes: Routes = [
     { path: 'soporte', title: 'Soporte', loadComponent: () => import('./support/support.component').then(m => m.SupportComponent) },
     { path: 'pagos', title: 'Pagos', component: Pagos },
     { path: 'compras', title: 'Compras', component: Compras },
-    { path: 'account', title: 'Detalles de la Cuenta', loadComponent: () => import('./account-details/account-details.component').then(m => m.AccountDetailsComponent) }
+    { path: 'account', title: 'Detalles de la Cuenta', loadComponent: () => import('./account-details/account-details.component').then(m => m.AccountDetailsComponent) },
+    { path: 'perfil/:username', title: 'Perfil', loadComponent: () => import('./profile/profile.component').then(m => m.ProfileComponent) },
+    { path: 'perfil', redirectTo: 'perfil/me', pathMatch: 'full' }
 ];

@@ -52,8 +52,9 @@
 
             @if (isMember) {
             <div class="glass-panel" style="padding: 1rem; margin-bottom: 1.5rem; display: flex; gap: 1rem;">
-                <img src="https://placehold.co/100" class="author-avatar" alt="Tu avatar"
-                    style="width: 2.5rem; height: 2.5rem;">
+                <img [src]="currentUser()?.profile_image || 'https://ui-avatars.com/api/?name=' + (currentUser()?.username || 'U') + '&background=0d1b2a&color=fff'" 
+                    class="author-avatar" alt="Tu avatar"
+                    style="width: 2.5rem; height: 2.5rem; object-fit: cover; border-radius: 50%;">
                 <div style="flex: 1; display: flex; flex-direction: column; gap: 0.5rem;">
                     <textarea [(ngModel)]="newMessage" placeholder="Escribe algo a la comunidad..."
                         style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-white); border-radius: 0.5rem; padding: 0.75rem; color: white; resize: vertical; min-height: 60px; outline: none; font-family: inherit;">
