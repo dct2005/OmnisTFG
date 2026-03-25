@@ -2,61 +2,109 @@
   <div class="main-content">
     <header class="user-header">
       <h1 class="username">{{ authService.currentUser()?.username || 'Usuario' }}</h1>
-      <span class="user-id">ID: {{ authService.currentUser()?.id || '0000' }}</span>
+
     </header>
 
-    <section class="account-section">
-      <div class="section-header">
-        <h2>Historial de la tienda y compras</h2>
-      </div>
-      <div class="section-body grid-content">
-        <div class="column">
-          <a class="action-link" routerLink="/compras">+ Añadir fondos a tu cartera Peppix</a>
-          <div class="peppix-balance">
-            <img src="images/peppix.webp" alt="Peppix" class="peppix-icon">
-            <span class="balance-amount">{{ authService.currentUser()?.peppix || 0 }}</span>
-            <span class="balance-label">Saldo en Peppix</span>
-          </div>
-          <div class="payment-method">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" class="visa-logo">
+    <ng-container *ngIf="!showHistory()">
+      <section class="account-section">
+        <div class="section-header">
+          <h2>Historial de la tienda y compras</h2>
+        </div>
+        <div class="section-body grid-content">
+          <div class="column">
+            <a class="action-link" routerLink="/compras">+ Añadir fondos a tu cartera Peppix</a>
+            <div class="peppix-balance">
+              <img src="images/peppix.webp" alt="Peppix" class="peppix-icon">
+              <span class="balance-amount">{{ authService.currentUser()?.peppix || 0 }}</span>
+              <span class="balance-label">Saldo en Peppix</span>
+            </div>
+            <div class="payment-method">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa"
+                class="visa-logo">
               <span>Terminada en 8046</span>
+            </div>
+            <a class="action-link">+ Añadir método de pago</a>
           </div>
-          <a class="action-link">+ Añadir método de pago</a>
-        </div>
-        <div class="column">
-            <a class="action-link" routerLink="/compras">Ver historial de compras</a>
+          <div class="column">
+            <a class="action-link" (click)="toggleHistory()" style="cursor: pointer;">Ver historial de compras</a>
             <a class="action-link">Ver historial de la tienda</a>
-        </div>
-        <div class="column">
+          </div>
+          <div class="column">
             <span class="label">País: <strong class="highlight">{{ selectedCountry() }}</strong></span>
-            <p class="info-text">Si te has mudado a otro país, es posible que se te permita actualizar tu cartera de Omnis y la forma en la que ves la tienda de Omnis</p>
+            <p class="info-text">Si te has mudado a otro país, es posible que se te permita actualizar tu cartera de
+              Omnis y la forma en la que ves la tienda de Omnis</p>
             <a class="action-link" (click)="changeCountry()">Actualizar país de la tienda</a>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="account-section">
-      <div class="section-header">
-        <h2>Información de contacto</h2>
-      </div>
-      <div class="section-body grid-content">
-        <div class="column">
-          <a class="action-link">Gestionar preferencias de email</a>
-          <div class="info-group">
-            <span class="label">Dirección de email: <span class="masked-value">{{ maskedEmail }}</span></span>
-            <span class="label">Estado: <span class="status-verified">Verificado</span></span>
-          </div>
-          <a class="action-link" (click)="changeEmail()">Cambiar dirección de email</a>
+      <section class="account-section">
+        <div class="section-header">
+          <h2>Información de contacto</h2>
         </div>
-        <div class="column">
-          <a class="action-link" (click)="changePhone()">Gestionar tu número de teléfono</a>
-          <div class="info-group">
-            <span class="phone-value">{{ currentPrefix }} {{ maskedPhone }}</span>
-            <img src="https://img.icons8.com/material-rounded/24/ffffff/smartphone.png" alt="phone icon" class="phone-icon">
+        <div class="section-body grid-content">
+          <div class="column">
+            <a class="action-link">Gestionar preferencias de email</a>
+            <div class="info-group">
+              <span class="label">Dirección de email: <span class="masked-value">{{ maskedEmail }}</span></span>
+              <span class="label">Estado: <span class="status-verified">Verificado</span></span>
+            </div>
+            <a class="action-link" (click)="changeEmail()">Cambiar dirección de email</a>
+          </div>
+          <div class="column">
+            <a class="action-link" (click)="changePhone()">Gestionar tu número de teléfono</a>
+            <div class="info-group">
+              <span class="phone-value">{{ currentPrefix }} {{ maskedPhone }}</span>
+              <img src="https://img.icons8.com/material-rounded/24/ffffff/smartphone.png" alt="phone icon"
+                class="phone-icon">
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </ng-container>
+
+    <!-- VISTA DE HISTORIAL -->
+    <ng-container *ngIf="showHistory()">
+      <section class="account-section history-view">
+        <div class="section-header history-header">
+          <h2>Historial de Compras de Peppix</h2>
+          <button class="back-button" (click)="toggleHistory()">
+            <span class="material-icons-round">arrow_back</span> Volver
+          </button>
+        </div>
+
+        <div class="history-container">
+          <table class="history-table" *ngIf="transactions().length > 0">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Concepto</th>
+                <th>Método</th>
+                <th>Importe</th>
+                <th>Peppix</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of transactions()">
+                <td class="date-cell">{{ t.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>Compra de Peppix</td>
+                <td class="method-cell">
+                  <span class="method-tag">{{ t.payment_method | titlecase }}</span>
+                </td>
+                <td class="price-cell">{{ t.real_money_euro | number:'1.2-2' }}€</td>
+                <td class="amount-cell">+{{ t.peppix_amount | number }} PX</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="no-history" *ngIf="transactions().length === 0">
+            <span class="material-icons-round">receipt_long</span>
+            <p>Aún no has realizado ninguna compra de Peppix.</p>
+            <a class="action-link" routerLink="/compras">Ir a la tienda</a>
+          </div>
+        </div>
+      </section>
+    </ng-container>
   </div>
 
   <aside class="sidebar">

@@ -96,7 +96,7 @@ export class AuthService {
     }
   }
 
-  addPeppix(amount: number) {
+  addPeppix(amount: number, price: number = 0, method: string = 'tarjeta') {
     const user = this.currentUser();
     const userEmail = user?.email;
 
@@ -104,14 +104,17 @@ export class AuthService {
       const currentPeppix = typeof user.peppix === 'string' ? parseInt(user.peppix.replace(/\./g, ''), 10) : (user.peppix || 0);
       const newPeppix = currentPeppix + amount;
 
+      // Actualizamos el Signal local
       this.currentUser.set({ ...user, peppix: newPeppix });
 
       this.http.post(`${this.apiUrl}/user`, {
         action: 'update-peppix',
         email: userEmail,
-        amount: amount
+        amount: amount,
+        price: price,
+        method: method
       }).subscribe({
-        next: (res: any) => console.log('Peppix añadido en BD:', res.user?.peppix || newPeppix),
+        next: (res: any) => console.log('Peppix añadido y transacción registrada en BD'),
         error: (err) => console.error('Error al actualizar Peppix:', err)
       });
     }
@@ -163,5 +166,51 @@ export class AuthService {
     if (!userEmail) throw new Error('Usuario no autenticado');
 
     return this.http.get(`${this.apiUrl}/user?email=${userEmail}&action=get-user-games`);
+  }
+
+  getAnyGame(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/user?action=get-any-game`);
+  }
+
+  updateProfileImage(base64Image: string): Observable<any> {
+    const user = this.currentUser();
+    if (!user?.email) throw new Error('Usuario no autenticado');
+
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'update-profile-image',
+      email: user.email,
+      profileImage: base64Image
+    }).pipe(
+      tap((res: any) => {
+        if (res.user) {
+          this.currentUser.set(res.user);
+        }
+      })
+    );
+  }
+
+  getUserComments(userId: number | string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user?action=get-user-comments&userId=${userId}`);
+  }
+
+  getTransactions(userId: number | string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user?action=get-transactions&userId=${userId}`);
+  }
+
+  updateLocation(location: string): Observable<any> {
+    const user = this.currentUser();
+    if (!user?.email) throw new Error('Usuario no autenticado');
+
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'update-location',
+      email: user.email,
+      location: location
+    }).pipe(
+      tap((res: any) => {
+        if (res.user) {
+          this.currentUser.set(res.user);
+        }
+      })
+    );
   }
 }

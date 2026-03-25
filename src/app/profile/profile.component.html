@@ -1,0 +1,128 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <div class="user-avatar-section" (click)="triggerFileInput(fileInput)">
+      <div class="avatar-wrapper">
+        <img [src]="user?.profile_image || user?.avatar || user?.profile_picture || 'https://ui-avatars.com/api/?name=' + user?.username + '&background=0d1b2a&color=fff'" 
+             class="profile-avatar" [alt]="user?.username">
+        <div class="avatar-overlay">
+          <span class="upload-icon">📷</span>
+        </div>
+      </div>
+      <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" accept="image/*">
+    </div>
+    <div class="user-meta-section">
+      <div class="username-row">
+        <h1 class="username">{{ user?.username }}</h1>
+        <span class="badge-admin">ADMIN</span>
+      </div>
+      <div class="location-row">
+        <span class="location-text" *ngIf="user?.location">
+          {{ user?.location }}
+        </span>
+      </div>
+    </div>
+    <div class="level-section">
+      <div class="level-circle">
+        <span class="level-label">NIVEL</span>
+        <span class="level-number">{{ profileData().level }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-content">
+    <!-- Left Column: Favorite Group & Recent Activity -->
+    <div class="main-column">
+      <div class="section-card favorite-group">
+        <h2 class="section-title">Grupo Favorito</h2>
+        <div class="card-body">
+          <img *ngIf="profileData().favoriteGroup.image" [src]="profileData().favoriteGroup.image" class="group-img" alt="Group Image">
+          <div class="group-info">
+            <h3 class="group-name">{{ profileData().favoriteGroup.name }} <span class="group-type" *ngIf="profileData().favoriteGroup.type"> - {{ profileData().favoriteGroup.type }}</span></h3>
+            <div class="group-stats">
+              <div class="stat">
+                <span class="stat-value">{{ profileData().favoriteGroup.stats.members }}</span>
+                <span class="stat-label">Miembros</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card recent-activity highlight-border">
+        <h2 class="section-title">Actividad Reciente</h2>
+        <div class="card-body">
+          <img *ngIf="profileData().recentActivity.image" [src]="profileData().recentActivity.image" class="game-img" alt="Game Image">
+          <div class="activity-info">
+            <h3 class="game-name">{{ profileData().recentActivity.gameName }}</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nueva Sección de Comentarios -->
+      <div class="section-card comments-section">
+        <h2 class="section-title">Comentarios en Comunidades</h2>
+        <div class="comments-list" *ngIf="comments().length > 0; else noComments">
+          <div class="comment-item" *ngFor="let comment of comments()">
+            <div class="comment-header">
+              <span class="community-name">{{ comment.community_name }}</span>
+              <span class="comment-date">{{ comment.created_at | date:'dd MMM, yyyy' }}</span>
+            </div>
+            <div class="comment-text">
+              "{{ comment.content }}"
+            </div>
+          </div>
+        </div>
+        <ng-template #noComments>
+          <p class="no-data">No hay comentarios realizados aún.</p>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Right Column: Sidebar Stats -->
+    <div class="sidebar-column">
+      <div class="current-badge-card">
+        <img [src]="profileData().currentBadge.icon" class="badge-icon" alt="Badge Icon">
+        <div class="badge-info">
+          <span class="badge-name">{{ profileData().currentBadge.name }}</span>
+          <span class="badge-exp">{{ profileData().currentBadge.exp }} exp</span>
+        </div>
+      </div>
+
+      <div class="links-list-card">
+        <div class="online-status" [ngClass]="userStatus">
+          EN LÍNEA
+        </div>
+        
+        <div class="link-item">
+          <span class="link-label">PREMIOS DEL PERFIL</span>
+        </div>
+
+        <div class="link-item badges-link">
+          <div class="link-header">
+            <span class="link-label">INSIGNIAS</span>
+            <span class="badge-count" *ngIf="user?.badges?.length">{{ user.badges.length }}</span>
+          </div>
+          <div class="badges-mini-gallery" *ngIf="user?.badges?.length">
+            <img *ngFor="let badge of user.badges" [src]="badge.icon" [title]="badge.name" class="mini-badge" [alt]="badge.name">
+          </div>
+        </div>
+
+        <div class="link-item">
+          <span class="link-label">AMIGOS</span>
+        </div>
+        <div class="link-item">
+          <span class="link-label">COMENTARIOS</span>
+        </div>
+        <div class="link-item">
+          <span class="link-label">RESEÑAS</span>
+        </div>
+        <div class="link-item">
+          <span class="link-label">GRUPOS</span>
+        </div>
+        <div class="link-item">
+          <span class="link-label">JUEGOS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

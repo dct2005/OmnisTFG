@@ -19,6 +19,8 @@ export class AccountDetailsComponent {
   selectedCountry = signal('Andorra');
   userEmail = signal('');
   userPhone = signal('');
+  showHistory = signal(false);
+  transactions = signal<any[]>([]);
 
   countryData: any = {
     'Andorra': { prefix: '+376', length: 6 },
@@ -49,6 +51,32 @@ export class AccountDetailsComponent {
     return this.countryData[this.selectedCountry()].prefix;
   }
 
+  constructor() {
+    // Sincronizar país inicialmente con el de la base de datos
+    const user = this.authService.currentUser();
+    if (user?.location) {
+      this.selectedCountry.set(user.location);
+    }
+  }
+
+  loadTransactions() {
+    const user = this.authService.currentUser();
+    if (user?.id) {
+      this.authService.getTransactions(user.id).subscribe({
+        next: (data) => this.transactions.set(data),
+        error: (err) => console.error('Error cargando transacciones:', err)
+      });
+    }
+  }
+
+  toggleHistory() {
+    const newState = !this.showHistory();
+    this.showHistory.set(newState);
+    if (newState) {
+      this.loadTransactions();
+    }
+  }
+
   async changeCountry() {
     const { value: country } = await Swal.fire({
       title: 'Seleccionar país de la tienda',
@@ -76,14 +104,27 @@ export class AccountDetailsComponent {
     });
 
     if (country) {
-      this.selectedCountry.set(country);
-      Swal.fire({
-        icon: 'success',
-        title: 'País actualizado',
-        text: `Tu tienda ahora está configurada para ${country}`,
-        background: '#1a103c',
-        color: '#ffffff',
-        confirmButtonColor: '#7c3aed'
+      this.authService.updateLocation(country).subscribe({
+        next: () => {
+          this.selectedCountry.set(country);
+          Swal.fire({
+            icon: 'success',
+            title: 'País actualizado',
+            text: `Tu tienda ahora está configurada para ${country}`,
+            background: '#1a103c',
+            color: '#ffffff',
+            confirmButtonColor: '#7c3aed'
+          });
+        },
+        error: (err) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo actualizar el país en la base de datos',
+            background: '#1a103c',
+            color: '#ffffff'
+          });
+        }
       });
     }
   }

@@ -106,7 +106,8 @@ export class Pagos implements OnInit {
     }
 
     const amount = parseInt(this.peppix.replace(/\./g, ''), 10);
-    this.authService.addPeppix(amount);
+    const price = parseFloat(this.precio.replace(/\./g, '').replace(',', '.'));
+    this.authService.addPeppix(amount, price, this.metodoSeleccionado);
 
     Swal.fire({
       title: '¡Pago completado!',
