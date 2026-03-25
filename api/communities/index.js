@@ -15,8 +15,11 @@ module.exports = async function handler(req, res) {
         if (req.method === 'GET') {
             const { userId, myCommunities } = req.query;
 
-            // Si nos piden "Mis Comunidades" y nos dan el ID del usuario
-            if (userId && myCommunities === 'true') {
+            // Si nos piden "Mis Comunidades"
+            if (myCommunities === 'true') {
+                if (!userId) {
+                    return res.status(200).json([]);
+                }
                 const myComms = await sql`
                     SELECT c.* FROM communities c
                     JOIN community_members cm ON c.id = cm.community_id

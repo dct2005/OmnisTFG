@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CommunityService } from '../services/community.service';
+import { AuthService } from '../services/auth';
 import { RouterModule } from '@angular/router';
 declare var Swal: any;
 
@@ -13,13 +14,16 @@ declare var Swal: any;
 })
 export class CommunitiesComponent implements OnInit {
   private communityService = inject(CommunityService);
+  public authService = inject(AuthService);
 
 
   communities = signal<any[]>([]);
   searchTerm = signal<string>('');
   selectedCategories = signal<string[]>([]);
   activeTab = signal<'all' | 'mine'>('all');
-  isLoggedIn = signal<boolean>(false);
+  
+  // Sincronizado automáticamente con el servicio central
+  isLoggedIn = computed(() => !!this.authService.currentUser());
 
 
   availableCategories: string[] = [
@@ -47,30 +51,18 @@ export class CommunitiesComponent implements OnInit {
   });
 
   ngOnInit() {
-    this.isLoggedIn.set(!!this.getUserIdFromToken());
     this.loadCommunities();
   }
 
 
-
-  getUserIdFromToken(): number | null {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.id || payload.userId || null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-
   loadCommunities() {
-    const userId = this.getUserIdFromToken();
+    const user = this.authService.currentUser();
+    const userId = user?.id;
     const isMine = this.activeTab() === 'mine';
 
 
     if (isMine && !userId) {
+      this.communities.set([]); // Limpiamos para que no se vean las de "Todas"
       Swal.fire({
         title: 'Error',
         text: 'Debes iniciar sesión para ver tus comunidades',
@@ -79,8 +71,7 @@ export class CommunitiesComponent implements OnInit {
         color: '#ffffff',
         confirmButtonColor: '#7c3aed'
       });
-      this.activeTab.set('all');
-      return;
+      return; // Nos quedamos en la pestaña vacía con el error
     }
 
 

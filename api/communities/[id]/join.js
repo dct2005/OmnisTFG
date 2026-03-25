@@ -10,9 +10,7 @@ module.exports = async function handler(req, res) {
         const sql = neon(process.env.DATABASE_URL);
         const communityId = req.query.id;
 
-        // ==========================================
-        // GET: PREGUNTAR SI YA ES MIEMBRO
-        // ==========================================
+
         if (req.method === 'GET') {
             const userId = req.query.userId;
 
@@ -27,9 +25,7 @@ module.exports = async function handler(req, res) {
             return res.status(200).json({ isMember: rows.length > 0 });
         }
 
-        // ==========================================
-        // POST: EL INTERRUPTOR (Unirse / Abandonar)
-        // ==========================================
+
         if (req.method === 'POST') {
             const { userId } = req.body;
             if (!userId) return res.status(400).json({ message: 'Falta el ID del usuario.' });
