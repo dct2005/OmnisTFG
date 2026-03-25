@@ -1,5 +1,10 @@
--- Redirigir a /home al iniciar sesión
--- redirect cuando usuario logueado intente acceder a /login o /register.
+-- Hecho, ahora si inicias sesion te redirige a /catalogo.
+-- Hecho, ahora si un usuario logueado intenta acceder a /login o /register, se le redirige a /home.
+
+
+
+
+
 -- Si el juego ha sido comprado, que no te salga la opcion de comprar, sino que te ponga que lo has obtenido y esta en tus juegos
 -- Una lista de deseados que funcione con el icono de bookmark que hay debajo de cada juego
 -- Cuando creas un grupo, no deberia llevarte a /login sino a /comunidades
