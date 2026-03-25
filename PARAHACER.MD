@@ -8,6 +8,8 @@
 -- De soporte queda hacer todo (me voy a suicidar)
 -- Detalles de la cuenta: Quitar preferencias de email y poner una opcion para restablecer tu contraseña.
 
+-- Detalles de la cuenta: pestañas preferencias, preferencias de idioma, cookies y datos.
+
 -- Si el usuario es creador de una cmunidad debria ser capaz de editarla.
 
 -- pestaña "editar perfil" donde el usuario pueda cambiar su foto, el fondo del perfil, grupo favorito, juego favorito (de los que tiene compradosa). Que se muestre la banderita del pais del usuario ademas de que pueda seleccionar pais, comunidad autonoma/ estado y ciudad. Gestionar quien puede ver tu perfil, tus juegos, quien puede comentar en tu perfil, etc...
@@ -17,3 +19,4 @@
 -- Quitar fondos negros a las fotos de las insignias.
 
 -- Hacer el sistema de amistades funcional. Que puedas enviar solicitudes de amistad, aceptarlas, rechazarlas, eliminarlas, etc...
+
