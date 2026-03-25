@@ -1,0 +1,209 @@
+.account-container {
+  display: flex;
+  max-width: 1400px;
+  margin: 40px auto;
+  padding: 0 20px;
+  gap: 30px;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+}
+
+.main-content {
+  flex: 1;
+}
+
+.user-header {
+  margin-bottom: 30px;
+}
+
+.username {
+  font-family: 'Audiowide', cursive;
+  font-size: 3rem;
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+.user-id {
+  font-size: 0.9rem;
+  color: #b2bec3;
+  margin-top: 5px;
+  display: block;
+}
+
+.account-section {
+  background: rgba(30, 30, 50, 0.4);
+  border-radius: 12px;
+  margin-bottom: 25px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-header {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 12px 20px;
+}
+
+.section-header h2 {
+  font-family: 'Audiowide', cursive;
+  font-size: 1.1rem;
+  margin: 0;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.section-body {
+  padding: 20px;
+}
+
+.grid-content {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 20px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.action-link {
+  color: #ff00ff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.action-link:hover {
+  opacity: 0.8;
+}
+
+.peppix-balance {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px 15px;
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.peppix-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.balance-amount {
+  font-family: 'Audiowide', cursive;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+.balance-label {
+  font-size: 0.8rem;
+  color: #b2bec3;
+  margin-left: 5px;
+}
+
+.payment-method {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: #dfe6e9;
+}
+
+.visa-logo {
+  height: 12px;
+}
+
+.label {
+  font-size: 0.9rem;
+  color: #b2bec3;
+  display: block;
+}
+
+.highlight {
+  color: #fff;
+  font-weight: 600;
+}
+
+.info-text {
+  font-size: 0.8rem;
+  color: #b2bec3;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.info-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.status-verified {
+  color: #00d2d3;
+  font-weight: 500;
+}
+
+.phone-value {
+  font-size: 0.9rem;
+  color: #dfe6e9;
+}
+
+.phone-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  opacity: 0.7;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+}
+
+.sidebar-nav {
+  background: #161625;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nav-item {
+  padding: 15px 20px;
+  border-radius: 8px;
+  color: #dfe6e9;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item.active {
+  color: #00e5ff;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .account-container {
+    flex-direction: column-reverse;
+  }
+  
+  .sidebar {
+    width: 100%;
+  }
+  
+  .grid-content {
+    grid-template-columns: 1fr;
+  }
+}

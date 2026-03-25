@@ -40,7 +40,7 @@
                 <div class="status-option" (click)="isDropdownOpen.set(false)">
                     <span>Ver mi perfil</span>
                 </div>
-                <div class="status-option" (click)="isDropdownOpen.set(false)">
+                <div class="status-option" routerLink="/account" (click)="isDropdownOpen.set(false)">
                     <span>Detalles de la cuenta</span>
                 </div>
                 <div class="status-option" [routerLink]="['/catalogo']" [queryParams]="{tab: 'mine'}" (click)="isDropdownOpen.set(false)">

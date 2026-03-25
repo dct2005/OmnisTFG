@@ -19,5 +19,6 @@ export const routes: Routes = [
     { path: 'crear-comunidad', title: 'Crear Comunidad', component: CreateCommunity },
     { path: 'soporte', title: 'Soporte', loadComponent: () => import('./support/support.component').then(m => m.SupportComponent) },
     { path: 'pagos', title: 'Pagos', component: Pagos },
-    { path: 'compras', title: 'Compras', component: Compras }
+    { path: 'compras', title: 'Compras', component: Compras },
+    { path: 'account', title: 'Detalles de la Cuenta', loadComponent: () => import('./account-details/account-details.component').then(m => m.AccountDetailsComponent) }
 ];
