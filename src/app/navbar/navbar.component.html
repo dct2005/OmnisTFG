@@ -23,7 +23,7 @@
 
         <div class="user-profile-btn" [ngClass]="userEstado" (click)="toggleDropdown()" title="Perfil">
             <div class="user-avatar-wrapper">
-                <img [src]="authService.currentUser()?.avatar || authService.currentUser()?.profile_picture || 'https://ui-avatars.com/api/?name=' + usernameValue() + '&background=0d1b2a&color=fff'"
+                <img [src]="authService.currentUser()?.profile_image || 'https://ui-avatars.com/api/?name=' + usernameValue() + '&background=0d1b2a&color=fff'"
                     class="user-avatar" [alt]="usernameValue()">
             </div>
             <div class="user-info-wrapper">
