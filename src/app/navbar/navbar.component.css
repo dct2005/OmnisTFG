@@ -100,6 +100,7 @@
 @media (max-width: 992px) {
   .navbar {
     justify-content: space-between;
+    padding: 1rem 1.5rem;
   }
 
   .nav-links {
@@ -108,48 +109,107 @@
     margin-top: 1rem;
     gap: 1.5rem;
   }
+
+  /* Reducir logo y botones un poco */
+  .logo-container .logo {
+    height: 75px;
+  }
+
+  .peppix-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .peppix-amount {
+    font-size: 1rem;
+    letter-spacing: 1px;
+  }
+
+  .user-profile-btn {
+    height: 42px;
+  }
 }
 
 @media (max-width: 768px) {
   .logo-container .logo {
-    height: 70px;
+    height: 60px;
   }
 
   .auth-buttons {
-    gap: 1rem;
+    gap: 0.8rem;
   }
 
   .btn {
     padding: 0.5rem 1.2rem;
     font-size: 0.9rem;
   }
+
+  .peppix-container {
+    gap: 8px;
+  }
+
+  .peppix-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .user-info-wrapper {
+    padding-left: 10px;
+    gap: 10px;
+  }
+
+  .user-name {
+    font-size: 0.9rem;
+  }
 }
 
 @media (max-width: 576px) {
   .navbar {
-    padding: 1rem;
-    flex-direction: column;
-    justify-content: center;
+    padding: 0.8rem;
+    flex-wrap: nowrap; /* Forzar que el logo y perfil se queden arriba */
+    justify-content: space-between;
+    flex-direction: row; /* En vez de column, intentamos mantener logo y auth a los lados */
   }
 
   .logo-container {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0;
+  }
+
+  .logo-container .logo {
+    height: 50px;
   }
 
   .auth-buttons {
     order: 2;
-    width: 100%;
-    justify-content: center;
+    width: auto;
+    justify-content: flex-end;
+    gap: 0.5rem;
   }
 
   .nav-links {
     order: 3;
-    flex-direction: column;
-    width: 100%;
-    gap: 1rem;
-    margin-top: 1rem;
+    display: none; /* Ocultar enlaces de navegación en móviles muy pequeños por ahora */
+    /* Nota: Esto requeriría un menú tipo hamburguesa para producción real, 
+       pero por ahora priorizamos que el perfil no se rompa */
   }
 
+  .user-name {
+    display: none; /* Ocultar nombre para ahorrar espacio */
+  }
+
+  .user-profile-btn {
+    padding-right: 8px;
+    height: 36px;
+  }
+
+  .peppix-amount {
+    font-size: 0.9rem;
+  }
+
+  .peppix-icon {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 /* --- ESTILOS DE PEPPIX --- */
