@@ -33,16 +33,16 @@
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .game-cover {
-  flex: 0 0 450px; 
+  flex: 0 0 450px;
   padding-top: 2.5rem;
   padding-bottom: 2.5rem;
   background: transparent;
-  border-right: 1px solid rgba(255,255,255,0.05);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .game-cover img {
@@ -86,6 +86,7 @@
 .game-summary.expanded .summary-text::-webkit-scrollbar {
   width: 6px;
 }
+
 .game-summary.expanded .summary-text::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 4px;
@@ -103,6 +104,7 @@
   font-size: 0.95rem;
   transition: all 0.2s;
 }
+
 .btn-read-more:hover {
   color: #cd9cff;
   text-decoration: underline;
@@ -116,7 +118,7 @@
   padding: 1.2rem 2rem;
   border-radius: 8px;
   margin-bottom: 1rem;
-  border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .purchase-title {
@@ -129,7 +131,7 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   border-radius: 20px;
   padding: 4px;
   padding-left: 16px;
@@ -143,7 +145,7 @@
 }
 
 .btn-obtain {
-  background: linear-gradient(90deg, #4b6bfb, #3b5aec); 
+  background: linear-gradient(90deg, #4b6bfb, #3b5aec);
   color: white;
   border: none;
   padding: 0.6rem 2.5rem;
@@ -164,7 +166,7 @@
   background-color: rgba(15, 15, 25, 0.6);
   border-radius: 12px;
   padding: 1.5rem;
-  border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .similar-games-sidebar h3 {
@@ -178,7 +180,8 @@
 }
 
 .similar-window {
-  height: 528px; /* 3 cards (160px * 3) + 2 gaps (24px * 2) = 480 + 48 = 528px */
+  height: 528px;
+  /* 3 cards (160px * 3) + 2 gaps (24px * 2) = 480 + 48 = 528px */
   overflow: hidden;
   position: relative;
 }
@@ -197,8 +200,9 @@
   display: flex;
   flex-direction: column;
   background-color: rgba(30, 30, 45, 0.6);
-  border: 1px solid rgba(255,255,255,0.1);
-  height: 160px; /* fixed height */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  height: 160px;
+  /* fixed height */
   flex-shrink: 0;
 }
 
@@ -231,8 +235,8 @@
 
 .similar-card:hover {
   transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .show-more-container {
@@ -262,7 +266,8 @@
 
 
 
-.loading-state, .error-state {
+.loading-state,
+.error-state {
   text-align: center;
   padding: 4rem;
   font-size: 1.2rem;
@@ -388,6 +393,7 @@
 .dlc-grid.expanded::-webkit-scrollbar {
   width: 8px;
 }
+
 .dlc-grid.expanded::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 4px;

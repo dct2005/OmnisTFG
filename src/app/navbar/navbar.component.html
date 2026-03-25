@@ -36,15 +36,15 @@
 
             <!-- Menú Desplegable -->
             @if (isDropdownOpen()) {
-            <div class="status-dropdown">
-                <div class="status-option" (click)="changeStatus('conectado', $event)">
-                    <span class="status-dot conectado"></span> Conectado
+            <div class="status-dropdown" (click)="$event.stopPropagation()">
+                <div class="status-option" (click)="isDropdownOpen.set(false)">
+                    <span>Ver mi perfil</span>
                 </div>
-                <div class="status-option" (click)="changeStatus('ausente', $event)">
-                    <span class="status-dot ausente"></span> Ausente
+                <div class="status-option" (click)="isDropdownOpen.set(false)">
+                    <span>Detalles de la cuenta</span>
                 </div>
-                <div class="status-option" (click)="changeStatus('ocupado', $event)">
-                    <span class="status-dot ocupado"></span> Ocupado
+                <div class="status-option" [routerLink]="['/catalogo']" [queryParams]="{tab: 'mine'}" (click)="isDropdownOpen.set(false)">
+                    <span>Mis Juegos</span>
                 </div>
                 <div class="status-divider"></div>
                 <div class="status-option logout" (click)="logout($event)">

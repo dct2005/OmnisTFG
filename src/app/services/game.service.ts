@@ -30,10 +30,13 @@ export class GameService {
   private genresUrl = '/api/genres';
   private themesUrl = '/api/themes';
 
-  getGames(search?: string, offset: number = 0, genres?: string[], themes?: string[]): Observable<Game[]> {
+  getGames(search?: string, offset: number = 0, genres?: string[], themes?: string[], ids?: string[] | number[]): Observable<Game[]> {
     const params: any = { offset: offset.toString() };
     if (search) {
       params.search = search;
+    }
+    if (ids && ids.length > 0) {
+      params.id = ids.map(id => id.toString());
     }
     if (genres && genres.length > 0) {
       genres.forEach(g => {

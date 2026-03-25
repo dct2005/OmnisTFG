@@ -207,7 +207,7 @@
   height: 48px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
-  overflow: hidden;
+  overflow: visible; /* Cambiado de hidden a visible para mostrar el dropdown */
   /* Recorta la imagen del avatar en el borde curvo */
   padding-right: 16px;
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -254,6 +254,7 @@
   height: 100%;
   aspect-ratio: 1 / 1;
   flex-shrink: 0;
+  overflow: hidden; /* Asegura que la imagen siga el borde redondeado */
 }
 
 .user-avatar {
@@ -299,16 +300,18 @@
 /* --- ESTILOS DEL DROPDOWN DE ESTADO --- */
 .status-dropdown {
   position: absolute;
-  top: calc(100% + 12px);
+  top: calc(100% + 15px);
   right: 0;
-  width: 220px;
-  background-color: #0b141e;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 8px 0;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  width: 260px;
+  background: rgba(13, 27, 42, 0.85); /* Azul muy oscuro con transparencia */
+  backdrop-filter: blur(15px); /* Efecto cristal */
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 12px 0;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
   z-index: 100;
-  animation: fadeInDown 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+  animation: fadeInDown 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.1) forwards;
 }
 
 @keyframes fadeInDown {
@@ -325,41 +328,34 @@
 .status-option {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  color: #e2e8f0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 14px 24px;
+  color: #f1f5f9;
+  font-family: 'Audiowide', cursive; /* Estilo futurista como en la imagen */
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: 400;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  justify-content: center; /* Centrar texto como en la imagen */
 }
 
 .status-option:hover {
-  background-color: rgba(255, 255, 255, 0.06);
+  background-color: rgba(124, 58, 237, 0.15); /* Tinte morado al pasar */
+  color: #a855f7;
 }
-
-.status-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  box-shadow: 0 0 6px currentcolor;
-}
-
-.status-dot.conectado { background-color: #1ed760; color: #1ed760; }
-.status-dot.ausente { background-color: #ffb432; color: #ffb432; }
-.status-dot.ocupado { background-color: #ff3232; color: #ff3232; }
 
 .status-divider {
   height: 1px;
-  background-color: rgba(255, 255, 255, 0.08);
-  margin: 6px 0;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+  margin: 10px 0;
 }
 
 .status-option.logout {
   color: #ff5555;
-  margin-top: 4px;
+  font-weight: 500;
 }
+
 .status-option.logout:hover {
   background-color: rgba(255, 85, 85, 0.1);
+  color: #ff7777;
 }

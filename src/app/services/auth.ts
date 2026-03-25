@@ -118,4 +118,33 @@ export class AuthService {
         });
     }
   }
+
+  purchaseGame(gameId: number | string, price: number): Observable<any> {
+    const user = this.currentUser();
+    const userEmail = user?.email;
+
+    if (!userEmail) throw new Error('Usuario no autenticado');
+
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'purchase-game',
+      email: userEmail,
+      gameId: gameId.toString(),
+      price: price
+    }).pipe(
+      tap((res: any) => {
+        if (res.user) {
+          this.currentUser.set(res.user);
+        }
+      })
+    );
+  }
+
+  getUserGames(): Observable<any> {
+    const user = this.currentUser();
+    const userEmail = user?.email;
+
+    if (!userEmail) throw new Error('Usuario no autenticado');
+
+    return this.http.get(`${this.apiUrl}/user?email=${userEmail}&action=get-user-games`);
+  }
 }

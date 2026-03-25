@@ -16,8 +16,16 @@ module.exports = async function handler(req, res) {
 
         // OBTENER RECURSO DEL USUARIO
         if (req.method === 'GET') {
-            const email = req.query.email;
+            const { email, action } = req.query;
             if (!email) return res.status(400).json({ error: 'Falta email' });
+
+            if (action === 'get-user-games') {
+                const userCheck = await sql`SELECT id FROM users WHERE email = ${email}`;
+                if (userCheck.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+
+                const games = await sql`SELECT game_api_id FROM user_games WHERE user_id = ${userCheck[0].id} ORDER BY purchase_date DESC`;
+                return res.status(200).json({ games: games.map(g => g.game_api_id) });
+            }
 
             const users = await sql`SELECT id, email, username, estado, peppix, created_at FROM users WHERE email = ${email}`;
             if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
@@ -81,6 +89,31 @@ module.exports = async function handler(req, res) {
                 const updated = await sql`UPDATE users SET peppix = peppix + ${amount} WHERE email = ${email} RETURNING id, username, email, peppix, estado`;
                 if (updated.length === 0) return res.status(404).json({ error: 'User no encontrado' });
                 return res.status(200).json({ message: 'Peppix actualizados', user: updated[0] });
+            }
+
+            // 5. Comprar Juego
+            if (action === 'purchase-game') {
+                const { gameId, price } = req.body;
+                if (!email || !gameId || price === undefined) return res.status(400).json({ error: 'Faltan datos' });
+
+                // Transacción manual: Restar peppix e insertar en user_games
+                const userCheck = await sql`SELECT id, peppix FROM users WHERE email = ${email}`;
+                if (userCheck.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+
+                const user = userCheck[0];
+                if (user.peppix < price) return res.status(400).json({ error: 'Saldo insuficiente' });
+
+                // Actualizar peppix
+                const updated = await sql`UPDATE users SET peppix = peppix - ${price} WHERE email = ${email} RETURNING id, username, email, peppix, estado`;
+                
+                // Registrar compra
+                await sql`
+                    INSERT INTO user_games (user_id, game_api_id, purchase_date)
+                    VALUES (${user.id}, ${gameId.toString()}, NOW())
+                    ON CONFLICT (user_id, game_api_id) DO NOTHING
+                `;
+
+                return res.status(200).json({ message: 'Compra realizada', user: updated[0] });
             }
 
             return res.status(400).json({ error: 'Acción no válida' });
