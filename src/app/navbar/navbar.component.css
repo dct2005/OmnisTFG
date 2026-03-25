@@ -1,23 +1,25 @@
 .navbar {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: "logo links auth";
   align-items: center;
   padding: 1rem 4rem;
   background-color: transparent;
   z-index: 10;
-  flex-wrap: wrap;
   gap: 1rem;
 }
 
 .logo-container {
+  grid-area: logo;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .logo-container .logo {
   height: 90px;
   width: auto;
-  transition: height 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .logo-container a {
@@ -25,11 +27,13 @@
 }
 
 .nav-links {
+  grid-area: links;
   display: flex;
   gap: 4rem;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Evitar saltos internos en la fila superior */
+  transition: gap 0.3s ease;
 }
 
 /*Navbar*/
@@ -51,10 +55,13 @@
 }
 
 .auth-buttons {
+  grid-area: auth;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 1.5rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
 }
 
 .btn {
@@ -86,43 +93,93 @@
   color: #a855f7;
 }
 
-/* Responsiveness */
-@media (max-width: 1200px) {
+/* Responsiveness con CSS Grid */
+@media (max-width: 1300px) {
   .nav-links {
-    gap: 2rem;
-  }
-
-  .navbar {
-    padding: 1rem 2rem;
+    gap: 2.5rem; /* Reducir un poco más moderadamente */
   }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
   .navbar {
-    justify-content: space-between;
-    padding: 1rem 1.5rem;
+    padding: 1rem 2rem;
+  }
+  .nav-links {
+    gap: 1.5rem;
+  }
+}
+
+/* Mantener en una línea hasta 850px */
+@media (max-width: 1150px) {
+  .navbar {
+    grid-template-columns: auto 1fr auto; /* Forzar una línea */
+    grid-template-areas: "logo links auth";
+    padding: 0.8rem 1.5rem;
+    gap: 0.8rem;
+    align-items: center;
   }
 
   .nav-links {
-    order: 3;
-    width: 100%;
-    margin-top: 1rem;
-    gap: 1.5rem;
+    gap: 1rem;
+    flex-wrap: nowrap;
+    margin-top: 0;
   }
 
-  /* Reducir logo y botones un poco */
   .logo-container .logo {
-    height: 75px;
+    height: 70px; /* Reducción ligera */
+  }
+
+  .peppix-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .peppix-amount {
+    font-size: 1rem;
+  }
+
+  .user-profile-btn {
+    height: 44px;
+    padding-right: 12px;
+  }
+
+  .user-name {
+    font-size: 0.95rem;
+  }
+}
+
+/* Salto a dos líneas solo por debajo de 850px */
+@media (max-width: 850px) {
+  .navbar {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas: 
+      "logo auth"
+      "links links";
+    padding: 1rem 1.5rem;
+    row-gap: 1rem;
+    align-items: center;
+  }
+
+  .auth-buttons {
+    align-self: center;
+  }
+
+  .nav-links {
+    display: flex; /* Asegurar que se vea en esta resolución */
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .logo-container .logo {
+    height: 65px;
   }
 
   .peppix-icon {
     width: 40px;
     height: 40px;
-  }
-
-  .peppix-amount {
-    font-size: 1rem;
-    letter-spacing: 1px;
   }
 
   .user-profile-btn {
@@ -139,23 +196,9 @@
     gap: 0.8rem;
   }
 
-  .btn {
-    padding: 0.5rem 1.2rem;
-    font-size: 0.9rem;
-  }
-
-  .peppix-container {
-    gap: 8px;
-  }
-
   .peppix-icon {
     width: 32px;
     height: 32px;
-  }
-
-  .user-info-wrapper {
-    padding-left: 10px;
-    gap: 10px;
   }
 
   .user-name {
@@ -166,44 +209,24 @@
 @media (max-width: 576px) {
   .navbar {
     padding: 0.8rem;
-    flex-wrap: nowrap; /* Forzar que el logo y perfil se queden arriba */
-    justify-content: space-between;
-    flex-direction: row; /* En vez de column, intentamos mantener logo y auth a los lados */
-  }
-
-  .logo-container {
-    margin-bottom: 0;
+    row-gap: 1rem;
   }
 
   .logo-container .logo {
     height: 50px;
   }
 
-  .auth-buttons {
-    order: 2;
-    width: auto;
-    justify-content: flex-end;
-    gap: 0.5rem;
-  }
-
   .nav-links {
-    order: 3;
-    display: none; /* Ocultar enlaces de navegación en móviles muy pequeños por ahora */
-    /* Nota: Esto requeriría un menú tipo hamburguesa para producción real, 
-       pero por ahora priorizamos que el perfil no se rompa */
+    display: none; /* Mantener oculto en móviles muy pequeños */
   }
 
   .user-name {
-    display: none; /* Ocultar nombre para ahorrar espacio */
+    display: none;
   }
 
   .user-profile-btn {
     padding-right: 8px;
     height: 36px;
-  }
-
-  .peppix-amount {
-    font-size: 0.9rem;
   }
 
   .peppix-icon {
@@ -216,11 +239,12 @@
 .peppix-container {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 12px;
   transition: background-color 0.3s ease;
+  flex-wrap: nowrap; /* Evitar que el icono y el texto se separen */
 }
 
 .peppix-container:hover {

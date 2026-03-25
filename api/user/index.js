@@ -12,6 +12,7 @@ module.exports = async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
+        console.log(`[API User] ${req.method} request received. Action: ${req.body?.action || req.query?.action}`);
         const sql = neon(process.env.DATABASE_URL);
 
         // OBTENER RECURSO DEL USUARIO
