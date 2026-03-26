@@ -197,6 +197,9 @@ module.exports = async function handler(req, res) {
                     ON CONFLICT (user_id, game_api_id) DO NOTHING
                 `;
 
+                // Eliminar de la lista de deseos si existe
+                await sql`DELETE FROM user_wishlist WHERE user_id = ${user.id} AND game_api_id = ${gameId.toString()}`;
+
                 return res.status(200).json({ message: 'Compra realizada', user: updated[0] });
             }
 

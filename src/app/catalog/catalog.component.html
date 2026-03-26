@@ -54,10 +54,12 @@
                             } @else if (game.peppixPrice) {
                             <span class="price-tag">{{ game.peppixPrice }} <span class="peppix-icon"></span></span>
                             }
+                            @if (activeTab() !== 'mine') {
                             <button class="btn-favorite" (click)="toggleFavorite($event, game)">
                                 <span class="material-icons">{{ game.isFavorite ? 'bookmark' : 'bookmark_border'
                                     }}</span>
                             </button>
+                            }
                         </div>
                     </div>
                 </div>
