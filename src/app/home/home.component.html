@@ -49,4 +49,6 @@
             <span class="arrow-down">﹀</span>
         </div>
     </section>
+
+    <app-daily-reward *ngIf="showReward()" (onClose)="showReward.set(false)"></app-daily-reward>
 </div>

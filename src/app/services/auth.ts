@@ -31,10 +31,8 @@ export class AuthService {
   }
 
   register(userData: any): Observable<any> {
-    // IMPORTANTE: Asegúrate de que tu backend espera el objeto con { action: 'register', ... }
     return this.http.post(`${this.apiUrl}/user`, { action: 'register', ...userData }).pipe(
       tap((res: any) => {
-        // Al registrar, seteamos el usuario con peppix 0 y estado desconectado
         this.currentUser.set(res.user || {
           username: userData.name,
           email: userData.username,
@@ -59,7 +57,6 @@ export class AuthService {
     if (event) event.stopPropagation();
 
     const user = this.currentUser();
-    // Según tu DB: el email es donde está el correo real
     const userEmail = user?.email;
 
     if (userEmail) {
@@ -73,7 +70,7 @@ export class AuthService {
       });
     }
 
-    localStorage.removeItem('token'); // LIMPIEZA
+    localStorage.removeItem('token');
     this.currentUser.set(null);
   }
 
@@ -82,7 +79,6 @@ export class AuthService {
     const userEmail = user?.email;
 
     if (userEmail && user) {
-      // Actualizamos el Signal primero para que la Navbar cambie al instante
       this.currentUser.set({ ...user, estado: estado });
 
       this.http.post(`${this.apiUrl}/user`, {
@@ -104,7 +100,6 @@ export class AuthService {
       const currentPeppix = typeof user.peppix === 'string' ? parseInt(user.peppix.replace(/\./g, ''), 10) : (user.peppix || 0);
       const newPeppix = currentPeppix + amount;
 
-      // Actualizamos el Signal local
       this.currentUser.set({ ...user, peppix: newPeppix });
 
       this.http.post(`${this.apiUrl}/user`, {
@@ -140,12 +135,10 @@ export class AuthService {
     const userEmail = user?.email;
 
     if (userEmail) {
-      // Usamos la acción 'get-user' o el método que tengas en tu backend único
       this.http.get(`${this.apiUrl}/user?email=${userEmail}&action=get`)
         .subscribe({
           next: (res: any) => {
             if (res.user) {
-              // Actualizamos peppix y estado si han cambiado en la BD
               this.currentUser.set(res.user);
             }
           },
@@ -262,6 +255,23 @@ export class AuthService {
         if (res.user) {
           this.currentUser.set(res.user);
         }
+      })
+    );
+  }
+
+  checkDailyReward(): Observable<{ canClaim: boolean }> {
+    const user = this.currentUser();
+    return this.http.get<{ canClaim: boolean }>(`${this.apiUrl}/user?email=${user?.email}&action=check-daily-reward`);
+  }
+
+  claimDailyReward(): Observable<any> {
+    const user = this.currentUser();
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'claim-daily-reward',
+      email: user?.email
+    }).pipe(
+      tap((res: any) => {
+        this.fetchCurrentUser();
       })
     );
   }

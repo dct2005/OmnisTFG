@@ -53,6 +53,22 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json(transactions);
             }
 
+            if (action === 'check-daily-reward') {
+                const { email } = req.query;
+                if (!email) return res.status(400).json({ error: 'Falta email' });
+                
+                const userQuery = await sql`SELECT last_daily_reward FROM users WHERE email = ${email}`;
+                if (userQuery.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+
+                const lastReward = userQuery[0].last_daily_reward;
+                if (!lastReward) return res.status(200).json({ canClaim: true });
+
+                const lastDate = new Date(lastReward).toDateString();
+                const today = new Date().toDateString();
+
+                return res.status(200).json({ canClaim: lastDate !== today });
+            }
+
             if (!email) return res.status(400).json({ error: 'Falta email' });
 
             if (action === 'get-user-games') {
@@ -72,7 +88,7 @@ module.exports = async function handler(req, res) {
             }
 
             const users = await sql`
-                SELECT id, email, username, first_name, last_name, address, phone, peppix, xp, estado, profile_image, profile_background, location, created_at 
+                SELECT id, email, username, first_name, last_name, address, phone, peppix, xp, estado, profile_image, profile_background, location, created_at, last_daily_reward 
                 FROM users WHERE email = ${email}
             `;
             if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
@@ -303,6 +319,71 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ 
                     message: 'Información de facturación actualizada', 
                     user: updated[0] 
+                });
+            }
+
+            if (action === 'claim-daily-reward') {
+                if (!email) return res.status(400).json({ error: 'Falta email' });
+
+                // Check again to be safe
+                const check = await sql`SELECT last_daily_reward, peppix FROM users WHERE email = ${email}`;
+                if (check.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+
+                const lastReward = check[0].last_daily_reward;
+                if (lastReward && new Date(lastReward).toDateString() === new Date().toDateString()) {
+                    return res.status(400).json({ error: 'Ya has reclamado tu recompensa hoy' });
+                }
+
+                // RANDOM PRIZE LOGIC
+                const prizes = [
+                    { type: 'peppix', value: 50, label: '50 Peppix', weight: 35 },
+                    { type: 'peppix', value: 100, label: '100 Peppix', weight: 25 },
+                    { type: 'nada', value: 0, label: 'Nada', weight: 20 },
+                    { type: 'peppix', value: 250, label: '250 Peppix', weight: 10 },
+                    { type: 'peppix', value: 500, label: '500 Peppix', weight: 7 },
+                    { type: 'peppix', value: 1000, label: '1000 Peppix', weight: 2 },
+                    { type: 'game', value: 'random', label: 'Juego Gratis', weight: 1 }
+                ];
+
+                const totalWeight = prizes.reduce((sum, p) => sum + p.weight, 0);
+                let random = Math.random() * totalWeight;
+                let prize = prizes[0];
+
+                for (const p of prizes) {
+                    if (random < p.weight) {
+                        prize = p;
+                        break;
+                    }
+                    random -= p.weight;
+                }
+
+                // Update reward date regardless of prize
+                await sql`UPDATE users SET last_daily_reward = NOW() WHERE email = ${email}`;
+
+                if (prize.type === 'peppix') {
+                    const currentPeppix = typeof check[0].peppix === 'string' ? parseInt(check[0].peppix.replace(/\./g, ''), 10) : (check[0].peppix || 0);
+                    const newPeppix = currentPeppix + prize.value;
+
+                    await sql`UPDATE users SET peppix = ${newPeppix} WHERE email = ${email}`;
+
+                    // Register transaction for history
+                    await sql`
+                        INSERT INTO transactions (user_id, peppix_amount, real_money_euro, payment_method)
+                        SELECT id, ${prize.value}, 0, 'Recompensa Diaria'
+                        FROM users WHERE email = ${email}
+                    `;
+                } else if (prize.type === 'game') {
+                    const rewardVal = 1500;
+                    const currentPeppix = typeof check[0].peppix === 'string' ? parseInt(check[0].peppix.replace(/\./g, ''), 10) : (check[0].peppix || 0);
+                    
+                    await sql`UPDATE users SET peppix = ${currentPeppix + rewardVal} WHERE email = ${email}`;
+                    prize = { type: 'peppix', value: rewardVal, label: 'Súper Premio: 1500 Peppix' };
+                }
+                // If prize.type === 'nada', we do nothing else (already updated last_daily_reward)
+
+                return res.status(200).json({ 
+                    message: '¡Felicidades!', 
+                    prize: prize
                 });
             }
 
