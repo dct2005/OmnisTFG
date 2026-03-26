@@ -6,12 +6,16 @@
 
 
 -- Si el juego ha sido comprado, que no te salga la opcion de comprar, sino que te ponga que lo has obtenido y esta en tus juegos
+
 -- Una lista de deseados que funcione con el icono de bookmark que hay debajo de cada juego
--- Cuando creas un grupo, no deberia llevarte a /login sino a /comunidades
+
+-- Cuando creas un grupo, no deberia llevarte a /login sino a la. propia pagina del grupo.
+
 -- Si el usuario ha creado una comunidad, lo logico es que ya pertenezca a ella como creador que es.
 
 -- De soporte queda hacer todo (me voy a suicidar)
--- Detalles de la cuenta: Quitar preferencias de email y poner una opcion para restablecer tu contraseña.
+
+-- Detalles de la cuenta: Quitar preferencias de email y poner una opcion para cambiar tu contraseña.
 
 -- Detalles de la cuenta: pestañas preferencias, preferencias de idioma, cookies y datos.
 
