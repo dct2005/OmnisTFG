@@ -1,6 +1,6 @@
 -- De soporte queda hacer todo (me voy a suicidar)
 
--- Detalles de la cuenta: Quitar preferencias de email y poner una opcion para cambiar tu contraseña.
+-- Hecho, Detalles de la cuenta: Quitar preferencias de email y poner una opcion para cambiar tu contraseña.
 
 -- Detalles de la cuenta: pestañas preferencias, preferencias de idioma, cookies y datos.
 

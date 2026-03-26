@@ -306,6 +306,23 @@ module.exports = async function handler(req, res) {
                 });
             }
 
+            if (action === 'update-password') {
+                const { oldPassword, newPassword } = req.body;
+                if (!email || !oldPassword || !newPassword) return res.status(400).json({ error: 'Faltan datos' });
+
+                const users = await sql`SELECT * FROM users WHERE email = ${email}`;
+                if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+
+                const user = users[0];
+                const valid = await bcrypt.compare(oldPassword, user.password);
+                if (!valid) return res.status(401).json({ error: 'La contraseña actual es incorrecta' });
+
+                const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+                await sql`UPDATE users SET password = ${hashedNewPassword} WHERE email = ${email}`;
+
+                return res.status(200).json({ message: 'Contraseña actualizada correctamente' });
+            }
+
             return res.status(400).json({ error: 'Acción no válida' });
         }
 
