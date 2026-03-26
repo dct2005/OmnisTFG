@@ -11,6 +11,7 @@
             <p>Total: <span class="price">{{ precio }}€</span></p>
         </div>
 
+        <!-- PASO 1: INFORMACIÓN DE FACTURACIÓN -->
         <div class="payment-methods">
             <div class="method" [class.active]="metodoSeleccionado === 'tarjeta'"
                 (click)="seleccionarMetodo('tarjeta')">
@@ -27,8 +28,19 @@
             </div>
         </div>
 
-
+        <!-- FORMULARIO DE TARJETA CON FACTURACIÓN INTEGRADA -->
         <form class="card-form" *ngIf="metodoSeleccionado === 'tarjeta'">
+            <div class="billing-section-title">Información de Facturación</div>
+            <div class="form-row">
+                <input type="text" placeholder="Nombre" [(ngModel)]="billingInfo.firstName" name="firstName">
+                <input type="text" placeholder="Apellidos" [(ngModel)]="billingInfo.lastName" name="lastName">
+            </div>
+            <div class="form-row">
+                <input type="text" placeholder="Dirección completa" [(ngModel)]="billingInfo.address" name="address">
+                <input type="text" placeholder="Número de teléfono" [(ngModel)]="billingInfo.phone" name="phone">
+            </div>
+
+            <div class="billing-section-title" style="margin-top: 15px;">Datos de la Tarjeta</div>
             <div class="form-row">
                 <input type="text" placeholder="Numero de tarjeta" [(ngModel)]="numTarjeta" name="numTarjeta">
                 <input type="text" placeholder="Caducidad (MM/YY)" [(ngModel)]="caducidad" name="caducidad">
@@ -46,12 +58,10 @@
             <button type="button" class="btn-pay" (click)="pagar()">Pagar {{ precio }}€</button>
         </form>
 
-
         <div class="paypal-section" *ngIf="metodoSeleccionado === 'paypal'">
             <p>Serás redirigido a la plataforma segura de PayPal para completar tu compra.</p>
             <button type="button" class="btn-pay" (click)="pagar()">Continuar con PayPal</button>
         </div>
-
 
         <div class="crypto-section" *ngIf="metodoSeleccionado === 'crypto'">
             <p>Se generará una dirección de pago para completar la transacción en BTC/ETH.</p>

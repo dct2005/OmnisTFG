@@ -23,6 +23,14 @@ export class Pagos implements OnInit {
   nombreTarjeta: string = '';
   cvv: string = '';
 
+  // Billing State
+  billingInfo = {
+    firstName: '',
+    lastName: '',
+    address: '',
+    phone: ''
+  };
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -38,6 +46,16 @@ export class Pagos implements OnInit {
         this.precio = params['precio'];
       }
     });
+
+    const user = this.authService.currentUser();
+    if (user) {
+      this.billingInfo = {
+        firstName: user.first_name || '',
+        lastName: user.last_name || '',
+        address: user.address || '',
+        phone: user.phone || ''
+      };
+    }
   }
 
   seleccionarMetodo(metodo: string) {
@@ -59,12 +77,12 @@ export class Pagos implements OnInit {
       return;
     }
 
-    // 1. Validation only for Card method
     if (this.metodoSeleccionado === 'tarjeta') {
-      if (!this.numTarjeta || !this.caducidad || !this.nombreTarjeta || !this.cvv) {
+      if (!this.numTarjeta || !this.caducidad || !this.nombreTarjeta || !this.cvv ||
+          !this.billingInfo.firstName || !this.billingInfo.lastName || !this.billingInfo.address || !this.billingInfo.phone) {
         Swal.fire({
-          title: 'Error',
-          text: 'Por favor, rellena todos los campos del formulario.',
+          title: 'Faltan datos',
+          text: 'Por favor, rellena todos los campos (facturación y tarjeta).',
           icon: 'warning',
           background: '#1a103c',
           color: '#ffffff',
@@ -73,34 +91,40 @@ export class Pagos implements OnInit {
         return;
       }
 
-      const [month, yearRaw] = this.caducidad.split('/').map(n => parseInt(n, 10));
+      this.authService.updateBillingInfo(this.billingInfo).subscribe({
+        next: () => this.ejecutarPago(),
+        error: (err: any) => {
+          console.error('Error guardando info de facturación:', err);
+          Swal.fire('Error', 'No se pudo procesar la información de facturación', 'error');
+        }
+      });
+    } else {
+      this.ejecutarPago();
+    }
+  }
+
+  private ejecutarPago() {
+    if (this.metodoSeleccionado === 'tarjeta') {
+      const parts = this.caducidad.split('/');
+      if (parts.length !== 2) {
+        Swal.fire('Error', 'Formato de fecha inválido (MM/YY)', 'error');
+        return;
+      }
+      const month = parseInt(parts[0], 10);
+      const yearRaw = parseInt(parts[1], 10);
+      
       const now = new Date();
       const currentMonth = now.getMonth() + 1;
-      const currentYearFull = now.getFullYear();
-      const currentYear2Digit = parseInt(currentYearFull.toString().slice(-2), 10);
+      const currentYear2Digit = parseInt(now.getFullYear().toString().slice(-2), 10);
       const year = yearRaw > 100 ? parseInt(yearRaw.toString().slice(-2), 10) : yearRaw;
 
-      if (!month || !yearRaw || month < 1 || month > 12) {
-        Swal.fire({
-          title: 'Fecha inválida',
-          text: 'Por favor, introduce una fecha válida (MM/YY).',
-          icon: 'error',
-          background: '#1a103c',
-          color: '#ffffff',
-          confirmButtonColor: '#7c3aed'
-        });
+      if (!month || isNaN(year) || month < 1 || month > 12) {
+        Swal.fire('Fecha inválida', 'Por favor, introduce una fecha válida.', 'error');
         return;
       }
 
       if (year < currentYear2Digit || (year === currentYear2Digit && month < currentMonth)) {
-        Swal.fire({
-          title: 'Tarjeta caducada',
-          text: 'La fecha de caducidad no puede ser inferior al día de hoy.',
-          icon: 'error',
-          background: '#1a103c',
-          color: '#ffffff',
-          confirmButtonColor: '#7c3aed'
-        });
+        Swal.fire('Tarjeta caducada', 'La fecha no puede ser inferior al día de hoy.', 'error');
         return;
       }
     }

@@ -248,4 +248,21 @@ export class AuthService {
       gameId: gameId.toString()
     });
   }
+
+  updateBillingInfo(billingData: { firstName: string, lastName: string, address: string, phone: string }): Observable<any> {
+    const user = this.currentUser();
+    if (!user?.email) throw new Error('Usuario no autenticado');
+
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'update-billing-info',
+      email: user.email,
+      ...billingData
+    }).pipe(
+      tap((res: any) => {
+        if (res.user) {
+          this.currentUser.set(res.user);
+        }
+      })
+    );
+  }
 }

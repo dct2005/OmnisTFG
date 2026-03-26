@@ -71,7 +71,10 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ wishlist: wishlist.map(w => w.game_api_id) });
             }
 
-            const users = await sql`SELECT id, email, username, peppix, xp, estado, profile_image, profile_background, location, created_at FROM users WHERE email = ${email}`;
+            const users = await sql`
+                SELECT id, email, username, first_name, last_name, address, phone, peppix, xp, estado, profile_image, profile_background, location, created_at 
+                FROM users WHERE email = ${email}
+            `;
             if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
             const user = users[0];
@@ -138,6 +141,10 @@ module.exports = async function handler(req, res) {
                         id: user.id,
                         username: user.username,
                         email: user.email,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        address: user.address,
+                        phone: user.phone,
                         peppix: user.peppix,
                         estado: user.estado,
                         created_at: user.created_at
@@ -275,6 +282,25 @@ module.exports = async function handler(req, res) {
                     await sql`INSERT INTO user_wishlist (user_id, game_api_id) VALUES (${userId}, ${gameId.toString()})`;
                     return res.status(200).json({ message: 'Añadido a la lista de deseos', inWishlist: true });
                 }
+            }
+
+            if (action === 'update-billing-info') {
+                const { firstName, lastName, address, phone } = req.body;
+                if (!email) return res.status(400).json({ error: 'Falta email' });
+
+                const updated = await sql`
+                    UPDATE users 
+                    SET first_name = ${firstName}, last_name = ${lastName}, address = ${address}, phone = ${phone}
+                    WHERE email = ${email}
+                    RETURNING id, username, email, first_name, last_name, address, phone, peppix, xp, estado
+                `;
+
+                if (updated.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+
+                return res.status(200).json({ 
+                    message: 'Información de facturación actualizada', 
+                    user: updated[0] 
+                });
             }
 
             return res.status(400).json({ error: 'Acción no válida' });
