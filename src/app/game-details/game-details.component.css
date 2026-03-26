@@ -160,6 +160,16 @@
   opacity: 0.9;
 }
 
+.btn-obtain.owned {
+  background: linear-gradient(90deg, #10b981, #059669);
+  cursor: default;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+
+.btn-obtain:disabled {
+  opacity: 1;
+}
+
 .similar-games-sidebar {
   width: 320px;
   flex-shrink: 0;

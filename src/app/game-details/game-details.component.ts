@@ -29,6 +29,8 @@ export class GameDetailsComponent implements OnInit {
   loading = true;
   error: string | null = null;
   loadingSimilar = false;
+  isOwned = false;
+  ownedGameIds: string[] = [];
 
   isDescriptionExpanded = false;
   isDlcsExpanded = false;
@@ -60,6 +62,32 @@ export class GameDetailsComponent implements OnInit {
         this.loadGame(id);
       }
     });
+
+    // Check ownership if user is already logged in
+    if (this.currentUser()) {
+      this.fetchOwnedGames();
+    }
+  }
+
+  fetchOwnedGames() {
+    this.authService.getUserGames().subscribe({
+      next: (res) => {
+        this.ownedGameIds = res.games.map((g: any) => g.game_api_id.toString());
+        this.checkIfOwned();
+      },
+      error: (err) => {
+        console.error('Error fetching owned games', err);
+      }
+    });
+  }
+
+  checkIfOwned() {
+    this.isOwned = this.isItemOwned(this.game?.id);
+  }
+
+  isItemOwned(itemId: number | string | undefined): boolean {
+    if (!itemId) return false;
+    return this.ownedGameIds.includes(itemId.toString());
   }
 
   loadGame(id: string) {
@@ -82,6 +110,7 @@ export class GameDetailsComponent implements OnInit {
           return specialKeywords.some(kw => lowerName.includes(kw));
         });
 
+        this.checkIfOwned();
         this.loading = false;
         this.loadSimilarGames();
       },
@@ -147,6 +176,8 @@ export class GameDetailsComponent implements OnInit {
     if (currentPeppix >= price) {
       this.authService.purchaseGame(this.game.id, price).subscribe({
         next: () => {
+          this.isOwned = true;
+          this.ownedGameIds.push(this.game!.id.toString());
           Swal.fire({
             title: '¡Gracias por tu compra!',
             text: 'El juego se ha añadido a tu biblioteca.',

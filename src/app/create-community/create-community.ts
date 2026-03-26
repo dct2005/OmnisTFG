@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommunityService } from '../services/community.service';
+import { AuthService } from '../services/auth';
 declare var Swal: any;
 
 @Component({
@@ -23,6 +24,8 @@ export class CreateCommunity {
 
   private router = inject(Router);
   private communityService = inject(CommunityService);
+  private authService = inject(AuthService);
+  currentUser = this.authService.currentUser;
 
 
   onFileSelected(event: any) {
@@ -52,7 +55,8 @@ export class CreateCommunity {
       name: this.community.name,
       description: this.community.description,
       categoria: this.community.categoria,
-      image_url: this.imagePreview
+      image_url: this.imagePreview,
+      userId: this.currentUser()?.id
     };
 
 
@@ -66,7 +70,11 @@ export class CreateCommunity {
           color: '#ffffff',
           confirmButtonColor: '#7c3aed'
         }).then(() => {
-          this.router.navigate(['/']);
+          if (response.community?.id) {
+            this.router.navigate(['/informacion-communities', response.community.id]);
+          } else {
+            this.router.navigate(['/communities']);
+          }
         });
       },
       error: (err) => {
