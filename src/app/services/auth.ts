@@ -320,4 +320,21 @@ export class AuthService {
       receiverId
     });
   }
+
+  updateProfileSettings(settings: any): Observable<any> {
+    const user = this.currentUser();
+    if (!user?.email) throw new Error('Usuario no autenticado');
+
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'update-profile-settings',
+      email: user.email,
+      ...settings
+    }).pipe(
+      tap((res: any) => {
+        if (res.user) {
+          this.currentUser.set(res.user);
+        }
+      })
+    );
+  }
 }

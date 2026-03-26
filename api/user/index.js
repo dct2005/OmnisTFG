@@ -15,6 +15,30 @@ module.exports = async function handler(req, res) {
         console.log(`[API User] ${req.method} request received. Action: ${req.body?.action || req.query?.action}`);
         const sql = neon(process.env.DATABASE_URL);
 
+        async function getUserWithBadges(user) {
+            const gamesCountQuery = await sql`SELECT COUNT(*) as count FROM user_games WHERE user_id = ${user.id}`;
+            const gamesCount = parseInt(gamesCountQuery[0].count, 10);
+
+            const badges = [];
+            if (gamesCount >= 1) badges.push({ id: 1, name: 'Novato de Élite', icon: 'images/ins_nonecesito.png', tier: 1, description: 'Conseguida tras comprar 1 juego.' });
+            if (gamesCount >= 3) badges.push({ id: 2, name: 'Borracho de Época', icon: 'images/ins_borracho.png', tier: 2, description: 'Conseguida tras comprar 3 juegos.' });
+            if (gamesCount >= 5) badges.push({ id: 3, name: 'Cuñao Honorario', icon: 'images/ins_cunado.png', tier: 3, description: 'Conseguida tras comprar 5 juegos.' });
+            if (gamesCount >= 7) badges.push({ id: 4, name: 'Cállese y Tome mi Dinero', icon: 'images/ins_callese.png', tier: 4, description: 'Conseguida tras comprar 7 juegos.' });
+            if (gamesCount >= 10) badges.push({ id: 5, name: 'Frozen Mind Legend', icon: 'images/ins_frozenmind.png', tier: 5, description: 'Conseguida tras comprar 10 juegos.' });
+
+            let currentBadge = badges.find(b => b.id == user.selected_badge_id);
+            if (!currentBadge) {
+                currentBadge = badges.length > 0 ? badges[badges.length - 1] : { name: 'Sin Insignias', icon: 'images/ins_nonecesito.png', tier: 0 };
+            }
+
+            const { password: _, ...userWithoutPassword } = user;
+            return {
+                ...userWithoutPassword,
+                badges,
+                current_badge: currentBadge
+            };
+        }
+
         // OBTENER RECURSO DEL USUARIO
         if (req.method === 'GET') {
             const { email, username, action } = req.query;
@@ -108,26 +132,8 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ wishlist: wishlist.map(w => w.game_api_id) });
             }
 
-            const gamesCountQuery = await sql`SELECT COUNT(*) as count FROM user_games WHERE user_id = ${user.id}`;
-            const gamesCount = parseInt(gamesCountQuery[0].count, 10);
-
-            const badges = [];
-            if (gamesCount >= 1) badges.push({ name: 'Novato de Élite', icon: 'images/ins_nonecesito.png', tier: 1, description: 'Conseguida tras comprar 1 juego.' });
-            if (gamesCount >= 3) badges.push({ name: 'Borracho de Época', icon: 'images/ins_borracho.png', tier: 2, description: 'Conseguida tras comprar 3 juegos.' });
-            if (gamesCount >= 5) badges.push({ name: 'Cuñao Honorario', icon: 'images/ins_cunado.png', tier: 3, description: 'Conseguida tras comprar 5 juegos.' });
-            if (gamesCount >= 7) badges.push({ name: 'Cállese y Tome mi Dinero', icon: 'images/ins_callese.png', tier: 4, description: 'Conseguida tras comprar 7 juegos.' });
-            if (gamesCount >= 10) badges.push({ name: 'Frozen Mind Legend', icon: 'images/ins_frozenmind.png', tier: 5, description: 'Conseguida tras comprar 10 juegos.' });
-
-            const currentBadge = badges.length > 0 ? badges[badges.length - 1] : { name: 'Sin Insignias', icon: 'images/ins_nonecesito.png', tier: 0 };
-
-            const { password: _, ...userWithoutPassword } = user;
-            return res.status(200).json({ 
-                user: { 
-                    ...userWithoutPassword, 
-                    badges,
-                    current_badge: currentBadge
-                } 
-            });
+            const fullUser = await getUserWithBadges(user);
+            return res.status(200).json({ user: fullUser });
         }
 
         if (req.method === 'POST') {
@@ -315,6 +321,50 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ 
                     message: 'Información de facturación actualizada', 
                     user: updated[0] 
+                });
+            }
+
+            if (action === 'update-profile-settings') {
+                const { 
+                    favorite_group_id, 
+                    favorite_game_id, 
+                    country, 
+                    state, 
+                    city, 
+                    privacy_profile, 
+                    privacy_games, 
+                    privacy_inventory, 
+                    privacy_comments,
+                    status_message,
+                    selected_badge_id
+                } = req.body;
+
+                if (!email) return res.status(400).json({ error: 'Falta email' });
+
+                const updated = await sql`
+                    UPDATE users 
+                    SET 
+                        favorite_group_id = ${favorite_group_id}, 
+                        favorite_game_id = ${favorite_game_id}, 
+                        country = ${country}, 
+                        state = ${state}, 
+                        city = ${city}, 
+                        privacy_profile = ${privacy_profile || 'public'}, 
+                        privacy_games = ${privacy_games || 'public'}, 
+                        privacy_inventory = ${privacy_inventory || 'public'}, 
+                        privacy_comments = ${privacy_comments || 'public'},
+                        status_message = ${status_message},
+                        selected_badge_id = ${selected_badge_id}
+                    WHERE email = ${email}
+                    RETURNING *
+                `;
+
+                if (updated.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+
+                const fullUser = await getUserWithBadges(updated[0]);
+                return res.status(200).json({ 
+                    message: 'Ajustes de perfil actualizados', 
+                    user: fullUser 
                 });
             }
 

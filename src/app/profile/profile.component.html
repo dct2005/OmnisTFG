@@ -14,18 +14,21 @@
     <div class="user-meta-section">
       <div class="username-row">
         <h1 class="username">{{ user?.username }}</h1>
-        <span class="badge-admin">ADMIN</span>
+        <div class="user-badges-inline">
+          <span class="badge-admin" *ngIf="user?.role === 'admin'">ADMIN</span>
+          <img *ngIf="user?.country" 
+               [src]="'https://flagcdn.com/w40/' + user.country.toLowerCase() + '.png'" 
+               class="country-flag-title" 
+               [title]="user.country">
+          <span class="user-location-inline" *ngIf="user?.city || user?.state || user?.country">
+            {{ user?.city }}{{ user?.city && (user?.state || user?.country) ? ', ' : '' }}
+            {{ user?.state }}{{ user?.state && user?.country ? ', ' : '' }}
+            {{ user?.country }}
+          </span>
+        </div>
       </div>
 
       <div class="header-actions-inline">
-        <!-- Botones para el propio perfil -->
-        <ng-container *ngIf="isOwnProfile()">
-          <button class="btn-change-bg" (click)="bgInput.click()">
-            <span class="material-icons-round">image</span> Cambiar Fondo
-          </button>
-          <input #bgInput type="file" (change)="onBackgroundSelected($event)" accept="image/*" style="display: none;">
-        </ng-container>
-
         <!-- Botones para perfiles ajenos (Amistad) -->
         <ng-container *ngIf="!isOwnProfile() && authService.currentUser()">
           <button class="btn-action friend-add" *ngIf="friendshipStatus() === 'none'" (click)="sendRequest()">
@@ -51,10 +54,10 @@
         </ng-container>
       </div>
 
-      <div class="location-row">
-        <span class="location-text" *ngIf="user?.location">
-          {{ user?.location }}
-        </span>
+      <div class="status-message-row" *ngIf="user?.status_message">
+        <span class="status-quote-icon">“</span>
+        <span class="status-text">{{ user?.status_message }}</span>
+        <span class="status-quote-icon">”</span>
       </div>
     </div>
     <div class="level-section">
@@ -62,6 +65,11 @@
         <span class="level-label">NIVEL</span>
         <span class="level-number">{{ userLevel() }}</span>
       </div>
+      
+      <!-- Botón Editar Perfil debajo del nivel -->
+      <button class="btn-edit-profile" *ngIf="isOwnProfile()" (click)="openEditModal()">
+        Editar Perfil
+      </button>
     </div>
   </div>
 
@@ -120,15 +128,15 @@
 
     <!-- Right Column: Sidebar Stats -->
     <div class="sidebar-column">
-      <div class="current-badge-card">
-        <img [src]="profileData().currentBadge.icon" class="badge-icon" alt="Badge Icon">
-        <div class="badge-info">
-          <span class="badge-name">{{ profileData().currentBadge.name }}</span>
-          <span class="badge-exp">{{ profileData().currentBadge.exp }} exp</span>
-        </div>
-      </div>
-
       <div class="links-list-card">
+        <div class="current-badge-sidebar" *ngIf="viewedUser()?.current_badge">
+          <img [src]="viewedUser()?.current_badge?.icon" class="badge-icon-sidebar" [alt]="viewedUser()?.current_badge?.name">
+          <div class="badge-info-sidebar">
+            <span class="badge-name-sidebar">{{ viewedUser()?.current_badge?.name }}</span>
+            <span class="badge-desc-sidebar">{{ viewedUser()?.current_badge?.description }}</span>
+          </div>
+        </div>
+
         <div class="online-status" [ngClass]="userStatus">
           EN LÍNEA
         </div>
@@ -174,6 +182,131 @@
           <span class="link-label">JUEGOS</span>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Edición de Perfil -->
+<div class="modal-overlay" *ngIf="isEditModalOpen()" (click)="closeEditModal()">
+  <div class="edit-modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>EDITAR PERFIL</h2>
+      <button class="close-btn" (click)="closeEditModal()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="edit-section">
+        <h3><span class="material-icons-round">person</span> Información General</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Avatar y Fondo</label>
+            <div class="media-edit-actions">
+              <button class="btn-media-edit" (click)="fileInput.click()">
+                <span class="material-icons-round">account_circle</span> Cambiar Foto
+              </button>
+              <button class="btn-media-edit" (click)="bgInputModal.click()">
+                <span class="material-icons-round">image</span> Cambiar Fondo
+              </button>
+              <input #bgInputModal type="file" (change)="onBackgroundSelected($event)" accept="image/*" style="display: none;">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Estado de perfil</label>
+            <select [(ngModel)]="editForm().estado" (change)="onProfileStatusChange(editForm().estado)">
+              <option value="en-linea">En línea</option>
+              <option value="ausente">Ausente</option>
+              <option value="invisible">Invisible</option>
+              <option value="desconectado">Desconectado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mensaje de estado</label>
+            <input type="text" [(ngModel)]="editForm().status_message" placeholder="¿Qué estás pensando?">
+          </div>
+          <div class="form-group">
+            <label>Insignia destacada</label>
+            <select [(ngModel)]="editForm().selected_badge_id">
+              <option [ngValue]="null">Más alta (Auto)</option>
+              <option *ngFor="let badge of user?.badges" [ngValue]="badge.id">{{ badge.name }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="edit-section">
+        <h3><span class="material-icons-round">star</span> Favoritos</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Grupo Favorito</label>
+            <select [(ngModel)]="editForm().favorite_group_id">
+              <option [ngValue]="null">Ninguno</option>
+              <option *ngFor="let comm of userCommunities()" [ngValue]="comm.id">{{ comm.name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Juego Favorito</label>
+            <select [(ngModel)]="editForm().favorite_game_id">
+              <option value="">Ninguno</option>
+              <option *ngFor="let game of userGames()" [value]="game.game_api_id">
+                {{ gameDetailsMap().get(game.game_api_id) || 'Cargando...' }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="edit-section">
+        <h3><span class="material-icons-round">public</span> Ubicación</h3>
+        <div class="location-grid">
+          <div class="form-group">
+            <label>País (Código ISO, ej: ES, US, FR)</label>
+            <input type="text" [(ngModel)]="editForm().country" placeholder="ES">
+          </div>
+          <div class="form-group">
+            <label>Comunidad / Estado</label>
+            <input type="text" [(ngModel)]="editForm().state" placeholder="Madrid">
+          </div>
+          <div class="form-group">
+            <label>Ciudad</label>
+            <input type="text" [(ngModel)]="editForm().city" placeholder="Madrid">
+          </div>
+        </div>
+      </div>
+
+      <div class="edit-section">
+        <h3><span class="material-icons-round">privacy_tip</span> Privacidad</h3>
+        <div class="privacy-grid">
+          <div class="form-group">
+            <label>Perfil</label>
+            <select [(ngModel)]="editForm().privacy_profile">
+              <option value="public">Público</option>
+              <option value="friends">Solo Amigos</option>
+              <option value="private">Privado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Juegos</label>
+            <select [(ngModel)]="editForm().privacy_games">
+              <option value="public">Público</option>
+              <option value="friends">Solo Amigos</option>
+              <option value="private">Privado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Comentarios</label>
+            <select [(ngModel)]="editForm().privacy_comments">
+              <option value="public">Público</option>
+              <option value="friends">Solo Amigos</option>
+              <option value="private">Privado</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeEditModal()">Cancelar</button>
+      <button class="btn-save" (click)="saveProfile()">Guardar Cambios</button>
     </div>
   </div>
 </div>

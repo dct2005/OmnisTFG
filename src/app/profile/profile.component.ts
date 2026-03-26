@@ -4,12 +4,13 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { GameService, Game } from '../services/game.service';
 import { CommunityService } from '../services/community.service';
+import { FormsModule } from '@angular/forms';
 declare var Swal: any;
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
@@ -63,6 +64,25 @@ export class ProfileComponent implements OnDestroy {
   friendshipStatus = signal<'none' | 'pending' | 'requested' | 'accepted'>('none');
   friendshipId = signal<number | null>(null);
   friendsList = signal<any[]>([]);
+
+  // Edit Profile signals
+  isEditModalOpen = signal(false);
+  userGames = signal<any[]>([]);
+  userCommunities = signal<any[]>([]);
+  editForm = signal({
+    favorite_group_id: null,
+    favorite_game_id: '',
+    country: '',
+    state: '',
+    city: '',
+    privacy_profile: 'public',
+    privacy_games: 'public',
+    privacy_inventory: 'public',
+    privacy_comments: 'public',
+    status_message: '',
+    estado: 'en-linea',
+    selected_badge_id: null
+  });
 
   isOwnProfile = computed(() => {
     const current = this.authService.currentUser();
@@ -216,9 +236,12 @@ export class ProfileComponent implements OnDestroy {
         const games = res.games || [];
         const gameIds = games.map((g: any) => g.game_api_id);
         
-        if (gameIds.length > 0) {
-          this.updateRecentActivity(gameIds[0]);
+        // Priorizar el juego favorito si está marcado, si no el primero
+        const favGameId = user.favorite_game_id || (gameIds.length > 0 ? gameIds[0] : null);
+        if (favGameId) {
+          this.updateRecentActivity(favGameId);
         }
+
         // Actualizamos los stats de juegos
         this.profileData.update(data => ({
           ...data,
@@ -227,22 +250,14 @@ export class ProfileComponent implements OnDestroy {
       }
     });
 
-    // Sincronizamos insignias si vienen del usuario (ya vienen del AuthService en el effect)
-    if (user.current_badge) {
-      this.profileData.update(data => ({
-        ...data,
-        currentBadge: {
-          name: user.current_badge.name,
-          exp: user.current_badge.tier * 1000, // Simulación de exp base
-          icon: user.current_badge.icon
-        }
-      }));
-    }
+    // ... insignias ...
 
     this.communityService.getCommunities(user.id, true).subscribe({
       next: (myComms: any[]) => {
         if (myComms && myComms.length > 0) {
-          this.setFavoriteGroup(myComms[0], myComms.length);
+          // Priorizar el grupo favorito
+          const favGroup = myComms.find(c => c.id === user.favorite_group_id) || myComms[0];
+          this.setFavoriteGroup(favGroup, myComms.length);
         }
       }
     });
@@ -419,5 +434,94 @@ export class ProfileComponent implements OnDestroy {
 
   get userStatus() {
     return this.user?.estado || 'desconectado';
+  }
+
+  openEditModal() {
+    this.isEditModalOpen.set(true);
+    const user = this.isOwnProfile() ? this.viewedUser() : this.authService.currentUser();
+    if (user) {
+      this.editForm.set({
+        favorite_group_id: user.favorite_group_id || null,
+        favorite_game_id: user.favorite_game_id || '',
+        country: user.country || '',
+        state: user.state || '',
+        city: user.city || '',
+        privacy_profile: user.privacy_profile || 'public',
+        privacy_games: user.privacy_games || 'public',
+        privacy_inventory: user.privacy_inventory || 'public',
+        privacy_comments: user.privacy_comments || 'public',
+        status_message: user.status_message || '',
+        estado: user.estado || 'en-linea',
+        selected_badge_id: user.selected_badge_id || null
+      });
+
+      // Cargar juegos y comunidades para los selectores
+      this.authService.getUserGames().subscribe({
+        next: (res: any) => {
+          this.userGames.set(res.games || []);
+          // También necesitamos obtener los detalles de los juegos para mostrar los nombres
+          this.loadGameDetailsForSelect(res.games || []);
+        }
+      });
+
+      this.communityService.getCommunities(user.id, true).subscribe({
+        next: (comms: any[]) => this.userCommunities.set(comms)
+      });
+    }
+  }
+
+  gameDetailsMap = signal<Map<string, string>>(new Map());
+
+  loadGameDetailsForSelect(games: any[]) {
+    games.forEach(g => {
+      if (!this.gameDetailsMap().has(g.game_api_id)) {
+        this.gameService.getGameById(g.game_api_id).subscribe(detail => {
+          this.gameDetailsMap.update(map => {
+            const newMap = new Map(map);
+            newMap.set(g.game_api_id, detail.name);
+            return newMap;
+          });
+        });
+      }
+    });
+  }
+
+  closeEditModal() {
+    this.isEditModalOpen.set(false);
+  }
+
+  saveProfile() {
+    const settings = this.editForm();
+    this.authService.updateProfileSettings(settings).subscribe({
+      next: (res) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Perfil actualizado',
+          text: 'Se han guardado tus cambios con éxito.',
+          background: '#0d1b2a',
+          color: '#ffffff',
+          confirmButtonColor: '#00f2ff'
+        });
+        this.closeEditModal();
+        // Recargar el perfil visualizado si es el propio
+        if (this.isOwnProfile()) {
+          this.viewedUser.set(res.user);
+        }
+      },
+      error: (err) => {
+        console.error('Error al guardar el perfil:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo actualizar el perfil.',
+          background: '#0d1b2a',
+          color: '#ffffff'
+        });
+      }
+    });
+  }
+
+  onProfileStatusChange(status: string) {
+    this.editForm.update(form => ({ ...form, estado: status }));
   }
 }
