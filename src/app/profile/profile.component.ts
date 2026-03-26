@@ -575,14 +575,14 @@ export class ProfileComponent implements OnDestroy {
       const banner = g.image_url || 'images/default_community.jpg';
       
       groupsHtml += `
-        <div class="swal-group-item" style="display: flex; align-items: center; gap: 15px; padding: 12px; background: rgba(72, 187, 120, 0.05); border-radius: 10px; border: 1px solid rgba(72, 187, 120, 0.2);">
-          <img src="${banner}" style="width: 80px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid #48bb78;">
-          <div style="flex-grow: 1;">
-            <div style="font-weight: 700; color: #fff; font-size: 1.1rem; margin-bottom: 2px;">${g.name}</div>
-            <div style="font-size: 0.85rem; color: #a0aec0; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${g.description || 'Sin descripción'}</div>
+        <div class="swal-group-item" style="display: flex; align-items: center; gap: 15px; padding: 12px; background: rgba(72, 187, 120, 0.05); border-radius: 10px; border: 1px solid rgba(72, 187, 120, 0.2); width: 100%; box-sizing: border-box;">
+          <img src="${banner}" style="width: 80px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid #48bb78; flex-shrink: 0;">
+          <div style="flex-grow: 1; min-width: 0;">
+            <div style="font-weight: 700; color: #fff; font-size: 1.1rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${g.name}</div>
+            <div style="font-size: 0.85rem; color: #a0aec0; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">${g.description || 'Sin descripción'}</div>
           </div>
           <button onclick="window.location.href='/informacion-communities/${g.id}'" 
-                  style="background: linear-gradient(135deg, #48bb78, #38a169); color: #000; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; border: none; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);">
+                  style="background: linear-gradient(135deg, #48bb78, #38a169); color: #000; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; border: none; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3); flex-shrink: 0; white-space: nowrap;">
             Entrar
           </button>
         </div>
