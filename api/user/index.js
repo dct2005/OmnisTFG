@@ -336,7 +336,8 @@ module.exports = async function handler(req, res) {
                     privacy_inventory, 
                     privacy_comments,
                     status_message,
-                    selected_badge_id
+                    selected_badge_id,
+                    estado
                 } = req.body;
 
                 if (!email) return res.status(400).json({ error: 'Falta email' });
@@ -354,7 +355,8 @@ module.exports = async function handler(req, res) {
                         privacy_inventory = ${privacy_inventory || 'public'}, 
                         privacy_comments = ${privacy_comments || 'public'},
                         status_message = ${status_message},
-                        selected_badge_id = ${selected_badge_id}
+                        selected_badge_id = ${selected_badge_id},
+                        estado = ${estado || 'en-linea'}
                     WHERE email = ${email}
                     RETURNING *
                 `;
