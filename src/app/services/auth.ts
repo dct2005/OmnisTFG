@@ -147,6 +147,10 @@ export class AuthService {
     }
   }
 
+  getUserByUsername(username: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/user?username=${username}&action=get`);
+  }
+
   purchaseGame(gameId: number | string, price: number): Observable<any> {
     const user = this.currentUser();
     const userEmail = user?.email;
@@ -167,12 +171,9 @@ export class AuthService {
     );
   }
 
-  getUserGames(): Observable<any> {
-    const user = this.currentUser();
-    const userEmail = user?.email;
-
-    if (!userEmail) throw new Error('Usuario no autenticado');
-
+  getUserGames(email?: string): Observable<any> {
+    const userEmail = email || this.currentUser()?.email;
+    if (!userEmail) throw new Error('Email de usuario no proporcionado');
     return this.http.get(`${this.apiUrl}/user?email=${userEmail}&action=get-user-games`);
   }
 
@@ -285,6 +286,38 @@ export class AuthService {
       email: user.email,
       oldPassword,
       newPassword
+    });
+  }
+
+  // --- SISTEMA DE AMISTADES ---
+
+  getFriends(userId?: number | string): Observable<any[]> {
+    const id = userId || this.currentUser()?.id;
+    if (!id) throw new Error('ID de usuario no proporcionado');
+    return this.http.get<any[]>(`${this.apiUrl}/user?action=get-friends&userId=${id}`);
+  }
+
+  sendFriendRequest(senderId: number | string, receiverId: number | string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'friend-request',
+      senderId,
+      receiverId
+    });
+  }
+
+  acceptFriendRequest(friendshipId: number | string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'accept-friend',
+      friendshipId
+    });
+  }
+
+  removeFriend(friendshipId?: number | string, senderId?: number | string, receiverId?: number | string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'remove-friend',
+      friendshipId,
+      senderId,
+      receiverId
     });
   }
 }

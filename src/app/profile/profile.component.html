@@ -1,11 +1,5 @@
 <div class="profile-container">
   <div class="profile-header">
-    <div class="header-actions">
-      <button class="btn-change-bg" (click)="bgInput.click()">
-        <span class="material-icons-outline">image</span> Cambiar Fondo
-      </button>
-      <input #bgInput type="file" (change)="onBackgroundSelected($event)" accept="image/*" style="display: none;">
-    </div>
 
     <div class="user-avatar-section" (click)="triggerFileInput(fileInput)">
       <div class="avatar-wrapper">
@@ -22,6 +16,41 @@
         <h1 class="username">{{ user?.username }}</h1>
         <span class="badge-admin">ADMIN</span>
       </div>
+
+      <div class="header-actions-inline">
+        <!-- Botones para el propio perfil -->
+        <ng-container *ngIf="isOwnProfile()">
+          <button class="btn-change-bg" (click)="bgInput.click()">
+            <span class="material-icons-round">image</span> Cambiar Fondo
+          </button>
+          <input #bgInput type="file" (change)="onBackgroundSelected($event)" accept="image/*" style="display: none;">
+        </ng-container>
+
+        <!-- Botones para perfiles ajenos (Amistad) -->
+        <ng-container *ngIf="!isOwnProfile() && authService.currentUser()">
+          <button class="btn-action friend-add" *ngIf="friendshipStatus() === 'none'" (click)="sendRequest()">
+            <span class="material-icons-round">person_add</span> Añadir Amigo
+          </button>
+          
+          <button class="btn-action friend-pending" *ngIf="friendshipStatus() === 'requested'" disabled>
+            <span class="material-icons-round">schedule</span> Solicitud Enviada
+          </button>
+
+          <div class="friend-options" *ngIf="friendshipStatus() === 'pending'">
+            <button class="btn-action friend-accept" (click)="acceptRequest()">
+              <span class="material-icons-round">check</span> Aceptar
+            </button>
+            <button class="btn-action friend-remove" (click)="removeFriend()">
+              <span class="material-icons-round">close</span> Rechazar
+            </button>
+          </div>
+
+          <button class="btn-action friend-accepted" *ngIf="friendshipStatus() === 'accepted'" (click)="removeFriend()">
+            <span class="material-icons-round">person_remove</span> Eliminar Amigo
+          </button>
+        </ng-container>
+      </div>
+
       <div class="location-row">
         <span class="location-text" *ngIf="user?.location">
           {{ user?.location }}
@@ -71,8 +100,12 @@
         <div class="comments-list" *ngIf="comments().length > 0; else noComments">
           <div class="comment-item" *ngFor="let comment of comments()">
             <div class="comment-header">
-              <span class="community-name">{{ comment.community_name }}</span>
-              <span class="comment-date">{{ comment.created_at | date:'dd MMM, yyyy' }}</span>
+              <span class="community-name" 
+                    [routerLink]="['/informacion-communities', comment.community_id]"
+                    style="cursor: pointer;">
+                {{ comment.community_name }}
+              </span>
+              <span class="comment-date">{{ comment.created_at | date:'dd/MM/yyyy' }}</span>
             </div>
             <div class="comment-text">
               "{{ comment.content }}"
@@ -110,12 +143,23 @@
             <span class="badge-count" *ngIf="user?.badges?.length">{{ user.badges.length }}</span>
           </div>
           <div class="badges-mini-gallery" *ngIf="user?.badges?.length">
-            <img *ngFor="let badge of user.badges" [src]="badge.icon" [title]="badge.name" class="mini-badge" [alt]="badge.name">
+            <div class="badge-wrapper" *ngFor="let badge of user.badges" (click)="showBadgeDetail(badge)" style="cursor: pointer;">
+              <img [src]="badge.icon" class="mini-badge" [alt]="badge.name">
+            </div>
           </div>
         </div>
 
-        <div class="link-item">
-          <span class="link-label">AMIGOS</span>
+        <div class="link-item friends-link" (click)="showFriendsList()" style="cursor: pointer;">
+          <div class="link-header">
+            <span class="link-label">AMIGOS</span>
+            <span class="badge-count" *ngIf="friendsList().length">{{ friendsList().length }}</span>
+          </div>
+          <div class="badges-mini-gallery" *ngIf="friendsList().length">
+            <img *ngFor="let friend of friendsList() | slice:0:6" 
+                 [src]="friend.profile_image || 'https://ui-avatars.com/api/?name=' + friend.username" 
+                 [title]="friend.username" 
+                 class="mini-friend-avatar">
+          </div>
         </div>
         <div class="link-item">
           <span class="link-label">COMENTARIOS</span>

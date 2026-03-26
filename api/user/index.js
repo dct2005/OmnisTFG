@@ -17,7 +17,7 @@ module.exports = async function handler(req, res) {
 
         // OBTENER RECURSO DEL USUARIO
         if (req.method === 'GET') {
-            const { email, action } = req.query;
+            const { email, username, action } = req.query;
 
             if (action === 'get-any-game') {
                 const games = await sql`SELECT game_api_id FROM user_games ORDER BY purchase_date DESC LIMIT 1`;
@@ -53,6 +53,22 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json(transactions);
             }
 
+            if (action === 'get-friends') {
+                const { userId } = req.query;
+                if (!userId) return res.status(400).json({ error: 'Falta userId' });
+
+                const friends = await sql`
+                    SELECT 
+                        u.id, u.username, u.profile_image, u.estado,
+                        f.status, f.sender_id, f.id as friendship_id
+                    FROM friendships f
+                    JOIN users u ON (u.id = f.sender_id OR u.id = f.receiver_id)
+                    WHERE (f.sender_id = ${userId} OR f.receiver_id = ${userId})
+                    AND u.id != ${userId}
+                `;
+                return res.status(200).json(friends);
+            }
+
             if (action === 'check-daily-reward') {
                 const { email } = req.query;
                 if (!email) return res.status(400).json({ error: 'Falta email' });
@@ -69,41 +85,38 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ canClaim: lastDate !== today });
             }
 
-            if (!email) return res.status(400).json({ error: 'Falta email' });
+            if (!email && !username) return res.status(400).json({ error: 'Falta email o username' });
+
+            let user;
+            if (email) {
+                const users = await sql`SELECT * FROM users WHERE email = ${email}`;
+                if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+                user = users[0];
+            } else {
+                const users = await sql`SELECT * FROM users WHERE username = ${username}`;
+                if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+                user = users[0];
+            }
 
             if (action === 'get-user-games') {
-                const userCheck = await sql`SELECT id FROM users WHERE email = ${email}`;
-                if (userCheck.length === 0) return res.status(404).json({ error: 'User no encontrado' });
-
-                const games = await sql`SELECT game_api_id, purchase_date FROM user_games WHERE user_id = ${userCheck[0].id} ORDER BY purchase_date DESC`;
+                const games = await sql`SELECT game_api_id, purchase_date FROM user_games WHERE user_id = ${user.id} ORDER BY purchase_date DESC`;
                 return res.status(200).json({ games });
             }
 
             if (action === 'get-wishlist') {
-                const userCheck = await sql`SELECT id FROM users WHERE email = ${email}`;
-                if (userCheck.length === 0) return res.status(404).json({ error: 'User no encontrado' });
-
-                const wishlist = await sql`SELECT game_api_id FROM user_wishlist WHERE user_id = ${userCheck[0].id}`;
+                const wishlist = await sql`SELECT game_api_id FROM user_wishlist WHERE user_id = ${user.id}`;
                 return res.status(200).json({ wishlist: wishlist.map(w => w.game_api_id) });
             }
-
-            const users = await sql`
-                SELECT id, email, username, first_name, last_name, address, phone, peppix, xp, estado, profile_image, profile_background, location, created_at, last_daily_reward 
-                FROM users WHERE email = ${email}
-            `;
-            if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
-
-            const user = users[0];
 
             const gamesCountQuery = await sql`SELECT COUNT(*) as count FROM user_games WHERE user_id = ${user.id}`;
             const gamesCount = parseInt(gamesCountQuery[0].count, 10);
 
             const badges = [];
-            if (gamesCount >= 1) badges.push({ name: 'Novato de Élite', icon: 'images/ins_nonecesito.png', tier: 1 });
-            if (gamesCount >= 3) badges.push({ name: 'Borracho de Época', icon: 'images/ins_borracho.png', tier: 2 });
-            if (gamesCount >= 5) badges.push({ name: 'Cuñao Honorario', icon: 'images/ins_cunado.png', tier: 3 });
-            if (gamesCount >= 7) badges.push({ name: 'Cállese y Tome mi Dinero', icon: 'images/ins_callese.png', tier: 4 });
-            if (gamesCount >= 10) badges.push({ name: 'Frozen Mind Legend', icon: 'images/ins_frozenmind.png', tier: 5 });
+            if (gamesCount >= 1) badges.push({ name: 'Novato de Élite', icon: 'images/ins_nonecesito.png', tier: 1, description: 'Conseguida tras comprar 1 juego.' });
+            if (gamesCount >= 3) badges.push({ name: 'Borracho de Época', icon: 'images/ins_borracho.png', tier: 2, description: 'Conseguida tras comprar 3 juegos.' });
+            if (gamesCount >= 5) badges.push({ name: 'Cuñao Honorario', icon: 'images/ins_cunado.png', tier: 3, description: 'Conseguida tras comprar 5 juegos.' });
+            if (gamesCount >= 7) badges.push({ name: 'Cállese y Tome mi Dinero', icon: 'images/ins_callese.png', tier: 4, description: 'Conseguida tras comprar 7 juegos.' });
+            if (gamesCount >= 10) badges.push({ name: 'Frozen Mind Legend', icon: 'images/ins_frozenmind.png', tier: 5, description: 'Conseguida tras comprar 10 juegos.' });
 
             const currentBadge = badges.length > 0 ? badges[badges.length - 1] : { name: 'Sin Insignias', icon: 'images/ins_nonecesito.png', tier: 0 };
 
@@ -377,6 +390,53 @@ module.exports = async function handler(req, res) {
                 await sql`UPDATE users SET password = ${hashedNewPassword} WHERE email = ${email}`;
 
                 return res.status(200).json({ message: 'Contraseña actualizada correctamente' });
+            }
+
+            if (action === 'friend-request') {
+                const { senderId, receiverId } = req.body;
+                if (!senderId || !receiverId) return res.status(400).json({ error: 'Faltan IDs' });
+
+                const existing = await sql`
+                    SELECT id FROM friendships 
+                    WHERE (sender_id = ${senderId} AND receiver_id = ${receiverId})
+                    OR (sender_id = ${receiverId} AND receiver_id = ${senderId})
+                `;
+                if (existing.length > 0) return res.status(400).json({ error: 'Ya existe una relación o solicitud' });
+
+                await sql`
+                    INSERT INTO friendships (sender_id, receiver_id, status)
+                    VALUES (${senderId}, ${receiverId}, 'pending')
+                `;
+                return res.status(201).json({ message: 'Solicitud enviada' });
+            }
+
+            if (action === 'accept-friend') {
+                const { friendshipId } = req.body;
+                if (!friendshipId) return res.status(400).json({ error: 'Falta ID de amistad' });
+
+                await sql`
+                    UPDATE friendships SET status = 'accepted', updated_at = NOW()
+                    WHERE id = ${friendshipId}
+                `;
+                return res.status(200).json({ message: 'Solicitud aceptada' });
+            }
+
+            if (action === 'remove-friend') {
+                const { friendshipId, senderId, receiverId } = req.body;
+                
+                if (friendshipId) {
+                    await sql`DELETE FROM friendships WHERE id = ${friendshipId}`;
+                } else if (senderId && receiverId) {
+                    await sql`
+                        DELETE FROM friendships 
+                        WHERE (sender_id = ${senderId} AND receiver_id = ${receiverId})
+                        OR (sender_id = ${receiverId} AND receiver_id = ${senderId})
+                    `;
+                } else {
+                    return res.status(400).json({ error: 'Faltan datos para eliminar' });
+                }
+                
+                return res.status(200).json({ message: 'Amistad/Solicitud eliminada' });
             }
 
             return res.status(400).json({ error: 'Acción no válida' });

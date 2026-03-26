@@ -1,9 +1,10 @@
 import { Component, inject, signal, OnInit, effect, computed, Renderer2, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { GameService, Game } from '../services/game.service';
 import { CommunityService } from '../services/community.service';
+declare var Swal: any;
 
 @Component({
   selector: 'app-profile',
@@ -17,6 +18,7 @@ export class ProfileComponent implements OnDestroy {
   gameService = inject(GameService);
   communityService = inject(CommunityService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private renderer = inject(Renderer2);
 
   // Profile data signal
@@ -57,9 +59,19 @@ export class ProfileComponent implements OnDestroy {
   });
 
   comments = signal<any[]>([]);
+  viewedUser = signal<any>(null);
+  friendshipStatus = signal<'none' | 'pending' | 'requested' | 'accepted'>('none');
+  friendshipId = signal<number | null>(null);
+  friendsList = signal<any[]>([]);
+
+  isOwnProfile = computed(() => {
+    const current = this.authService.currentUser();
+    const viewed = this.viewedUser();
+    return current && viewed && current.id === viewed.id;
+  });
 
   userLevel = computed(() => {
-    const user = this.authService.currentUser();
+    const user = this.viewedUser();
     const xp = user?.xp || 0;
     return Math.floor(xp / 1000);
   });
@@ -69,18 +81,35 @@ export class ProfileComponent implements OnDestroy {
   });
 
   profileBackground = computed(() => {
-    return this.authService.currentUser()?.profile_background;
+    return this.viewedUser()?.profile_background;
   });
 
   constructor() {
     this.loadInitialData();
-    // Reaccionamos cuando el usuario esté disponible para personalizar
+
+    // Reaccionamos a cambios en la ruta (username)
+    this.route.params.subscribe(params => {
+      let username = params['username'];
+      if (username === 'me') {
+        const current = this.authService.currentUser();
+        if (current) {
+          username = current.username;
+        } else {
+          // Si no hay usuario logueado y es 'me', redirigir a login o similar
+          return;
+        }
+      }
+      this.loadProfileByUsername(username);
+    });
+
+    // Reaccionamos cuando el usuario visualizado cambie para cargar sus datos
     effect(() => {
-      const user = this.authService.currentUser();
+      const user = this.viewedUser();
       if (user) {
         this.loadUserData(user);
+        this.checkFriendshipStatus(user);
       }
-    });
+    }, { allowSignalWrites: true });
 
     // Efecto para controlar el fondo global del body
     effect(() => {
@@ -88,9 +117,72 @@ export class ProfileComponent implements OnDestroy {
       if (background) {
         this.renderer.setStyle(document.body, 'background-image', `url(${background})`);
       } else {
-        // Si no hay fondo personalizado, usamos el de por defecto
         this.renderer.setStyle(document.body, 'background-image', "url('/images/background.webp')");
       }
+    });
+  }
+
+  loadProfileByUsername(username: string) {
+    this.authService.getUserByUsername(username).subscribe({
+      next: (res: any) => {
+        if (res.user) {
+          this.viewedUser.set(res.user);
+        }
+      },
+      error: (err) => console.error('Error loading profile:', err)
+    });
+  }
+
+  checkFriendshipStatus(targetUser: any) {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser || currentUser.id === targetUser.id) {
+      this.friendshipStatus.set('none');
+      return;
+    }
+
+    this.authService.getFriends(currentUser.id).subscribe({
+      next: (friends: any[]) => {
+        const relation = friends.find(f => f.id === targetUser.id);
+        if (relation) {
+          this.friendshipId.set(relation.friendship_id);
+          if (relation.status === 'accepted') {
+            this.friendshipStatus.set('accepted');
+          } else if (relation.sender_id === currentUser.id) {
+            this.friendshipStatus.set('requested');
+          } else {
+            this.friendshipStatus.set('pending');
+          }
+        } else {
+          this.friendshipStatus.set('none');
+          this.friendshipId.set(null);
+        }
+      }
+    });
+  }
+
+  sendRequest() {
+    const current = this.authService.currentUser();
+    const target = this.viewedUser();
+    if (!current || !target) return;
+
+    this.authService.sendFriendRequest(current.id, target.id).subscribe(() => {
+      this.checkFriendshipStatus(target);
+    });
+  }
+
+  acceptRequest() {
+    const id = this.friendshipId();
+    if (!id) return;
+    this.authService.acceptFriendRequest(id).subscribe(() => {
+      this.checkFriendshipStatus(this.viewedUser());
+    });
+  }
+
+  removeFriend() {
+    const id = this.friendshipId();
+    if (!id) return;
+    this.authService.removeFriend(id).subscribe(() => {
+      this.checkFriendshipStatus(this.viewedUser());
     });
   }
 
@@ -119,7 +211,7 @@ export class ProfileComponent implements OnDestroy {
 
   loadUserData(user: any) {
     // Refinar con datos del usuario
-    this.authService.getUserGames().subscribe({
+    this.authService.getUserGames(user.email).subscribe({
       next: (res: any) => {
         const games = res.games || [];
         const gameIds = games.map((g: any) => g.game_api_id);
@@ -152,6 +244,17 @@ export class ProfileComponent implements OnDestroy {
         if (myComms && myComms.length > 0) {
           this.setFavoriteGroup(myComms[0], myComms.length);
         }
+      }
+    });
+
+    this.authService.getFriends(user.id).subscribe({
+      next: (friends) => {
+        const acceptedFriends = friends.filter(f => f.status === 'accepted');
+        this.friendsList.set(acceptedFriends);
+        this.profileData.update(data => ({
+          ...data,
+          stats: { ...data.stats, friends: acceptedFriends.length }
+        }));
       }
     });
 
@@ -208,6 +311,73 @@ export class ProfileComponent implements OnDestroy {
     fileInput.click();
   }
 
+  showBadgeDetail(badge: any) {
+    Swal.fire({
+      title: badge.name,
+      text: badge.description,
+      imageUrl: badge.icon,
+      imageWidth: 150,
+      imageHeight: 150,
+      imageAlt: badge.name,
+      background: '#0d1b2a',
+      color: '#ffffff',
+      confirmButtonColor: '#00f2ff',
+      confirmButtonText: 'Genial'
+    });
+  }
+
+  showFriendsList() {
+    const friends = this.friendsList();
+    if (!friends || friends.length === 0) {
+      Swal.fire({
+        title: 'Amigos',
+        text: 'Aún no tiene amigos agregados.',
+        icon: 'info',
+        background: '#0d1b2a',
+        color: '#ffffff',
+        confirmButtonColor: '#7c3aed'
+      });
+      return;
+    }
+
+    let friendsHtml = `
+      <div style="max-height: 400px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; text-align: left;">
+    `;
+
+    friends.forEach(f => {
+      const avatar = f.profile_image || `https://ui-avatars.com/api/?name=${f.username}&background=0d1b2a&color=fff`;
+      const statusClass = f.estado === 'en-linea' ? 'text-blue-400' : (f.estado === 'jugando' ? 'text-green-400' : 'text-gray-400');
+      
+      friendsHtml += `
+        <div class="swal-friend-item" style="display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+          <img src="${avatar}" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover; border: 2px solid #00f2ff;">
+          <div style="flex-grow: 1;">
+            <div style="font-weight: 700; color: #fff; font-size: 1.1rem;">${f.username}</div>
+            <div style="font-size: 0.85rem; color: #a0aec0;">${f.estado || 'Desconectado'}</div>
+          </div>
+          <button onclick="window.location.href='/perfil/${f.username}'" 
+                  style="background: linear-gradient(135deg, #7c3aed, #5b21b6); color: #fff; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; border: none; font-weight: 600; box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3); transition: all 0.3s ease;">
+            Ver Perfil
+          </button>
+        </div>
+      `;
+    });
+
+    friendsHtml += '</div>';
+
+    Swal.fire({
+      title: `<span style="color: #00f2ff; letter-spacing: 2px;">LISTA DE AMIGOS</span>`,
+      html: friendsHtml,
+      width: '500px',
+      background: '#050510',
+      showConfirmButton: false,
+      showCloseButton: true,
+      customClass: {
+        popup: 'swal-premium-popup'
+      }
+    });
+  }
+
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
@@ -244,7 +414,7 @@ export class ProfileComponent implements OnDestroy {
   }
 
   get user() {
-    return this.authService.currentUser();
+    return this.viewedUser();
   }
 
   get userStatus() {

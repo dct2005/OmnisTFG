@@ -15,10 +15,10 @@
     transition: background-image 0.5s ease-in-out;
 }
 
-.header-actions {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+.header-actions-inline {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
     z-index: 5;
 }
 
@@ -43,8 +43,52 @@
     transform: translateY(-2px);
 }
 
-.btn-change-bg .material-icons-outline {
+.btn-change-bg .material-icons-round,
+.btn-action .material-icons-round {
     font-size: 18px;
+}
+
+.btn-action {
+    background: rgba(124, 58, 237, 0.2);
+    border: 1px solid rgba(124, 58, 237, 0.4);
+    color: #e9d5ff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.btn-action:hover:not(:disabled) {
+    background: rgba(124, 58, 237, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+}
+
+.friend-options {
+    display: flex;
+    gap: 10px;
+}
+
+.friend-accept {
+    background: rgba(72, 187, 120, 0.2);
+    border-color: rgba(72, 187, 120, 0.4);
+    color: #c6f6d5;
+}
+
+.friend-remove {
+    background: rgba(245, 101, 101, 0.2);
+    border-color: rgba(245, 101, 101, 0.4);
+    color: #fed7d7;
+}
+
+.friend-pending {
+    opacity: 0.7;
+    cursor: default;
 }
 
 /* Header Section */
@@ -421,6 +465,12 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.community-name:hover {
+    color: #fff;
+    text-decoration: underline;
 }
 
 .comment-date {
@@ -480,7 +530,28 @@
     transition: transform 0.2s ease;
 }
 
-.mini-badge:hover {
+.mini-badge:hover,
+.mini-friend-avatar:hover {
     transform: scale(1.2);
-    filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.5));
+    filter: drop-shadow(0 0-10px rgba(0, 242, 255, 0.5));
+}
+
+.mini-friend-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 4px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.badge-wrapper {
+    position: relative;
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.badge-wrapper:hover {
+    transform: scale(1.1);
 }

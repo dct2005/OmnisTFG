@@ -99,6 +99,7 @@
                 @for (post of posts; track post.id) {
                 <div class="glass-panel post-card">
                     <div class="post-author">
+                    <div class="post-info-clickable" [routerLink]="['/perfil', post.author]" style="cursor: pointer;">
                         <div class="author-info">
                             <img [src]="post.avatar" class="author-avatar" alt="Avatar">
                             <div class="author-name">
@@ -106,6 +107,7 @@
                                 <span>{{ post.time | date:'dd/MM/yyyy' }}</span>
                             </div>
                         </div>
+                    </div>
                     </div>
                     <div class="post-body">
                         {{ post.content }}
@@ -146,7 +148,7 @@
                     @for (member of members; track member.id) {
                         @if (member.id !== currentUser()?.id) {
                             <div class="member-admin-item">
-                                <div class="member-info">
+                                <div class="member-info" [routerLink]="['/perfil', member.username]" style="cursor: pointer;">
                                     <img [src]="member.profile_image || 'https://ui-avatars.com/api/?name=' + member.username" class="member-avatar-small">
                                     <span class="member-name">{{ member.username }}</span>
                                 </div>

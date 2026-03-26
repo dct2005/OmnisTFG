@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CommunityService } from '../services/community.service';
 import { AuthService } from '../services/auth';
 import { CommonModule } from '@angular/common';
@@ -9,7 +9,7 @@ declare var Swal: any;
 @Component({
   selector: 'app-informacion-communities',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './informacion-communities.html',
   styleUrl: './informacion-communities.css',
 })
