@@ -5,7 +5,7 @@
 
 
 
--- Si el juego ha sido comprado, que no te salga la opcion de comprar, sino que te ponga que lo has obtenido y esta en tus juegos
+-- Hecho, Si el juego ha sido comprado, que no te salga la opcion de comprar, sino que te ponga que lo has obtenido y esta en tus juegos
 
 -- Una lista de deseados que funcione con el icono de bookmark que hay debajo de cada juego
 

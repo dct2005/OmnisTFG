@@ -35,7 +35,7 @@ module.exports = async function handler(req, res) {
         }
 
         if (req.method === 'POST') {
-            const { name, description, categoria, image_url } = req.body;
+            const { name, description, categoria, image_url, userId } = req.body;
 
             if (!name || !categoria) {
                 return res.status(400).json({ error: 'Faltan datos obligatorios' });
@@ -59,12 +59,22 @@ module.exports = async function handler(req, res) {
                     ${categoria}, 
                     ${image_url}, 
                     FALSE, 
-                    0, 
+                    1, 
                     0, 
                     0
                 )
                 RETURNING id, name
             `;
+
+            const communityId = newCommunity[0].id;
+
+            // Si se proporciona un userId, lo añadimos como miembro (creador)
+            if (userId) {
+                await sql`
+                    INSERT INTO community_members (user_id, community_id, joined_at)
+                    VALUES (${userId}, ${communityId}, NOW())
+                `;
+            }
 
             return res.status(201).json({
                 message: 'Comunidad creada con éxito',
