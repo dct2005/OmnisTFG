@@ -198,8 +198,15 @@ export class AuthService {
     );
   }
 
-  getUserComments(userId: number | string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/user?action=get-user-comments&userId=${userId}`);
+  getUserComments(userId: number | string, limit: number = 5, offset: number = 0): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user`, {
+      params: {
+        action: 'get-user-comments',
+        userId: userId.toString(),
+        limit: limit.toString(),
+        offset: offset.toString()
+      }
+    });
   }
 
   getTransactions(userId: number | string): Observable<any[]> {
@@ -336,5 +343,33 @@ export class AuthService {
         }
       })
     );
+  }
+
+  addProfileComment(profileUserId: number, authorUserId: number, content: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'add-profile-comment',
+      profile_user_id: profileUserId,
+      author_user_id: authorUserId,
+      content
+    });
+  }
+
+  getProfileComments(userId: number, limit: number = 5, offset: number = 0): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user`, {
+      params: {
+        action: 'get-profile-comments',
+        userId: userId.toString(),
+        limit: limit.toString(),
+        offset: offset.toString()
+      }
+    });
+  }
+
+  deleteProfileComment(commentId: number, userId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'delete-profile-comment',
+      commentId,
+      userId
+    });
   }
 }

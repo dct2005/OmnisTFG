@@ -1,10 +1,11 @@
-<div class="profile-container">
+<div class="profile-container" [style.--profile-theme-color]="viewedUser()?.profile_theme_color || '#00f2ff'">
   <div class="profile-header">
 
     <div class="user-avatar-section" (click)="triggerFileInput(fileInput)">
       <div class="avatar-wrapper">
-        <img [src]="user?.profile_image || user?.avatar || user?.profile_picture || 'https://ui-avatars.com/api/?name=' + user?.username + '&background=0d1b2a&color=fff'" 
-             class="profile-avatar" [alt]="user?.username">
+        <img
+          [src]="user?.profile_image || user?.avatar || user?.profile_picture || 'https://ui-avatars.com/api/?name=' + user?.username + '&background=0d1b2a&color=fff'"
+          class="profile-avatar" [alt]="user?.username">
         <div class="avatar-overlay">
           <span class="upload-icon">📷</span>
         </div>
@@ -16,10 +17,8 @@
         <h1 class="username">{{ user?.username }}</h1>
         <div class="user-badges-inline">
           <span class="badge-admin" *ngIf="user?.role === 'admin'">ADMIN</span>
-          <img *ngIf="user?.country" 
-               [src]="'https://flagcdn.com/w40/' + user.country.toLowerCase() + '.png'" 
-               class="country-flag-title" 
-               [title]="user.country">
+          <img *ngIf="user?.country" [src]="'https://flagcdn.com/w40/' + user.country.toLowerCase() + '.png'"
+            class="country-flag-title" [title]="user.country">
           <span class="user-location-inline" *ngIf="user?.city || user?.state || user?.country">
             {{ user?.city }}{{ user?.city && (user?.state || user?.country) ? ', ' : '' }}
             {{ user?.state }}{{ user?.state && user?.country ? ', ' : '' }}
@@ -34,7 +33,7 @@
           <button class="btn-action friend-add" *ngIf="friendshipStatus() === 'none'" (click)="sendRequest()">
             <span class="material-icons-round">person_add</span> Añadir Amigo
           </button>
-          
+
           <button class="btn-action friend-pending" *ngIf="friendshipStatus() === 'requested'" disabled>
             <span class="material-icons-round">schedule</span> Solicitud Enviada
           </button>
@@ -65,7 +64,7 @@
         <span class="level-label">NIVEL</span>
         <span class="level-number">{{ userLevel() }}</span>
       </div>
-      
+
       <!-- Botón Editar Perfil debajo del nivel -->
       <button class="btn-edit-profile" *ngIf="isOwnProfile()" (click)="openEditModal()">
         Editar Perfil
@@ -79,9 +78,11 @@
       <div class="section-card favorite-group">
         <h2 class="section-title">Grupo Favorito</h2>
         <div class="card-body">
-          <img *ngIf="profileData().favoriteGroup.image" [src]="profileData().favoriteGroup.image" class="group-img" alt="Group Image">
+          <img *ngIf="profileData().favoriteGroup.image" [src]="profileData().favoriteGroup.image" class="group-img"
+            alt="Group Image">
           <div class="group-info">
-            <h3 class="group-name">{{ profileData().favoriteGroup.name }} <span class="group-type" *ngIf="profileData().favoriteGroup.type"> - {{ profileData().favoriteGroup.type }}</span></h3>
+            <h3 class="group-name">{{ profileData().favoriteGroup.name }} <span class="group-type"
+                *ngIf="profileData().favoriteGroup.type"> - {{ profileData().favoriteGroup.type }}</span></h3>
             <div class="group-stats">
               <div class="stat">
                 <span class="stat-value">{{ profileData().favoriteGroup.stats.members }}</span>
@@ -93,35 +94,73 @@
       </div>
 
       <div class="section-card recent-activity highlight-border">
-        <h2 class="section-title">Actividad Reciente</h2>
+        <h2 class="section-title">Juego Favorito</h2>
         <div class="card-body">
-          <img *ngIf="profileData().recentActivity.image" [src]="profileData().recentActivity.image" class="game-img" alt="Game Image">
+          <img *ngIf="profileData().recentActivity.image" [src]="profileData().recentActivity.image" class="game-img"
+            alt="Game Image">
           <div class="activity-info">
             <h3 class="game-name">{{ profileData().recentActivity.gameName }}</h3>
           </div>
         </div>
       </div>
 
-      <!-- Nueva Sección de Comentarios -->
+      <!-- Sección de Comentarios Dinámica -->
       <div class="section-card comments-section">
-        <h2 class="section-title">Comentarios en Comunidades</h2>
-        <div class="comments-list" *ngIf="comments().length > 0; else noComments">
-          <div class="comment-item" *ngFor="let comment of comments()">
-            <div class="comment-header">
-              <span class="community-name" 
-                    [routerLink]="['/informacion-communities', comment.community_id]"
-                    style="cursor: pointer;">
-                {{ comment.community_name }}
-              </span>
-              <span class="comment-date">{{ comment.created_at | date:'dd/MM/yyyy' }}</span>
-            </div>
-            <div class="comment-text">
-              "{{ comment.content }}"
-            </div>
+        <h2 class="section-title">
+          {{ user?.display_comments_type === 'profile' ? 'Comentarios del Perfil' : 'Mensajes en Comunidades' }}
+        </h2>
+
+        <!-- Input para nuevos comentarios (Solo en modo Perfil) -->
+        <div class="post-comment-box" *ngIf="user?.display_comments_type === 'profile' && authService.currentUser()">
+          <img [src]="authService.currentUser()?.profile_image || 'https://ui-avatars.com/api/?name=User'" class="mini-avatar">
+          <div class="input-wrapper">
+            <textarea [(ngModel)]="commentInput" placeholder="Escribe un comentario público..."></textarea>
+            <button class="btn-post" (click)="postComment()">Publicar</button>
           </div>
         </div>
+
+        <div class="comments-list" *ngIf="comments().length > 0; else noComments">
+          <div class="comment-item" *ngFor="let comment of comments()">
+            
+            <!-- Avatar del Autor (Solo en modo Perfil) -->
+            <img *ngIf="user?.display_comments_type === 'profile'" 
+                 [src]="comment.author_image || 'https://ui-avatars.com/api/?name=' + comment.author_name" 
+                 class="comment-avatar"
+                 [routerLink]="['/perfil', comment.author_name]"
+                 style="cursor: pointer;">
+
+            <div class="comment-content">
+              <div class="comment-header">
+                <span class="author-name" *ngIf="user?.display_comments_type === 'profile'"
+                      [routerLink]="['/perfil', comment.author_name]" style="cursor: pointer;">
+                  {{ comment.author_name }}
+                </span>
+                <span class="community-name" *ngIf="user?.display_comments_type === 'community'"
+                      [routerLink]="['/informacion-communities', comment.community_id]" style="cursor: pointer;">
+                  {{ comment.community_name }}
+                </span>
+                <span class="comment-date">{{ comment.created_at | date:'dd/MM/yyyy' }}</span>
+                
+                <!-- Botón Eliminar -->
+                <button class="btn-delete-comment" 
+                        *ngIf="authService.currentUser() && (authService.currentUser()?.id === comment.author_id || isOwnProfile())"
+                        (click)="deleteComment(comment.id)">
+                  <span class="material-icons-round">delete</span>
+                </button>
+              </div>
+              <div class="comment-text">
+                "{{ comment.content }}"
+              </div>
+            </div>
+          </div>
+
+          <!-- Botón Cargar Más -->
+          <button class="btn-load-more" *ngIf="hasMoreComments()" (click)="loadMoreComments()">
+            Cargar más comentarios
+          </button>
+        </div>
         <ng-template #noComments>
-          <p class="no-data">No hay comentarios realizados aún.</p>
+          <p class="no-data">No hay contenido para mostrar aún.</p>
         </ng-template>
       </div>
     </div>
@@ -130,17 +169,18 @@
     <div class="sidebar-column">
       <div class="links-list-card">
         <div class="current-badge-sidebar" *ngIf="viewedUser()?.current_badge">
-          <img [src]="viewedUser()?.current_badge?.icon" class="badge-icon-sidebar" [alt]="viewedUser()?.current_badge?.name">
+          <img [src]="viewedUser()?.current_badge?.icon" class="badge-icon-sidebar"
+            [alt]="viewedUser()?.current_badge?.name">
           <div class="badge-info-sidebar">
             <span class="badge-name-sidebar">{{ viewedUser()?.current_badge?.name }}</span>
             <span class="badge-desc-sidebar">{{ viewedUser()?.current_badge?.description }}</span>
           </div>
         </div>
 
-        <div class="online-status" [ngClass]="userStatus">
-          EN LÍNEA
+        <div class="online-status" [ngClass]="statusClass()">
+          {{ statusLabel() }}
         </div>
-        
+
         <div class="link-item">
           <span class="link-label">PREMIOS DEL PERFIL</span>
         </div>
@@ -151,26 +191,20 @@
             <span class="badge-count" *ngIf="user?.badges?.length">{{ user.badges.length }}</span>
           </div>
           <div class="badges-mini-gallery" *ngIf="user?.badges?.length">
-            <div class="badge-wrapper" *ngFor="let badge of user.badges" (click)="showBadgeDetail(badge)" style="cursor: pointer;">
+            <div class="badge-wrapper" *ngFor="let badge of user.badges" (click)="showBadgeDetail(badge)"
+              style="cursor: pointer;">
               <img [src]="badge.icon" class="mini-badge" [alt]="badge.name">
             </div>
           </div>
         </div>
 
         <div class="link-item friends-link" (click)="showFriendsList()" style="cursor: pointer;">
-          <div class="link-header">
-            <span class="link-label">AMIGOS</span>
-            <span class="badge-count" *ngIf="friendsList().length">{{ friendsList().length }}</span>
-          </div>
-          <div class="badges-mini-gallery" *ngIf="friendsList().length">
-            <img *ngFor="let friend of friendsList() | slice:0:6" 
-                 [src]="friend.profile_image || 'https://ui-avatars.com/api/?name=' + friend.username" 
-                 [title]="friend.username" 
-                 class="mini-friend-avatar">
-          </div>
+          <span class="link-label">AMIGOS</span>
+          <span class="badge-count" *ngIf="friendsList().length">{{ friendsList().length }}</span>
         </div>
         <div class="link-item">
           <span class="link-label">COMENTARIOS</span>
+          <span class="badge-count" *ngIf="comments().length">{{ comments().length }}</span>
         </div>
         <div class="link-item" (click)="showReviewsList()" style="cursor: pointer;">
           <span class="link-label">RESEÑAS</span>
@@ -210,7 +244,8 @@
               <button class="btn-media-edit" (click)="bgInputModal.click()">
                 <span class="material-icons-round">image</span> Cambiar Fondo
               </button>
-              <input #bgInputModal type="file" (change)="onBackgroundSelected($event)" accept="image/*" style="display: none;">
+              <input #bgInputModal type="file" (change)="onBackgroundSelected($event)" accept="image/*"
+                style="display: none;">
             </div>
           </div>
           <div class="form-group">
@@ -232,6 +267,13 @@
               <option [ngValue]="null">Más alta (Auto)</option>
               <option *ngFor="let badge of user?.badges" [ngValue]="badge.id">{{ badge.name }}</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label>Color de Tema</label>
+            <div class="color-picker-wrapper">
+              <input type="color" [(ngModel)]="editForm().profile_theme_color" class="color-input">
+              <span class="color-hex">{{ editForm().profile_theme_color }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -301,6 +343,13 @@
               <option value="public">Público</option>
               <option value="friends">Solo Amigos</option>
               <option value="private">Privado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mostrar en perfil</label>
+            <select [(ngModel)]="editForm().display_comments_type">
+              <option value="profile">Comentarios de Perfil</option>
+              <option value="community">Mensajes en Comunidades</option>
             </select>
           </div>
         </div>

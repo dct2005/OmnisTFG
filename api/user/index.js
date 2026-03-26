@@ -15,6 +15,15 @@ module.exports = async function handler(req, res) {
         console.log(`[API User] ${req.method} request received. Action: ${req.body?.action || req.query?.action}`);
         const sql = neon(process.env.DATABASE_URL);
 
+        // Update last activity for the current user (the requester)
+        const requesterEmail = req.query?.email || req.body?.email;
+        const requesterUsername = req.query?.username || req.body?.username;
+        if (requesterEmail) {
+            await sql`UPDATE users SET last_activity = CURRENT_TIMESTAMP WHERE email = ${requesterEmail}`;
+        } else if (requesterUsername) {
+            await sql`UPDATE users SET last_activity = CURRENT_TIMESTAMP WHERE username = ${requesterUsername}`;
+        }
+
         async function getUserWithBadges(user) {
             const gamesCountQuery = await sql`SELECT COUNT(*) as count FROM user_games WHERE user_id = ${user.id}`;
             const gamesCount = parseInt(gamesCountQuery[0].count, 10);
@@ -43,6 +52,39 @@ module.exports = async function handler(req, res) {
         if (req.method === 'GET') {
             const { email, username, action } = req.query;
 
+            if (action === 'migrate-comments') {
+                await sql`
+                    CREATE TABLE IF NOT EXISTS profile_comments (
+                        id SERIAL PRIMARY KEY,
+                        profile_user_id INTEGER REFERENCES users(id),
+                        author_user_id INTEGER REFERENCES users(id),
+                        content TEXT NOT NULL,
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                    )
+                `;
+                await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS display_comments_type TEXT DEFAULT 'community'`;
+                await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_theme_color TEXT DEFAULT '#00f2ff'`;
+                await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_bg_color TEXT DEFAULT '#00f2ff'`;
+                await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_name_color TEXT DEFAULT '#ffffff'`;
+                await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_activity TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP`;
+                return res.status(200).json({ message: 'Migración completada' });
+            }
+
+            if (action === 'get-profile-comments') {
+                const { userId, limit = 5, offset = 0 } = req.query;
+                if (!userId) return res.status(400).json({ error: 'Falta userId' });
+
+                const comments = await sql`
+                    SELECT pc.id, pc.content, pc.created_at, u.username as author_name, u.profile_image as author_image, u.id as author_id
+                    FROM profile_comments pc
+                    JOIN users u ON pc.author_user_id = u.id
+                    WHERE pc.profile_user_id = ${userId}
+                    ORDER BY pc.created_at DESC
+                    LIMIT ${limit} OFFSET ${offset}
+                `;
+                return res.status(200).json(comments);
+            }
+
             if (action === 'get-any-game') {
                 const games = await sql`SELECT game_api_id FROM user_games ORDER BY purchase_date DESC LIMIT 1`;
                 if (games.length === 0) return res.status(404).json({ error: 'No hay juegos en la BD' });
@@ -50,7 +92,7 @@ module.exports = async function handler(req, res) {
             }
 
             if (action === 'get-user-comments') {
-                const { userId } = req.query;
+                const { userId, limit = 5, offset = 0 } = req.query;
                 if (!userId) return res.status(400).json({ error: 'Falta userId' });
 
                 const comments = await sql`
@@ -59,7 +101,7 @@ module.exports = async function handler(req, res) {
                     JOIN communities c ON m.community_id = c.id
                     WHERE m.user_id = ${userId}
                     ORDER BY m.created_at DESC
-                    LIMIT 20
+                    LIMIT ${limit} OFFSET ${offset}
                 `;
                 return res.status(200).json(comments);
             }
@@ -96,7 +138,7 @@ module.exports = async function handler(req, res) {
             if (action === 'check-daily-reward') {
                 const { email } = req.query;
                 if (!email) return res.status(400).json({ error: 'Falta email' });
-                
+
                 const userQuery = await sql`SELECT last_daily_reward FROM users WHERE email = ${email}`;
                 if (userQuery.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
@@ -133,11 +175,72 @@ module.exports = async function handler(req, res) {
             }
 
             const fullUser = await getUserWithBadges(user);
-            return res.status(200).json({ user: fullUser });
+
+            // Fetch initial 5 comments based on preference
+            let initialComments = [];
+            if (fullUser.display_comments_type === 'profile') {
+                initialComments = await sql`
+                    SELECT pc.id, pc.content, pc.created_at, u.username as author_name, u.profile_image as author_image, u.id as author_id
+                    FROM profile_comments pc
+                    JOIN users u ON pc.author_user_id = u.id
+                    WHERE pc.profile_user_id = ${user.id}
+                    ORDER BY pc.created_at DESC
+                    LIMIT 5
+                `;
+            } else {
+                initialComments = await sql`
+                    SELECT m.id, m.content, m.created_at, c.name as community_name, c.id as community_id
+                    FROM community_messages m
+                    JOIN communities c ON m.community_id = c.id
+                    WHERE m.user_id = ${user.id}
+                    ORDER BY m.created_at DESC
+                    LIMIT 5
+                `;
+            }
+
+            return res.status(200).json({
+                user: fullUser,
+                initialComments
+            });
         }
 
         if (req.method === 'POST') {
             const { action, email, password, name, username, estado } = req.body;
+
+            if (action === 'add-profile-comment') {
+                const { profile_user_id, author_user_id, content } = req.body;
+                if (!profile_user_id || !author_user_id || !content) return res.status(400).json({ error: 'Faltan datos' });
+
+                const inserted = await sql`
+                    INSERT INTO profile_comments (profile_user_id, author_user_id, content)
+                    VALUES (${profile_user_id}, ${author_user_id}, ${content})
+                    RETURNING *
+                `;
+
+                // Return with author info
+                const commenter = await sql`SELECT username as author_name, profile_image as author_image FROM users WHERE id = ${author_user_id}`;
+                return res.status(201).json({
+                    ...inserted[0],
+                    author_name: commenter[0].author_name,
+                    author_image: commenter[0].author_image
+                });
+            }
+
+            if (action === 'delete-profile-comment') {
+                const { commentId, userId } = req.body;
+                if (!commentId || !userId) return res.status(400).json({ error: 'Faltan datos' });
+
+                // Only the author or the profile owner can delete
+                const comment = await sql`SELECT profile_user_id, author_user_id FROM profile_comments WHERE id = ${commentId}`;
+                if (comment.length === 0) return res.status(404).json({ error: 'Comentario no encontrado' });
+
+                if (comment[0].profile_user_id !== userId && comment[0].author_user_id !== userId) {
+                    return res.status(403).json({ error: 'No tienes permiso para borrar este comentario' });
+                }
+
+                await sql`DELETE FROM profile_comments WHERE id = ${commentId}`;
+                return res.status(200).json({ message: 'Comentario eliminado' });
+            }
 
             if (action === 'register') {
                 if (!name || !username || !password) return res.status(400).json({ error: 'Faltan datos' });
@@ -242,9 +345,9 @@ module.exports = async function handler(req, res) {
 
                 if (updated.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
-                return res.status(200).json({ 
-                    message: 'Imagen actualizada con éxito', 
-                    user: updated[0] 
+                return res.status(200).json({
+                    message: 'Imagen actualizada con éxito',
+                    user: updated[0]
                 });
             }
 
@@ -261,9 +364,9 @@ module.exports = async function handler(req, res) {
 
                 if (updated.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
-                return res.status(200).json({ 
-                    message: 'Localización actualizada con éxito', 
-                    user: updated[0] 
+                return res.status(200).json({
+                    message: 'Localización actualizada con éxito',
+                    user: updated[0]
                 });
             }
 
@@ -280,9 +383,9 @@ module.exports = async function handler(req, res) {
 
                 if (updated.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
-                return res.status(200).json({ 
-                    message: 'Fondo de perfil actualizado', 
-                    user: updated[0] 
+                return res.status(200).json({
+                    message: 'Fondo de perfil actualizado',
+                    user: updated[0]
                 });
             }
 
@@ -318,26 +421,28 @@ module.exports = async function handler(req, res) {
 
                 if (updated.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
-                return res.status(200).json({ 
-                    message: 'Información de facturación actualizada', 
-                    user: updated[0] 
+                return res.status(200).json({
+                    message: 'Información de facturación actualizada',
+                    user: updated[0]
                 });
             }
 
             if (action === 'update-profile-settings') {
-                const { 
-                    favorite_group_id, 
-                    favorite_game_id, 
-                    country, 
-                    state, 
-                    city, 
-                    privacy_profile, 
-                    privacy_games, 
-                    privacy_inventory, 
+                const {
+                    favorite_group_id,
+                    favorite_game_id,
+                    country,
+                    state,
+                    city,
+                    privacy_profile,
+                    privacy_games,
+                    privacy_inventory,
                     privacy_comments,
                     status_message,
                     selected_badge_id,
-                    estado
+                    estado,
+                    display_comments_type,
+                    profile_theme_color
                 } = req.body;
 
                 if (!email) return res.status(400).json({ error: 'Falta email' });
@@ -356,7 +461,9 @@ module.exports = async function handler(req, res) {
                         privacy_comments = ${privacy_comments || 'public'},
                         status_message = ${status_message},
                         selected_badge_id = ${selected_badge_id},
-                        estado = ${estado || 'en-linea'}
+                        estado = ${estado || 'en-linea'},
+                        display_comments_type = ${display_comments_type || 'community'},
+                        profile_theme_color = ${profile_theme_color || '#00f2ff'}
                     WHERE email = ${email}
                     RETURNING *
                 `;
@@ -364,9 +471,32 @@ module.exports = async function handler(req, res) {
                 if (updated.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
                 const fullUser = await getUserWithBadges(updated[0]);
-                return res.status(200).json({ 
-                    message: 'Ajustes de perfil actualizados', 
-                    user: fullUser 
+
+                // Also return initial comments based on the new preference
+                let initialComments = [];
+                if (fullUser.display_comments_type === 'profile') {
+                    initialComments = await sql`
+                        SELECT pc.id, pc.content, pc.created_at, u.username as author_name, u.profile_image as author_image, u.id as author_id
+                        FROM profile_comments pc
+                        JOIN users u ON pc.author_user_id = u.id
+                        WHERE pc.profile_user_id = ${fullUser.id}
+                        ORDER BY pc.created_at DESC
+                        LIMIT 5
+                    `;
+                } else {
+                    initialComments = await sql`
+                        SELECT m.id, m.content, m.created_at, c.name as community_name, c.id as community_id
+                        FROM community_messages m
+                        JOIN communities c ON m.community_id = c.id
+                        WHERE m.user_id = ${fullUser.id}
+                        ORDER BY m.created_at DESC
+                        LIMIT 5
+                    `;
+                }
+
+                return res.status(200).json({
+                    user: fullUser,
+                    initialComments
                 });
             }
 
@@ -421,8 +551,8 @@ module.exports = async function handler(req, res) {
                     prize = { type: 'peppix', value: rewardVal, label: 'Súper Premio: 1500 Peppix' };
                 }
 
-                return res.status(200).json({ 
-                    message: '¡Felicidades!', 
+                return res.status(200).json({
+                    message: '¡Felicidades!',
                     prize: prize
                 });
             }
@@ -475,7 +605,7 @@ module.exports = async function handler(req, res) {
 
             if (action === 'remove-friend') {
                 const { friendshipId, senderId, receiverId } = req.body;
-                
+
                 if (friendshipId) {
                     await sql`DELETE FROM friendships WHERE id = ${friendshipId}`;
                 } else if (senderId && receiverId) {
@@ -487,7 +617,7 @@ module.exports = async function handler(req, res) {
                 } else {
                     return res.status(400).json({ error: 'Faltan datos para eliminar' });
                 }
-                
+
                 return res.status(200).json({ message: 'Amistad/Solicitud eliminada' });
             }
 

@@ -84,13 +84,58 @@ export class ProfileComponent implements OnDestroy {
     privacy_comments: 'public',
     status_message: '',
     estado: 'en-linea',
-    selected_badge_id: null
+    selected_badge_id: null,
+    display_comments_type: 'community',
+    profile_theme_color: '#00f2ff'
   });
+
+  commentInput = signal('');
+  commentsOffset = signal(0);
+  hasMoreComments = signal(true);
 
   isOwnProfile = computed(() => {
     const current = this.authService.currentUser();
     const viewed = this.viewedUser();
     return current && viewed && current.id === viewed.id;
+  });
+
+  statusLabel = computed(() => {
+    const user = this.viewedUser();
+    const estado = user?.estado;
+    
+    if (estado === 'en-linea') return 'En línea';
+    if (estado === 'ausente') return 'Ausente';
+    
+    // Tanto invisible como desconectado muestran "Desconectado"
+    // Pero desconectado muestra el tiempo transcurrido
+    if (estado === 'desconectado' && user?.last_activity) {
+      const timeStr = this.formatRelativeTime(new Date(user.last_activity));
+      return `Desconectado hace ${timeStr}`;
+    }
+    
+    return 'Desconectado';
+  });
+
+  formatRelativeTime(lastSeen: Date): string {
+    const now = new Date();
+    const diffMs = now.getTime() - lastSeen.getTime();
+    if (diffMs < 0) return 'poco tiempo';
+    
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays > 0) return `${diffDays} día${diffDays > 1 ? 's' : ''}`;
+    if (diffHours > 0) {
+      const mins = diffMins % 60;
+      return mins > 0 ? `${diffHours}h ${mins}m` : `${diffHours}h`;
+    }
+    return `${Math.max(1, diffMins)}min`;
+  }
+
+  statusClass = computed(() => {
+    const estado = this.viewedUser()?.estado || 'desconectado';
+    return `status-${estado}`;
   });
 
   userLevel = computed(() => {
@@ -150,6 +195,9 @@ export class ProfileComponent implements OnDestroy {
       next: (res: any) => {
         if (res.user) {
           this.viewedUser.set(res.user);
+          this.comments.set(res.initialComments || []);
+          this.commentsOffset.set(res.initialComments?.length || 0);
+          this.hasMoreComments.set((res.initialComments?.length || 0) === 5);
         }
       },
       error: (err) => console.error('Error loading profile:', err)
@@ -282,15 +330,32 @@ export class ProfileComponent implements OnDestroy {
       }
     });
 
-    this.authService.getUserComments(user.id).subscribe({
-      next: (comments) => {
-        this.comments.set(comments);
-        this.profileData.update(data => ({
-          ...data,
-          stats: { ...data.stats, comments: comments.length }
-        }));
-      }
-    });
+    // Comentarios basados en preferencia
+    if (user.display_comments_type === 'profile') {
+      this.authService.getProfileComments(user.id).subscribe({
+        next: (comments) => {
+          this.comments.set(comments);
+          this.commentsOffset.set(comments.length);
+          this.hasMoreComments.set(comments.length === 5);
+          this.profileData.update(data => ({
+            ...data,
+            stats: { ...data.stats, comments: comments.length }
+          }));
+        }
+      });
+    } else {
+      this.authService.getUserComments(user.id).subscribe({
+        next: (comments) => {
+          this.comments.set(comments);
+          this.commentsOffset.set(comments.length);
+          this.hasMoreComments.set(comments.length === 5);
+          this.profileData.update(data => ({
+            ...data,
+            stats: { ...data.stats, comments: comments.length }
+          }));
+        }
+      });
+    }
 
     this.gameService.getUserReviews(user.id).subscribe({
       next: (reviews) => {
@@ -589,6 +654,103 @@ export class ProfileComponent implements OnDestroy {
     });
   }
 
+  postComment() {
+    const content = this.commentInput().trim();
+    if (!content) return;
+
+    const current = this.authService.currentUser();
+    const viewed = this.viewedUser();
+    
+    if (!current || !viewed) return;
+
+    this.authService.addProfileComment(viewed.id, current.id, content).subscribe({
+      next: (newComment: any) => {
+        if (viewed.display_comments_type === 'profile') {
+          this.comments.update(all => [newComment, ...all]);
+        }
+        this.commentInput.set('');
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Comentario publicado',
+          showConfirmButton: false,
+          timer: 2000,
+          background: '#0d1b2a',
+          color: '#fff'
+        });
+      },
+      error: (err: any) => console.error('Error posting comment:', err)
+    });
+  }
+
+  deleteComment(commentId: number) {
+    const current = this.authService.currentUser();
+    if (!current) return;
+
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "No podrás revertir esto",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, borrar',
+      cancelButtonText: 'Cancelar',
+      background: '#0d1b2a',
+      color: '#fff'
+    }).then((result: any) => {
+      if (result.isConfirmed) {
+        this.authService.deleteProfileComment(commentId, current.id).subscribe({
+          next: () => {
+            this.comments.update(all => all.filter(c => c.id !== commentId));
+            Swal.fire({
+              title: '¡Borrado!',
+              text: 'El comentario ha sido eliminado.',
+              icon: 'success',
+              background: '#0d1b2a',
+              color: '#fff'
+            });
+          },
+          error: (err: any) => {
+            console.error('Error deleting comment:', err);
+            Swal.fire('Error', 'No tienes permiso o el comentario no existe', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  loadMoreComments() {
+    const user = this.viewedUser();
+    if (!user) return;
+
+    const offset = this.commentsOffset();
+    const limit = 5;
+
+    if (user.display_comments_type === 'profile') {
+      this.authService.getProfileComments(user.id, limit, offset).subscribe({
+        next: (more: any[]) => {
+          if (more.length > 0) {
+            this.comments.update(all => [...all, ...more]);
+            this.commentsOffset.update(v => v + more.length);
+          }
+          this.hasMoreComments.set(more.length === limit);
+        }
+      });
+    } else {
+      this.authService.getUserComments(user.id, limit, offset).subscribe({
+        next: (more: any[]) => {
+          if (more.length > 0) {
+            this.comments.update(all => [...all, ...more]);
+            this.commentsOffset.update(v => v + more.length);
+          }
+          this.hasMoreComments.set(more.length === limit);
+        }
+      });
+    }
+  }
+
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
@@ -648,7 +810,9 @@ export class ProfileComponent implements OnDestroy {
         privacy_comments: user.privacy_comments || 'public',
         status_message: user.status_message || '',
         estado: user.estado || 'en-linea',
-        selected_badge_id: user.selected_badge_id || null
+        selected_badge_id: user.selected_badge_id || null,
+        display_comments_type: user.display_comments_type || 'community',
+        profile_theme_color: user.profile_theme_color || '#00f2ff'
       });
 
       // Cargar juegos y comunidades para los selectores
@@ -702,6 +866,9 @@ export class ProfileComponent implements OnDestroy {
         // Recargar el perfil visualizado si es el propio
         if (this.isOwnProfile()) {
           this.viewedUser.set(res.user);
+          this.comments.set(res.initialComments || []);
+          this.commentsOffset.set(res.initialComments?.length || 0);
+          this.hasMoreComments.set((res.initialComments?.length || 0) === 5);
         }
       },
       error: (err) => {
