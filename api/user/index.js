@@ -95,7 +95,6 @@ module.exports = async function handler(req, res) {
 
             const user = users[0];
 
-            // Calcular insignias dinámicas
             const gamesCountQuery = await sql`SELECT COUNT(*) as count FROM user_games WHERE user_id = ${user.id}`;
             const gamesCount = parseInt(gamesCountQuery[0].count, 10);
 
@@ -106,10 +105,8 @@ module.exports = async function handler(req, res) {
             if (gamesCount >= 7) badges.push({ name: 'Cállese y Tome mi Dinero', icon: 'images/ins_callese.png', tier: 4 });
             if (gamesCount >= 10) badges.push({ name: 'Frozen Mind Legend', icon: 'images/ins_frozenmind.png', tier: 5 });
 
-            // Identificar la insignia principal (la de mayor tier)
             const currentBadge = badges.length > 0 ? badges[badges.length - 1] : { name: 'Sin Insignias', icon: 'images/ins_nonecesito.png', tier: 0 };
 
-            // Remove password for security
             const { password: _, ...userWithoutPassword } = user;
             return res.status(200).json({ 
                 user: { 
@@ -120,11 +117,9 @@ module.exports = async function handler(req, res) {
             });
         }
 
-        // ACCIONES DE USUARIO E IDENTIDAD
         if (req.method === 'POST') {
-            const { action, email, password, name, username, estado, amount } = req.body;
+            const { action, email, password, name, username, estado } = req.body;
 
-            // 1. Registro
             if (action === 'register') {
                 if (!name || !username || !password) return res.status(400).json({ error: 'Faltan datos' });
 
@@ -140,7 +135,6 @@ module.exports = async function handler(req, res) {
                 return res.status(201).json({ message: 'Registrado correctamente', user: inserted[0] });
             }
 
-            // 2. Login
             if (action === 'login') {
                 if (!username || !password) return res.status(400).json({ error: 'Faltan datos' });
                 const users = await sql`SELECT * FROM users WHERE email = ${username}`;
@@ -151,7 +145,6 @@ module.exports = async function handler(req, res) {
                 if (!valid) return res.status(401).json({ error: 'Contraseña incorrecta' });
 
                 const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
-                // Devolvemos el usuario directamente sin cambiarle el estado
                 return res.status(200).json({
                     token, message: 'Login exitoso', user: {
                         id: user.id,
@@ -168,7 +161,6 @@ module.exports = async function handler(req, res) {
                 });
             }
 
-            // 3. Actualizar estado
             if (action === 'update-estado') {
                 if (!email || !estado) return res.status(400).json({ error: 'Faltan datos' });
                 const updated = await sql`UPDATE users SET estado = ${estado} WHERE email = ${email} RETURNING id, username, email, peppix, estado`;
@@ -176,19 +168,16 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ message: 'Estado actualizado', user: updated[0] });
             }
 
-            // 4. Actualizar Peppix
             if (action === 'update-peppix') {
                 const { amount, price, method } = req.body;
                 if (!email || amount === undefined) return res.status(400).json({ error: 'Faltan datos' });
 
-                // Transacción: Actualizar peppix e insertar en transactions
                 const userCheck = await sql`SELECT id FROM users WHERE email = ${email}`;
                 if (userCheck.length === 0) return res.status(404).json({ error: 'User no encontrado' });
                 const userId = userCheck[0].id;
 
                 await sql`UPDATE users SET peppix = peppix + ${amount} WHERE email = ${email}`;
 
-                // Registrar en tabla transactions
                 await sql`
                     INSERT INTO transactions (user_id, peppix_amount, real_money_euro, payment_method, created_at)
                     VALUES (${userId}, ${amount}, ${price || 0}, ${method || 'tarjeta'}, NOW())
@@ -198,35 +187,29 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ message: 'Peppix actualizados y transacción registrada', user: updated[0] });
             }
 
-            // 5. Comprar Juego
             if (action === 'purchase-game') {
                 const { gameId, price } = req.body;
                 if (!email || !gameId || price === undefined) return res.status(400).json({ error: 'Faltan datos' });
 
-                // Transacción manual: Restar peppix e insertar en user_games
                 const userCheck = await sql`SELECT id, peppix FROM users WHERE email = ${email}`;
                 if (userCheck.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
                 const user = userCheck[0];
                 if (user.peppix < price) return res.status(400).json({ error: 'Saldo insuficiente' });
 
-                // Actualizar peppix y sumar XP
                 const updated = await sql`UPDATE users SET peppix = peppix - ${price}, xp = xp + ${price} WHERE email = ${email} RETURNING id, username, email, peppix, xp, estado, profile_background`;
 
-                // Registrar compra
                 await sql`
                     INSERT INTO user_games (user_id, game_api_id, purchase_date)
                     VALUES (${user.id}, ${gameId.toString()}, NOW())
                     ON CONFLICT (user_id, game_api_id) DO NOTHING
                 `;
 
-                // Eliminar de la lista de deseos si existe
                 await sql`DELETE FROM user_wishlist WHERE user_id = ${user.id} AND game_api_id = ${gameId.toString()}`;
 
                 return res.status(200).json({ message: 'Compra realizada', user: updated[0] });
             }
 
-            // 6. Actualizar Imagen de Perfil
             if (action === 'update-profile-image') {
                 const { profileImage } = req.body;
                 if (!email || !profileImage) return res.status(400).json({ error: 'Faltan datos' });
@@ -325,7 +308,6 @@ module.exports = async function handler(req, res) {
             if (action === 'claim-daily-reward') {
                 if (!email) return res.status(400).json({ error: 'Falta email' });
 
-                // Check again to be safe
                 const check = await sql`SELECT last_daily_reward, peppix FROM users WHERE email = ${email}`;
                 if (check.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
@@ -334,7 +316,6 @@ module.exports = async function handler(req, res) {
                     return res.status(400).json({ error: 'Ya has reclamado tu recompensa hoy' });
                 }
 
-                // RANDOM PRIZE LOGIC
                 const prizes = [
                     { type: 'peppix', value: 50, label: '50 Peppix', weight: 35 },
                     { type: 'peppix', value: 100, label: '100 Peppix', weight: 25 },
@@ -357,16 +338,12 @@ module.exports = async function handler(req, res) {
                     random -= p.weight;
                 }
 
-                // Update reward date regardless of prize
                 await sql`UPDATE users SET last_daily_reward = NOW() WHERE email = ${email}`;
 
                 if (prize.type === 'peppix') {
                     const currentPeppix = typeof check[0].peppix === 'string' ? parseInt(check[0].peppix.replace(/\./g, ''), 10) : (check[0].peppix || 0);
                     const newPeppix = currentPeppix + prize.value;
-
                     await sql`UPDATE users SET peppix = ${newPeppix} WHERE email = ${email}`;
-
-                    // Register transaction for history
                     await sql`
                         INSERT INTO transactions (user_id, peppix_amount, real_money_euro, payment_method)
                         SELECT id, ${prize.value}, 0, 'Recompensa Diaria'
@@ -375,16 +352,31 @@ module.exports = async function handler(req, res) {
                 } else if (prize.type === 'game') {
                     const rewardVal = 1500;
                     const currentPeppix = typeof check[0].peppix === 'string' ? parseInt(check[0].peppix.replace(/\./g, ''), 10) : (check[0].peppix || 0);
-                    
                     await sql`UPDATE users SET peppix = ${currentPeppix + rewardVal} WHERE email = ${email}`;
                     prize = { type: 'peppix', value: rewardVal, label: 'Súper Premio: 1500 Peppix' };
                 }
-                // If prize.type === 'nada', we do nothing else (already updated last_daily_reward)
 
                 return res.status(200).json({ 
                     message: '¡Felicidades!', 
                     prize: prize
                 });
+            }
+
+            if (action === 'update-password') {
+                const { oldPassword, newPassword } = req.body;
+                if (!email || !oldPassword || !newPassword) return res.status(400).json({ error: 'Faltan datos' });
+
+                const users = await sql`SELECT * FROM users WHERE email = ${email}`;
+                if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+
+                const user = users[0];
+                const valid = await bcrypt.compare(oldPassword, user.password);
+                if (!valid) return res.status(401).json({ error: 'La contraseña actual es incorrecta' });
+
+                const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+                await sql`UPDATE users SET password = ${hashedNewPassword} WHERE email = ${email}`;
+
+                return res.status(200).json({ message: 'Contraseña actualizada correctamente' });
             }
 
             return res.status(400).json({ error: 'Acción no válida' });

@@ -275,4 +275,16 @@ export class AuthService {
       })
     );
   }
+
+  updatePassword(oldPassword: string, newPassword: string): Observable<any> {
+    const user = this.currentUser();
+    if (!user?.email) throw new Error('Usuario no autenticado');
+
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'update-password',
+      email: user.email,
+      oldPassword,
+      newPassword
+    });
+  }
 }

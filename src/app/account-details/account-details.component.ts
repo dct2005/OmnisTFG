@@ -197,4 +197,90 @@ export class AccountDetailsComponent {
       });
     }
   }
+
+  async changePassword() {
+    const { value: formValues } = await Swal.fire({
+      title: 'Cambiar contraseña',
+      html:
+        '<input id="swal-input1" class="swal2-input" type="password" placeholder="Contraseña actual">' +
+        '<input id="swal-input2" class="swal2-input" type="password" placeholder="Nueva contraseña">' +
+        '<input id="swal-input3" class="swal2-input" type="password" placeholder="Confirmar nueva contraseña">',
+      focusConfirm: false,
+      showCancelButton: true,
+      background: '#1a103c',
+      color: '#ffffff',
+      confirmButtonColor: '#7c3aed',
+      cancelButtonColor: '#ff00ff',
+      preConfirm: () => {
+        return [
+          (document.getElementById('swal-input1') as HTMLInputElement).value,
+          (document.getElementById('swal-input2') as HTMLInputElement).value,
+          (document.getElementById('swal-input3') as HTMLInputElement).value
+        ];
+      }
+    });
+
+    if (formValues) {
+      const [oldPassword, newPassword, confirmPassword] = formValues;
+
+      if (!oldPassword || !newPassword || !confirmPassword) {
+        Swal.fire({
+          title: 'Error',
+          text: 'Todos los campos son obligatorios',
+          icon: 'error',
+          background: '#1a103c',
+          color: '#ffffff',
+          confirmButtonColor: '#7c3aed'
+        });
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        Swal.fire({
+          title: 'Contraseña débil',
+          text: 'La nueva contraseña debe tener al menos 6 caracteres',
+          icon: 'warning',
+          background: '#1a103c',
+          color: '#ffffff',
+          confirmButtonColor: '#7c3aed'
+        });
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        Swal.fire({
+          title: 'Error de coincidencia',
+          text: 'Las nuevas contraseñas no coinciden',
+          icon: 'error',
+          background: '#1a103c',
+          color: '#ffffff',
+          confirmButtonColor: '#7c3aed'
+        });
+        return;
+      }
+
+      this.authService.updatePassword(oldPassword, newPassword).subscribe({
+        next: () => {
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Tu contraseña ha sido actualizada',
+            icon: 'success',
+            background: '#1a103c',
+            color: '#ffffff',
+            confirmButtonColor: '#7c3aed'
+          });
+        },
+        error: (err: any) => {
+          Swal.fire({
+            title: 'Error',
+            text: err.error?.error || 'No se pudo actualizar la contraseña',
+            icon: 'error',
+            background: '#1a103c',
+            color: '#ffffff',
+            confirmButtonColor: '#7c3aed'
+          });
+        }
+      });
+    }
+  }
 }
