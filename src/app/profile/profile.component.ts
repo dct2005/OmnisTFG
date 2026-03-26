@@ -63,6 +63,9 @@ export class ProfileComponent implements OnDestroy {
   friendshipStatus = signal<'none' | 'pending' | 'requested' | 'accepted'>('none');
   friendshipId = signal<number | null>(null);
   friendsList = signal<any[]>([]);
+  purchasedGamesList = signal<any[]>([]);
+  userCommunitiesList = signal<any[]>([]);
+  userReviewsList = signal<any[]>([]);
 
   isOwnProfile = computed(() => {
     const current = this.authService.currentUser();
@@ -214,6 +217,7 @@ export class ProfileComponent implements OnDestroy {
     this.authService.getUserGames(user.email).subscribe({
       next: (res: any) => {
         const games = res.games || [];
+        this.purchasedGamesList.set(games);
         const gameIds = games.map((g: any) => g.game_api_id);
         
         if (gameIds.length > 0) {
@@ -241,9 +245,14 @@ export class ProfileComponent implements OnDestroy {
 
     this.communityService.getCommunities(user.id, true).subscribe({
       next: (myComms: any[]) => {
+        this.userCommunitiesList.set(myComms);
         if (myComms && myComms.length > 0) {
           this.setFavoriteGroup(myComms[0], myComms.length);
         }
+        this.profileData.update(data => ({
+          ...data,
+          stats: { ...data.stats, groups: myComms.length }
+        }));
       }
     });
 
@@ -264,6 +273,16 @@ export class ProfileComponent implements OnDestroy {
         this.profileData.update(data => ({
           ...data,
           stats: { ...data.stats, comments: comments.length }
+        }));
+      }
+    });
+
+    this.gameService.getUserReviews(user.id).subscribe({
+      next: (reviews) => {
+        this.userReviewsList.set(reviews);
+        this.profileData.update(data => ({
+          ...data,
+          stats: { ...data.stats, reviews: reviews.length }
         }));
       }
     });
@@ -369,6 +388,183 @@ export class ProfileComponent implements OnDestroy {
       title: `<span style="color: #00f2ff; letter-spacing: 2px;">LISTA DE AMIGOS</span>`,
       html: friendsHtml,
       width: '500px',
+      background: '#050510',
+      showConfirmButton: false,
+      showCloseButton: true,
+      customClass: {
+        popup: 'swal-premium-popup'
+      }
+    });
+  }
+
+  showGamesList() {
+    const gameRecords = this.purchasedGamesList();
+    if (!gameRecords || gameRecords.length === 0) {
+      Swal.fire({
+        title: 'Biblioteca',
+        text: 'Aún no tiene juegos comprados.',
+        icon: 'info',
+        background: '#0d1b2a',
+        color: '#ffffff',
+        confirmButtonColor: '#00f2ff'
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: 'Cargando Biblioteca...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+        
+        // Fetch detailed info for all games in parallel
+        const detailPromises = gameRecords.map(record => 
+          new Promise((resolve) => {
+            this.gameService.getGameById(record.game_api_id).subscribe({
+              next: (detail) => resolve({ ...detail, purchaseDate: record.purchase_date }),
+              error: () => resolve({ id: record.game_api_id, name: 'Juego Desconocido', purchaseDate: record.purchase_date })
+            });
+          })
+        );
+
+        Promise.all(detailPromises).then((games: any[]) => {
+          let gamesHtml = `
+            <div style="max-height: 450px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 15px; text-align: left;">
+          `;
+
+          games.forEach(g => {
+            let coverUrl = g.cover?.url || 'https://placehold.co/100x120';
+            if (coverUrl.startsWith('//')) coverUrl = 'https:' + coverUrl;
+            
+            const pDate = new Date(g.purchaseDate).toLocaleDateString();
+
+            gamesHtml += `
+              <div class="swal-game-item" style="display: flex; align-items: center; gap: 15px; padding: 12px; background: rgba(0, 242, 255, 0.05); border-radius: 10px; border: 1px solid rgba(0, 242, 255, 0.2);">
+                <img src="${coverUrl}" style="width: 60px; height: 80px; border-radius: 6px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
+                <div style="flex-grow: 1;">
+                  <div style="font-weight: 700; color: #fff; font-size: 1.1rem; margin-bottom: 4px;">${g.name}</div>
+                  <div style="font-size: 0.85rem; color: #718096;">Comprado: ${pDate}</div>
+                </div>
+                <button onclick="window.location.href='/game/${g.id}'" 
+                        style="background: linear-gradient(135deg, #00f2ff, #0099ff); color: #000; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; border: none; font-weight: 700; transition: all 0.3s ease;">
+                  Ver Ficha
+                </button>
+              </div>
+            `;
+          });
+
+          gamesHtml += '</div>';
+
+          Swal.fire({
+            title: `<span style="color: #00f2ff; letter-spacing: 2px;">MI BIBLIOTECA</span>`,
+            html: gamesHtml,
+            width: '600px',
+            background: '#050510',
+            showConfirmButton: false,
+            showCloseButton: true,
+            customClass: {
+              popup: 'swal-premium-popup'
+            }
+          });
+        });
+      }
+    });
+  }
+
+  showGroupsList() {
+    const groups = this.userCommunitiesList();
+    if (!groups || groups.length === 0) {
+      Swal.fire({
+        title: 'Comunidades',
+        text: 'Aún no te has unido a ninguna comunidad.',
+        icon: 'info',
+        background: '#0d1b2a',
+        color: '#ffffff',
+        confirmButtonColor: '#00f2ff'
+      });
+      return;
+    }
+
+    let groupsHtml = `
+      <div style="max-height: 450px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; text-align: left;">
+    `;
+
+    groups.forEach(g => {
+      const banner = g.image_url || 'images/default_community.jpg';
+      
+      groupsHtml += `
+        <div class="swal-group-item" style="display: flex; align-items: center; gap: 15px; padding: 12px; background: rgba(72, 187, 120, 0.05); border-radius: 10px; border: 1px solid rgba(72, 187, 120, 0.2);">
+          <img src="${banner}" style="width: 80px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid #48bb78;">
+          <div style="flex-grow: 1;">
+            <div style="font-weight: 700; color: #fff; font-size: 1.1rem; margin-bottom: 2px;">${g.name}</div>
+            <div style="font-size: 0.85rem; color: #a0aec0; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${g.description || 'Sin descripción'}</div>
+          </div>
+          <button onclick="window.location.href='/informacion-communities/${g.id}'" 
+                  style="background: linear-gradient(135deg, #48bb78, #38a169); color: #000; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; border: none; font-weight: 700; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);">
+            Entrar
+          </button>
+        </div>
+      `;
+    });
+
+    groupsHtml += '</div>';
+
+    Swal.fire({
+      title: `<span style="color: #48bb78; letter-spacing: 2px;">MIS COMUNIDADES</span>`,
+      html: groupsHtml,
+      width: '600px',
+      background: '#050510',
+      showConfirmButton: false,
+      showCloseButton: true,
+      customClass: {
+        popup: 'swal-premium-popup'
+      }
+    });
+  }
+
+  showReviewsList() {
+    const reviews = this.userReviewsList();
+    if (!reviews || reviews.length === 0) {
+      Swal.fire({
+        title: 'Reseñas',
+        text: 'Aún no has escrito ninguna reseña.',
+        icon: 'info',
+        background: '#0d1b2a',
+        color: '#ffffff',
+        confirmButtonColor: '#7c3aed'
+      });
+      return;
+    }
+
+    let reviewsHtml = `
+      <div style="max-height: 450px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 15px; text-align: left;">
+    `;
+
+    reviews.forEach(r => {
+      const date = new Date(r.created_at).toLocaleDateString();
+      reviewsHtml += `
+        <div class="swal-review-item" style="padding: 15px; background: rgba(124, 58, 237, 0.05); border-radius: 10px; border: 1px solid rgba(124, 58, 237, 0.2);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+            <div style="font-weight: 700; color: #fff; font-size: 1.1rem;">${r.game_name || 'Juego'}</div>
+            <div style="font-size: 0.8rem; color: #718096;">${date}</div>
+          </div>
+          <div style="color: #cbd5e0; font-size: 0.95rem; line-height: 1.5;">${r.content}</div>
+          <div style="margin-top: 10px; text-align: right;">
+            <button onclick="window.location.href='/game/${r.game_api_id}'" 
+                    style="background: transparent; color: #7c3aed; padding: 4px 8px; border: 1px solid #7c3aed; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.3s;">
+              Ver Juego
+            </button>
+          </div>
+        </div>
+      `;
+    });
+
+    reviewsHtml += '</div>';
+
+    Swal.fire({
+      title: `<span style="color: #7c3aed; letter-spacing: 2px;">MIS RESEÑAS</span>`,
+      html: reviewsHtml,
+      width: '600px',
       background: '#050510',
       showConfirmButton: false,
       showCloseButton: true,

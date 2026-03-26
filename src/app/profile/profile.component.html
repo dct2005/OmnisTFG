@@ -164,14 +164,17 @@
         <div class="link-item">
           <span class="link-label">COMENTARIOS</span>
         </div>
-        <div class="link-item">
+        <div class="link-item" (click)="showReviewsList()" style="cursor: pointer;">
           <span class="link-label">RESEÑAS</span>
+          <span class="badge-count" *ngIf="userReviewsList().length">{{ userReviewsList().length }}</span>
         </div>
-        <div class="link-item">
+        <div class="link-item" (click)="showGroupsList()" style="cursor: pointer;">
           <span class="link-label">GRUPOS</span>
+          <span class="badge-count" *ngIf="userCommunitiesList().length">{{ userCommunitiesList().length }}</span>
         </div>
-        <div class="link-item">
+        <div class="link-item" (click)="showGamesList()" style="cursor: pointer;">
           <span class="link-label">JUEGOS</span>
+          <span class="badge-count" *ngIf="purchasedGamesList().length">{{ purchasedGamesList().length }}</span>
         </div>
       </div>
     </div>
