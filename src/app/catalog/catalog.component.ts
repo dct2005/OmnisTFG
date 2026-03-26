@@ -28,7 +28,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
     private router = inject(Router);
 
     currentUser = this.authService.currentUser;
-    activeTab = signal<'explore' | 'mine'>('explore');
+    activeTab = signal<'explore' | 'mine' | 'wishlist'>('explore');
 
     searchTerm = signal<string>('');
     loading = signal<boolean>(true);
@@ -50,6 +50,8 @@ export class CatalogComponent implements OnInit, OnDestroy {
         this.route.queryParams.subscribe((params: any) => {
             if (params['tab'] === 'mine' && this.currentUser()) {
                 this.activeTab.set('mine');
+            } else if (params['tab'] === 'wishlist' && this.currentUser()) {
+                this.activeTab.set('wishlist');
             } else {
                 this.activeTab.set('explore');
             }
@@ -99,7 +101,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
         this.resetAndLoad();
     }
 
-    setTab(tab: 'explore' | 'mine') {
+    setTab(tab: 'explore' | 'mine' | 'wishlist') {
         if (this.activeTab() === tab) return;
         this.activeTab.set(tab);
         this.resetAndLoad();
@@ -137,7 +139,27 @@ export class CatalogComponent implements OnInit, OnDestroy {
 
         const filters = this.getSelectedFilters();
 
-        if (this.activeTab() === 'mine') {
+        if (this.activeTab() === 'wishlist') {
+            const ids = this.userWishlist;
+            if (ids.length === 0) {
+                this.games = [];
+                this.loading.set(false);
+                this.reachedEnd = true;
+                return;
+            }
+            this.gameService.getGames(this.searchTerm(), 0, [], [], ids).subscribe({
+                next: (data) => {
+                    this.games = this.mapGames(data);
+                    this.loading.set(false);
+                    this.reachedEnd = true;
+                },
+                error: (err) => {
+                    console.error('Error loading wishlist games', err);
+                    this.error.set('Error al cargar tu lista de deseos.');
+                    this.loading.set(false);
+                }
+            });
+        } else if (this.activeTab() === 'mine') {
             this.authService.getUserGames().pipe(
                 switchMap((res: any) => {
                     const games = res.games || [];
@@ -177,7 +199,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
     }
 
     loadMoreGames() {
-        if (this.reachedEnd || this.activeTab() === 'mine') return;
+        if (this.reachedEnd || this.activeTab() === 'mine' || this.activeTab() === 'wishlist') return;
 
         this.isLoadingMore.set(true);
         this.offset += 20;

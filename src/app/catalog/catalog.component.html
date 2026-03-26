@@ -3,8 +3,8 @@
 </head>
 <div class="catalog-container">
     <header class="catalog-header">
-        <h1>{{ activeTab() === 'explore' ? 'EXPLORAR' : 'MIS JUEGOS' }}</h1>
-        <p>{{ activeTab() === 'explore' ? 'Tu próxima aventura comienza aquí.' : 'Tu biblioteca personal de juegos adquiridos.' }}</p>
+        <h1>{{ activeTab() === 'explore' ? 'EXPLORAR' : (activeTab() === 'mine' ? 'MIS JUEGOS' : 'LISTA DE DESEOS') }}</h1>
+        <p>{{ activeTab() === 'explore' ? 'Tu próxima aventura comienza aquí.' : (activeTab() === 'mine' ? 'Tu biblioteca personal de juegos adquiridos.' : 'Los juegos que tienes en la mira.') }}</p>
         <button class="btn-publish">Publicar contenido</button>
     </header>
 
@@ -21,6 +21,7 @@
                 <div class="quick-links">
                     @if (currentUser()) {
                     <a (click)="setTab('mine')" class="quick-link" [class.active]="activeTab() === 'mine'" style="cursor: pointer;"><span class="icon">🎮</span> Mis juegos</a>
+                    <a (click)="setTab('wishlist')" class="quick-link" [class.active]="activeTab() === 'wishlist'" style="cursor: pointer;"><span class="icon">📜</span> Lista de deseos</a>
                     }
                     <a (click)="setTab('explore')" class="quick-link" [class.active]="activeTab() === 'explore'" style="cursor: pointer;"><span class="icon">🔍</span> Explorar</a>
                 </div>
@@ -53,10 +54,12 @@
                             } @else if (game.peppixPrice) {
                             <span class="price-tag">{{ game.peppixPrice }} <span class="peppix-icon"></span></span>
                             }
+                            @if (activeTab() !== 'mine') {
                             <button class="btn-favorite" (click)="toggleFavorite($event, game)">
                                 <span class="material-icons">{{ game.isFavorite ? 'bookmark' : 'bookmark_border'
                                     }}</span>
                             </button>
+                            }
                         </div>
                     </div>
                 </div>
