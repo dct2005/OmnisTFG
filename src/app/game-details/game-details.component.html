@@ -85,6 +85,44 @@
         }
       </div>
       }
+
+      <div class="reviews-section">
+        <h2 class="section-title">OPINIONES DE LOS USUARIOS</h2>
+
+        <!-- Review Form -->
+        @if (currentUser()) {
+        <div class="review-form">
+          <textarea [(ngModel)]="reviewContent" placeholder="¿Qué te ha parecido el juego? Escribe tu opinión..." [disabled]="submittingReview"></textarea>
+          <div class="form-footer">
+            <button class="btn-submit-review" (click)="submitReview()" [disabled]="!reviewContent.trim() || submittingReview">
+              {{ submittingReview ? 'Enviando...' : 'Publicar Opinión' }}
+            </button>
+          </div>
+        </div>
+        } @else {
+        <div class="login-prompt-review">
+          <p>Debes iniciar sesión para publicar una opinión.</p>
+        </div>
+        }
+
+        <!-- Reviews List -->
+        <div class="reviews-list">
+          @for (review of gameReviews(); track review.id) {
+          <div class="review-card">
+            <div class="review-header">
+              <img [src]="review.profile_image || 'https://ui-avatars.com/api/?name=' + review.username" class="user-avatar">
+              <span class="username">{{ review.username }}</span>
+              <span class="review-date">{{ review.created_at | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="review-body">
+              <p>{{ review.content }}</p>
+            </div>
+          </div>
+          } @empty {
+          <p class="no-reviews">Aún no hay opiniones. ¡Sé el primero en compartir la tuya!</p>
+          }
+        </div>
+      </div>
     </div>
 
     <aside class="similar-games-sidebar">

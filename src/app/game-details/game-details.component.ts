@@ -1,5 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameService, Game } from '../services/game.service';
 import { AuthService } from '../services/auth';
@@ -8,7 +9,7 @@ declare var Swal: any;
 @Component({
   selector: 'app-game-details',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './game-details.component.html',
   styleUrls: ['./game-details.component.css']
 })
@@ -34,6 +35,10 @@ export class GameDetailsComponent implements OnInit {
 
   isDescriptionExpanded = false;
   isDlcsExpanded = false;
+
+  gameReviews = signal<any[]>([]);
+  reviewContent = '';
+  submittingReview = false;
 
   get truncatedSummary(): string {
     const summary = this.game?.summary || 'Durante las dos últimas décadas, Counter-Strike ha proporcionado una experiencia competitiva de primer nivel para los millones de jugadores de todo el mundo que contribuyeron a darle forma. Ahora el próximo capítulo en la historia de CS está a punto de comenzar. Hablamos de Counter-Strike 2.';
@@ -112,6 +117,7 @@ export class GameDetailsComponent implements OnInit {
 
         this.checkIfOwned();
         this.loading = false;
+        this.loadReviews(game.id);
         this.loadSimilarGames();
       },
       error: (err) => {
@@ -217,5 +223,47 @@ export class GameDetailsComponent implements OnInit {
         }
       });
     }
+  }
+
+  loadReviews(gameId: number | string) {
+    this.gameService.getGameReviews(gameId).subscribe({
+      next: (reviews) => this.gameReviews.set(reviews),
+      error: (err) => console.error('Error cargando reseñas', err)
+    });
+  }
+
+  submitReview() {
+    const user = this.currentUser();
+    if (!user || !this.game || !this.reviewContent.trim()) return;
+
+    this.submittingReview = true;
+    this.gameService.submitReview(
+      user.id,
+      this.game.id,
+      this.game.name,
+      this.reviewContent
+    ).subscribe({
+      next: (newReview) => {
+        this.gameReviews.update(prev => [
+          { ...newReview, username: user.username, profile_image: user.profile_image },
+          ...prev
+        ]);
+        this.reviewContent = '';
+        this.submittingReview = false;
+        Swal.fire({
+          title: 'Reseña enviada',
+          text: '¡Gracias por compartir tu opinión!',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+          background: '#1a103c',
+          color: '#ffffff'
+        });
+      },
+      error: (err) => {
+        console.error('Error enviando reseña', err);
+        this.submittingReview = false;
+      }
+    });
   }
 }

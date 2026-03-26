@@ -103,4 +103,16 @@ export class GameService {
   getThemes(): Observable<any[]> {
     return this.http.get<any[]>(this.themesUrl);
   }
+
+  getGameReviews(gameId: number | string): Observable<any[]> {
+    return this.http.get<any[]>(`/api/game-reviews?gameId=${gameId}`);
+  }
+
+  getUserReviews(userId: number | string): Observable<any[]> {
+    return this.http.get<any[]>(`/api/game-reviews?userId=${userId}`);
+  }
+
+  submitReview(userId: number, gameId: number, gameName: string, content: string): Observable<any> {
+    return this.http.post<any>('/api/game-reviews', { userId, gameId, gameName, content });
+  }
 }
