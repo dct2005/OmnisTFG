@@ -176,7 +176,7 @@
 .online-status.status-en-linea { background: rgba(72, 187, 120, 0.2); border-color: #48bb78; color: #48bb78; }
 .online-status.status-ausente { background: rgba(236, 201, 75, 0.2); border-color: #ecc94b; color: #ecc94b; }
 .online-status.status-invisible { background: rgba(160, 174, 192, 0.2); border-color: #a0aec0; color: #a0aec0; }
-.online-status.status-desconectado { background: rgba(245, 101, 101, 0.2); border-color: #f56565; color: #f56565; }
+.online-status.status-desconectado { background: rgba(160, 174, 192, 0.2); border-color: #a0aec0; color: #a0aec0; }
 
 .username {
     font-size: 2.2rem;
