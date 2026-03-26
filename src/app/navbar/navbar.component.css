@@ -32,7 +32,8 @@
   gap: 4rem;
   justify-content: center;
   align-items: center;
-  flex-wrap: nowrap; /* Evitar saltos internos en la fila superior */
+  flex-wrap: nowrap;
+  /* Evitar saltos internos en la fila superior */
   transition: gap 0.3s ease;
 }
 
@@ -96,7 +97,8 @@
 /* Responsiveness con CSS Grid */
 @media (max-width: 1300px) {
   .nav-links {
-    gap: 2.5rem; /* Reducir un poco más moderadamente */
+    gap: 2.5rem;
+    /* Reducir un poco más moderadamente */
   }
 }
 
@@ -104,6 +106,7 @@
   .navbar {
     padding: 1rem 2rem;
   }
+
   .nav-links {
     gap: 1.5rem;
   }
@@ -112,7 +115,8 @@
 /* Mantener en una línea hasta 850px */
 @media (max-width: 1150px) {
   .navbar {
-    grid-template-columns: auto 1fr auto; /* Forzar una línea */
+    grid-template-columns: auto 1fr auto;
+    /* Forzar una línea */
     grid-template-areas: "logo links auth";
     padding: 0.8rem 1.5rem;
     gap: 0.8rem;
@@ -126,7 +130,8 @@
   }
 
   .logo-container .logo {
-    height: 70px; /* Reducción ligera */
+    height: 70px;
+    /* Reducción ligera */
   }
 
   .peppix-icon {
@@ -153,7 +158,7 @@
   .navbar {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
-    grid-template-areas: 
+    grid-template-areas:
       "logo auth"
       "links links";
     padding: 1rem 1.5rem;
@@ -166,7 +171,8 @@
   }
 
   .nav-links {
-    display: flex; /* Asegurar que se vea en esta resolución */
+    display: flex;
+    /* Asegurar que se vea en esta resolución */
     flex-wrap: wrap;
     gap: 1.5rem;
     justify-content: center;
@@ -217,7 +223,8 @@
   }
 
   .nav-links {
-    display: none; /* Mantener oculto en móviles muy pequeños */
+    display: none;
+    /* Mantener oculto en móviles muy pequeños */
   }
 
   .user-name {
@@ -244,7 +251,8 @@
   padding: 4px 8px;
   border-radius: 12px;
   transition: background-color 0.3s ease;
-  flex-wrap: nowrap; /* Evitar que el icono y el texto se separen */
+  flex-wrap: nowrap;
+  /* Evitar que el icono y el texto se separen */
 }
 
 .peppix-container:hover {
@@ -267,11 +275,13 @@
 .peppix-amount {
   color: #ffffff;
   font-family: 'Audiowide', cursive;
-  font-size: 1.15rem; /* Reducido para que sea más pequeño */
+  font-size: 1.15rem;
+  /* Reducido para que sea más pequeño */
   font-weight: 500;
   letter-spacing: 2px;
   text-shadow: 0 0 6px rgba(103, 193, 245, 0.4);
-  display: inline-block; /* Necesario para que el transform funcione en el span */
+  display: inline-block;
+  /* Necesario para que el transform funcione en el span */
   transition: transform 0.3s ease, text-shadow 0.3s ease;
 }
 
@@ -291,7 +301,8 @@
   height: 48px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
-  overflow: visible; /* Cambiado de hidden a visible para mostrar el dropdown */
+  overflow: visible;
+  /* Cambiado de hidden a visible para mostrar el dropdown */
   /* Recorta la imagen del avatar en el borde curvo */
   padding-right: 16px;
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -299,36 +310,44 @@
 
 /* Modificadores de Estado (Más Notorios) */
 .user-profile-btn.conectado {
-  background-color: #0d3821; /* Verde esmeralda oscuro / Conectado */
-  border-color: rgba(30, 215, 96, 0.4); 
+  background-color: #0d3821;
+  /* Verde esmeralda oscuro / Conectado */
+  border-color: rgba(30, 215, 96, 0.4);
 }
+
 .user-profile-btn.conectado:hover {
   background-color: #124d2e;
   box-shadow: 0 4px 12px rgba(30, 215, 96, 0.25);
 }
 
 .user-profile-btn.desconectado {
-  background-color: #2b3036; /* Gris ceniza / Desconectado */
+  background-color: #2b3036;
+  /* Gris ceniza / Desconectado */
   border-color: rgba(255, 255, 255, 0.15);
 }
+
 .user-profile-btn.desconectado:hover {
   background-color: #383e45;
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
 
 .user-profile-btn.ausente {
-  background-color: #5c4113; /* Naranja-Dorado / Ausente */
+  background-color: #5c4113;
+  /* Naranja-Dorado / Ausente */
   border-color: rgba(255, 180, 50, 0.4);
 }
+
 .user-profile-btn.ausente:hover {
   background-color: #7a581a;
   box-shadow: 0 4px 12px rgba(255, 180, 50, 0.25);
 }
 
 .user-profile-btn.ocupado {
-  background-color: #5e1818; /* Rojo carmesí / Ocupado */
+  background-color: #5e1818;
+  /* Rojo carmesí / Ocupado */
   border-color: rgba(255, 50, 50, 0.4);
 }
+
 .user-profile-btn.ocupado:hover {
   background-color: #802020;
   box-shadow: 0 4px 12px rgba(255, 50, 50, 0.25);
@@ -338,7 +357,8 @@
   height: 100%;
   aspect-ratio: 1 / 1;
   flex-shrink: 0;
-  overflow: hidden; /* Asegura que la imagen siga el borde redondeado */
+  overflow: hidden;
+  /* Asegura que la imagen siga el borde redondeado */
 }
 
 .user-avatar {
@@ -387,8 +407,10 @@
   top: calc(100% + 15px);
   right: 0;
   width: 260px;
-  background: rgba(13, 27, 42, 0.85); /* Azul muy oscuro con transparencia */
-  backdrop-filter: blur(15px); /* Efecto cristal */
+  background: rgba(13, 27, 42, 0.85);
+  /* Azul muy oscuro con transparencia */
+  backdrop-filter: blur(15px);
+  /* Efecto cristal */
   -webkit-backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
@@ -403,6 +425,7 @@
     opacity: 0;
     transform: translateY(-10px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -414,17 +437,20 @@
   align-items: center;
   padding: 14px 24px;
   color: #f1f5f9;
-  font-family: 'Audiowide', cursive; /* Estilo futurista como en la imagen */
+  font-family: 'Audiowide', cursive;
+  /* Estilo futurista como en la imagen */
   font-size: 0.95rem;
   font-weight: 400;
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.2s ease;
-  justify-content: center; /* Centrar texto como en la imagen */
+  justify-content: center;
+  /* Centrar texto como en la imagen */
 }
 
 .status-option:hover {
-  background-color: rgba(124, 58, 237, 0.15); /* Tinte morado al pasar */
+  background-color: rgba(124, 58, 237, 0.15);
+  /* Tinte morado al pasar */
   color: #a855f7;
 }
 

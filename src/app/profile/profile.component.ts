@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, effect, computed } from '@angular/core';
+import { Component, inject, signal, OnInit, effect, computed, Renderer2, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth';
@@ -12,11 +12,12 @@ import { CommunityService } from '../services/community.service';
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnDestroy {
   authService = inject(AuthService);
   gameService = inject(GameService);
   communityService = inject(CommunityService);
   private route = inject(ActivatedRoute);
+  private renderer = inject(Renderer2);
 
   // Profile data signal
   profileData = signal({
@@ -80,6 +81,22 @@ export class ProfileComponent {
         this.loadUserData(user);
       }
     });
+
+    // Efecto para controlar el fondo global del body
+    effect(() => {
+      const background = this.profileBackground();
+      if (background) {
+        this.renderer.setStyle(document.body, 'background-image', `url(${background})`);
+      } else {
+        // Si no hay fondo personalizado, usamos el de por defecto
+        this.renderer.setStyle(document.body, 'background-image', "url('/images/background.webp')");
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    // Cuando salimos del perfil, restauramos el fondo por defecto de la aplicación
+    this.renderer.setStyle(document.body, 'background-image', "url('/images/background.webp')");
   }
 
   loadInitialData() {
