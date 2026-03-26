@@ -1,4 +1,6 @@
-<div class="profile-container" [style.--profile-theme-color]="viewedUser()?.profile_theme_color || '#00f2ff'">
+<div class="profile-container" 
+     [style.--profile-bg-color]="viewedUser()?.profile_bg_color || '#00f2ff'"
+     [style.--profile-name-color]="viewedUser()?.profile_name_color || '#ffffff'">
   <div class="profile-header">
 
     <div class="user-avatar-section" (click)="triggerFileInput(fileInput)">
@@ -269,10 +271,17 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Color de Tema</label>
+            <label>Color de Fondo (Tintado)</label>
             <div class="color-picker-wrapper">
-              <input type="color" [(ngModel)]="editForm().profile_theme_color" class="color-input">
-              <span class="color-hex">{{ editForm().profile_theme_color }}</span>
+              <input type="color" [(ngModel)]="editForm().profile_bg_color" class="color-input">
+              <span class="color-hex">{{ editForm().profile_bg_color }}</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Color del Nombre de Usuario</label>
+            <div class="color-picker-wrapper">
+              <input type="color" [(ngModel)]="editForm().profile_name_color" class="color-input">
+              <span class="color-hex">{{ editForm().profile_name_color }}</span>
             </div>
           </div>
         </div>

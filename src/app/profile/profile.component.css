@@ -1,13 +1,14 @@
 .profile-container {
-    --theme-color: var(--profile-theme-color, #00f2ff);
+    --bg-color: var(--profile-bg-color, #00f2ff);
+    --name-color: var(--profile-name-color, #ffffff);
     max-width: 1100px;
     margin: 40px auto;
     padding: 20px;
-    /* Fondo semitransparente basado en el color de tema */
-    background: color-mix(in srgb, var(--theme-color) 10%, rgba(13, 27, 42, 0.8));
+    /* Fondo semitransparente basado en el color de fondo personalizado */
+    background: color-mix(in srgb, var(--bg-color) 10%, rgba(13, 27, 42, 0.8));
     backdrop-filter: blur(20px);
     border-radius: 15px;
-    border: 1px solid color-mix(in srgb, var(--theme-color) 20%, rgba(255, 255, 255, 0.1));
+    border: 1px solid color-mix(in srgb, var(--bg-color) 20%, rgba(255, 255, 255, 0.1));
     color: #e0e6ed;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -182,8 +183,8 @@
     font-weight: 800;
     margin: 0;
     letter-spacing: -1px;
-    color: var(--theme-color);
-    text-shadow: 0 0 15px color-mix(in srgb, var(--theme-color) 40%, transparent);
+    color: var(--name-color);
+    text-shadow: 0 0 15px color-mix(in srgb, var(--name-color) 40%, transparent);
 }
 
 .badge-admin {
@@ -1077,14 +1078,13 @@
     }
 }
 
-/* Theme Color Styles */
-.profile-container {
-    --theme-color: var(--profile-theme-color, #00f2ff);
-    --theme-color-glow: rgba(0, 242, 255, 0.2);
-    /* Fallback glow */
-}
 
-/*Colores varios*/
+/* Fine-tuning accents with the new background theme color */
+.section-title { color: var(--bg-color); }
+.community-name { color: var(--bg-color); }
+.level-circle { border-color: var(--bg-color); }
+.status-indicator { border-color: var(--bg-color); } /* If I still had it, but let's be safe */
+.online-status { border-color: color-mix(in srgb, var(--bg-color) 30%, rgba(255, 255, 255, 0.1)); }
 
 /* Color Picker UI */
 

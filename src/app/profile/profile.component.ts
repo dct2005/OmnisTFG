@@ -86,7 +86,9 @@ export class ProfileComponent implements OnDestroy {
     estado: 'en-linea',
     selected_badge_id: null,
     display_comments_type: 'community',
-    profile_theme_color: '#00f2ff'
+    profile_theme_color: '#00f2ff',
+    profile_bg_color: '#00f2ff',
+    profile_name_color: '#ffffff'
   });
 
   commentInput = signal('');
@@ -812,7 +814,9 @@ export class ProfileComponent implements OnDestroy {
         estado: user.estado || 'en-linea',
         selected_badge_id: user.selected_badge_id || null,
         display_comments_type: user.display_comments_type || 'community',
-        profile_theme_color: user.profile_theme_color || '#00f2ff'
+        profile_theme_color: user.profile_theme_color || '#00f2ff',
+        profile_bg_color: user.profile_bg_color || '#00f2ff',
+        profile_name_color: user.profile_name_color || '#ffffff'
       });
 
       // Cargar juegos y comunidades para los selectores

@@ -442,7 +442,9 @@ module.exports = async function handler(req, res) {
                     selected_badge_id,
                     estado,
                     display_comments_type,
-                    profile_theme_color
+                    profile_theme_color,
+                    profile_bg_color,
+                    profile_name_color
                 } = req.body;
 
                 if (!email) return res.status(400).json({ error: 'Falta email' });
@@ -463,7 +465,9 @@ module.exports = async function handler(req, res) {
                         selected_badge_id = ${selected_badge_id},
                         estado = ${estado || 'en-linea'},
                         display_comments_type = ${display_comments_type || 'community'},
-                        profile_theme_color = ${profile_theme_color || '#00f2ff'}
+                        profile_theme_color = ${profile_theme_color || '#00f2ff'},
+                        profile_bg_color = ${profile_bg_color || '#00f2ff'},
+                        profile_name_color = ${profile_name_color || '#ffffff'}
                     WHERE email = ${email}
                     RETURNING *
                 `;
