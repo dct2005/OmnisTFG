@@ -17,6 +17,14 @@ const guestGuard = () => {
     }
     return true;
 };
+const authGuard = () => {
+    const authService = inject(AuthService);
+    const router = inject(Router);
+    if (localStorage.getItem('token') || authService.currentUser()) {
+        return true;
+    }
+    return router.parseUrl('/login');
+};
 export const routes: Routes = [
     { path: 'home', title: 'Inicio', loadComponent: () => import('./home/home.component').then(m => m.HomeComponent) },
     { path: 'catalogo', title: 'Catálogo', loadComponent: () => import('./catalog/catalog.component').then(m => m.CatalogComponent) },
@@ -37,7 +45,7 @@ export const routes: Routes = [
     },
     { path: 'communities', title: 'Comunidades', component: CommunitiesComponent },
     { path: 'informacion-communities/:id', title: 'Información de la Comunidad', component: InformacionCommunities },
-    { path: 'crear-comunidad', title: 'Crear Comunidad', component: CreateCommunity },
+    { path: 'crear-comunidad', title: 'Crear Comunidad', component: CreateCommunity, canActivate: [authGuard] },
     { path: 'soporte', title: 'Soporte', loadComponent: () => import('./support/support.component').then(m => m.SupportComponent) },
     { path: 'pagos', title: 'Pagos', component: Pagos },
     { path: 'compras', title: 'Compras', component: Compras },

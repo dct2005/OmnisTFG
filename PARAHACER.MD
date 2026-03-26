@@ -9,7 +9,7 @@
 
 -- Hecho, Una lista de deseados que funcione con el icono de bookmark que hay debajo de cada juego
 
--- Cuando creas un grupo, no deberia llevarte a /login sino a la. propia pagina del grupo.
+-- Hecho, Cuando creas un grupo, no deberia llevarte a /login sino a la propia pagina del grupo.
 
 -- Si el usuario ha creado una comunidad, lo logico es que ya pertenezca a ella como creador que es.
 
