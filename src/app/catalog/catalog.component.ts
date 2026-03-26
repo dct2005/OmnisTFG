@@ -42,6 +42,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
 
     categoriesInput: { name: string, selected: boolean }[] = [];
     themesInput: { name: string, selected: boolean }[] = [];
+    userWishlist: string[] = [];
 
     private route = inject(ActivatedRoute);
 
@@ -108,7 +109,20 @@ export class CatalogComponent implements OnInit, OnDestroy {
         this.offset = 0;
         this.reachedEnd = false;
         this.games = [];
-        this.loadGames();
+        if (this.currentUser()) {
+            this.authService.getWishlist().subscribe({
+                next: (res: any) => {
+                    this.userWishlist = res.wishlist || [];
+                    this.loadGames();
+                },
+                error: (err) => {
+                    console.error('Error fetching wishlist', err);
+                    this.loadGames();
+                }
+            });
+        } else {
+            this.loadGames();
+        }
     }
 
     private getSelectedFilters(): { genres: string[], themes: string[] } {
@@ -194,7 +208,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
         return data.map(g => ({
             ...g,
             isLibrary: isLibrary,
-            isFavorite: false,
+            isFavorite: this.userWishlist.includes(g.id.toString()),
             categories: g.genres || [],
             themes: g.themes || []
         }));
@@ -202,7 +216,27 @@ export class CatalogComponent implements OnInit, OnDestroy {
 
     toggleFavorite(event: Event, game: CatalogGame) {
         event.stopPropagation();
+        if (!this.currentUser()) {
+            this.router.navigate(['/login']);
+            return;
+        }
+        
         game.isFavorite = !game.isFavorite;
+        this.authService.toggleWishlist(game.id).subscribe({
+            next: (res: any) => {
+                if (res.inWishlist) {
+                    if (!this.userWishlist.includes(game.id.toString())) {
+                        this.userWishlist.push(game.id.toString());
+                    }
+                } else {
+                    this.userWishlist = this.userWishlist.filter(id => id !== game.id.toString());
+                }
+            },
+            error: (err) => {
+                console.error('Error toggling wishlist', err);
+                game.isFavorite = !game.isFavorite; // Revert on error
+            }
+        });
     }
 
     goToGame(id: number) {

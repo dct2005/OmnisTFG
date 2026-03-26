@@ -228,4 +228,24 @@ export class AuthService {
       })
     );
   }
+
+  getWishlist(): Observable<any> {
+    const user = this.currentUser();
+    const userEmail = user?.email;
+    if (!userEmail) throw new Error('Usuario no autenticado');
+
+    return this.http.get(`${this.apiUrl}/user?email=${userEmail}&action=get-wishlist`);
+  }
+
+  toggleWishlist(gameId: number | string): Observable<any> {
+    const user = this.currentUser();
+    const userEmail = user?.email;
+    if (!userEmail) throw new Error('Usuario no autenticado');
+
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'toggle-wishlist',
+      email: userEmail,
+      gameId: gameId.toString()
+    });
+  }
 }

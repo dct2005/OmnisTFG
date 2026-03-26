@@ -63,6 +63,14 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ games });
             }
 
+            if (action === 'get-wishlist') {
+                const userCheck = await sql`SELECT id FROM users WHERE email = ${email}`;
+                if (userCheck.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+
+                const wishlist = await sql`SELECT game_api_id FROM user_wishlist WHERE user_id = ${userCheck[0].id}`;
+                return res.status(200).json({ wishlist: wishlist.map(w => w.game_api_id) });
+            }
+
             const users = await sql`SELECT id, email, username, peppix, xp, estado, profile_image, profile_background, location, created_at FROM users WHERE email = ${email}`;
             if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
 
@@ -248,6 +256,25 @@ module.exports = async function handler(req, res) {
                     message: 'Fondo de perfil actualizado', 
                     user: updated[0] 
                 });
+            }
+
+            if (action === 'toggle-wishlist') {
+                const { gameId } = req.body;
+                if (!email || !gameId) return res.status(400).json({ error: 'Faltan datos' });
+
+                const userCheck = await sql`SELECT id FROM users WHERE email = ${email}`;
+                if (userCheck.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+                const userId = userCheck[0].id;
+
+                const existing = await sql`SELECT * FROM user_wishlist WHERE user_id = ${userId} AND game_api_id = ${gameId.toString()}`;
+
+                if (existing.length > 0) {
+                    await sql`DELETE FROM user_wishlist WHERE user_id = ${userId} AND game_api_id = ${gameId.toString()}`;
+                    return res.status(200).json({ message: 'Eliminado de la lista de deseos', inWishlist: false });
+                } else {
+                    await sql`INSERT INTO user_wishlist (user_id, game_api_id) VALUES (${userId}, ${gameId.toString()})`;
+                    return res.status(200).json({ message: 'Añadido a la lista de deseos', inWishlist: true });
+                }
             }
 
             return res.status(400).json({ error: 'Acción no válida' });
