@@ -9,7 +9,11 @@
                     <img [alt]="communityData?.name" class="avatar-img" [src]="communityData?.image_url" />
                 </div>
                 <div class="community-info">
-                    <h1>{{ communityData?.name }}</h1>
+                    @if (!isEditing) {
+                        <h1>{{ communityData?.name }}</h1>
+                    } @else {
+                        <input [(ngModel)]="editData.name" class="edit-input-title" placeholder="Nombre de la comunidad">
+                    }
                     <p class="verified-tag">
                         @if (communityData?.is_official) {
                         <span class="material-icons-round text-sm"
@@ -20,6 +24,16 @@
                 </div>
             </div>
             <div class="banner-actions">
+                @if (userRole === 'administrador') {
+                    @if (!isEditing) {
+                        <button class="btn-admin" (click)="startEditing()">
+                            <span class="material-icons-round">settings</span> Administrar
+                        </button>
+                    } @else {
+                        <button class="btn-save" (click)="saveChanges()">Guardar</button>
+                        <button class="btn-cancel" (click)="cancelEditing()">Cancelar</button>
+                    }
+                }
                 <button class="btn-join" (click)="toggleJoin()"
                     [ngStyle]="{'background': isMember ? '#334155' : 'var(--primary)'}">
                     {{ isMember ? 'Abandonar' : 'Unirse' }}
@@ -43,7 +57,15 @@
         <section class="content-main">
             <div class="glass-panel about-card">
                 <h2>Sobre nosotros</h2>
-                <p>{{ communityData?.description }}</p>
+                @if (!isEditing) {
+                    <p>{{ communityData?.description }}</p>
+                } @else {
+                    <textarea [(ngModel)]="editData.description" class="edit-textarea" placeholder="Descripción de la comunidad"></textarea>
+                    <div style="margin-top: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Categoría</label>
+                        <input [(ngModel)]="editData.categoria" class="edit-input" placeholder="Categoría">
+                    </div>
+                }
             </div>
 
             <div class="feed-header" style="margin-top: 2rem;">
@@ -116,6 +138,27 @@
                     <span style="font-weight: 700;">{{ communityData?.total_messages | number }}</span>
                 </div>
             </div>
+
+            @if (userRole === 'administrador' && members.length > 0) {
+            <div class="glass-panel p-6" style="margin-top: 1.5rem;">
+                <h3 class="section-title">Gestionar Miembros</h3>
+                <div class="members-admin-list">
+                    @for (member of members; track member.id) {
+                        @if (member.id !== currentUser()?.id) {
+                            <div class="member-admin-item">
+                                <div class="member-info">
+                                    <img [src]="member.profile_image || 'https://ui-avatars.com/api/?name=' + member.username" class="member-avatar-small">
+                                    <span class="member-name">{{ member.username }}</span>
+                                </div>
+                                <button class="btn-kick" (click)="kickMember(member.id)">
+                                    <span class="material-icons-round">person_remove</span>
+                                </button>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            }
         </aside>
     </div>
 </main>

@@ -21,8 +21,12 @@ module.exports = async function handler(req, res) {
                 SELECT * FROM community_members 
                 WHERE user_id = ${userId} AND community_id = ${communityId}
             `;
-            // Devuelve true si lo encuentra, false si no
-            return res.status(200).json({ isMember: rows.length > 0 });
+            // Devuelve true si lo encuentra, false si no, y el rol
+            const isMember = rows.length > 0;
+            return res.status(200).json({ 
+                isMember, 
+                role: isMember ? rows[0].role : null 
+            });
         }
 
 
@@ -38,11 +42,11 @@ module.exports = async function handler(req, res) {
             if (rows.length > 0) {
                 await sql`DELETE FROM community_members WHERE user_id = ${userId} AND community_id = ${communityId}`;
                 await sql`UPDATE communities SET member_count = member_count - 1 WHERE id = ${communityId}`;
-                return res.status(200).json({ message: 'Has abandonado la comunidad', isMember: false });
+                return res.status(200).json({ message: 'Has abandonado la comunidad', isMember: false, role: null });
             } else {
-                await sql`INSERT INTO community_members (user_id, community_id) VALUES (${userId}, ${communityId})`;
+                await sql`INSERT INTO community_members (user_id, community_id, joined_at, role) VALUES (${userId}, ${communityId}, NOW(), 'member')`;
                 await sql`UPDATE communities SET member_count = member_count + 1 WHERE id = ${communityId}`;
-                return res.status(200).json({ message: 'Te has unido a la comunidad', isMember: true });
+                return res.status(200).json({ message: 'Te has unido a la comunidad', isMember: true, role: 'member' });
             }
         }
 

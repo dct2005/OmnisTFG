@@ -35,51 +35,72 @@ module.exports = async function handler(req, res) {
         }
 
         if (req.method === 'POST') {
-            const { name, description, categoria, image_url, userId } = req.body;
+            const { action, name, description, categoria, image_url, userId } = req.body;
 
-            if (!name || !categoria) {
-                return res.status(400).json({ error: 'Faltan datos obligatorios' });
-            }
+            // Acción: Crear Comunidad
+            if (action === 'create' || !action) {
+                if (!name || !categoria) {
+                    return res.status(400).json({ error: 'Faltan datos obligatorios' });
+                }
 
-            // Insertamos los datos haciendo match con las columnas de tu captura
-            const newCommunity = await sql`
-                INSERT INTO communities (
-                    name, 
-                    description, 
-                    categoria, 
-                    image_url, 
-                    is_official, 
-                    member_count, 
-                    online_count, 
-                    total_messages
-                )
-                VALUES (
-                    ${name}, 
-                    ${description}, 
-                    ${categoria}, 
-                    ${image_url}, 
-                    FALSE, 
-                    1, 
-                    0, 
-                    0
-                )
-                RETURNING id, name
-            `;
-
-            const communityId = newCommunity[0].id;
-
-            // Si se proporciona un userId, lo añadimos como miembro (creador)
-            if (userId) {
-                await sql`
-                    INSERT INTO community_members (user_id, community_id, joined_at)
-                    VALUES (${userId}, ${communityId}, NOW())
+                const newCommunity = await sql`
+                    INSERT INTO communities (
+                        name, 
+                        description, 
+                        categoria, 
+                        image_url, 
+                        is_official, 
+                        member_count, 
+                        online_count, 
+                        total_messages
+                    )
+                    VALUES (
+                        ${name}, 
+                        ${description}, 
+                        ${categoria}, 
+                        ${image_url}, 
+                        FALSE, 
+                        1, 
+                        0, 
+                        0
+                    )
+                    RETURNING id, name
                 `;
+
+                const communityId = newCommunity[0].id;
+
+                if (userId) {
+                    await sql`
+                        INSERT INTO community_members (user_id, community_id, joined_at, role)
+                        VALUES (${userId}, ${communityId}, NOW(), 'administrador')
+                    `;
+                }
+
+                return res.status(201).json({
+                    message: 'Comunidad creada con éxito',
+                    community: newCommunity[0]
+                });
             }
 
-            return res.status(201).json({
-                message: 'Comunidad creada con éxito',
-                community: newCommunity[0]
-            });
+            // Acción: Actualizar Comunidad
+            if (action === 'update') {
+                const { id, name, description, categoria } = req.body;
+                if (!id) return res.status(400).json({ error: 'Falta el ID de la comunidad' });
+
+                const updated = await sql`
+                    UPDATE communities 
+                    SET name = ${name}, description = ${description}, categoria = ${categoria}
+                    WHERE id = ${id}
+                    RETURNING id, name, description, categoria
+                `;
+
+                if (updated.length === 0) return res.status(404).json({ error: 'Comunidad no encontrada' });
+
+                return res.status(200).json({
+                    message: 'Comunidad actualizada con éxito',
+                    community: updated[0]
+                });
+            }
         }
 
         return res.status(405).json({ error: 'Método no permitido' });

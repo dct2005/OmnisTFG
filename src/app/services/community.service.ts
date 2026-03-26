@@ -42,4 +42,18 @@ export class CommunityService {
     checkMembership(communityId: string, userId: number): Observable<any> {
         return this.http.get<any>(`/api/communities/${communityId}/join?userId=${userId}`);
     }
+
+    getCommunityMembers(communityId: string): Observable<any[]> {
+        return this.http.get<any[]>(`/api/communities/${communityId}/members`);
+    }
+
+    kickMember(communityId: string, userId: number, adminId: number): Observable<any> {
+        return this.http.delete<any>(`/api/communities/${communityId}/members`, {
+            body: { userId, adminId }
+        });
+    }
+
+    updateCommunity(data: any): Observable<any> {
+        return this.http.post<any>('/api/communities', { action: 'update', ...data });
+    }
 }

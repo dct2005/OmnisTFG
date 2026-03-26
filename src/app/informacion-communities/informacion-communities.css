@@ -687,3 +687,126 @@ button {
 .text-green {
     color: #4ade80;
 }
+
+/* Admin Styles */
+.btn-admin {
+    background: rgba(124, 58, 237, 0.15);
+    color: var(--primary);
+    border: 1px solid rgba(124, 58, 237, 0.3);
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.btn-admin:hover {
+    background: rgba(124, 58, 237, 0.25);
+    transform: translateY(-2px);
+}
+
+.btn-save {
+    background: #10b981;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+}
+
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+}
+
+.edit-input-title {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--primary);
+    color: white;
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    width: 60%;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.edit-textarea {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-white);
+    color: var(--text-main);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    min-height: 100px;
+    margin-top: 0.5rem;
+    font-family: var(--font-body);
+}
+
+.edit-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-white);
+    color: var(--text-main);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-family: var(--font-body);
+}
+
+.members-admin-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.member-admin-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-white);
+}
+
+.member-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.member-avatar-small {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.member-name {
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: var(--font-body);
+}
+
+.btn-kick {
+    color: #ef4444;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-kick:hover {
+    background: rgba(239, 68, 68, 0.1);
+    transform: scale(1.1);
+}
