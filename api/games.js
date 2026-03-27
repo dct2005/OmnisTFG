@@ -83,7 +83,8 @@ module.exports = async function handler(req, res) {
             
             // Multiplicadores por edición
             const name = (game.name || "").toLowerCase();
-            if (name.includes('collector')) price *= 1.6;
+            if (name.includes('collection') || name.includes('bundle') || name.includes('pack')) price *= 3.0; // Colecciones notablemente más caras
+            else if (name.includes('collector')) price *= 1.6;
             else if (name.includes('ultimate')) price *= 1.5;
             else if (name.includes('premium')) price *= 1.4;
             else if (name.includes('platinum')) price *= 1.4;
