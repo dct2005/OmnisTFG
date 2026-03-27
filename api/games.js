@@ -23,22 +23,20 @@ module.exports = async function handler(req, res) {
                 whereConditions.push(`id = (${ids.join(",")})`);
             }
         } else if (search) {
-            whereConditions.push("game_type = (0, 8, 9, 11)"); //Juego base, remake, remaster, port
+            whereConditions.push("game_type = (0, 8, 9, 10, 11, 13)"); // Juego base, remake, remaster, expanded, port, pack
             whereConditions.push(`name ~ *"${search}"*`); // Búsqueda más flexible
         } else {
-            whereConditions.push("game_type = (0, 8, 9, 11)"); //Juego base, remake, remaster, port
+            whereConditions.push("game_type = (0, 8, 9, 10, 11, 13)");
             whereConditions.push("rating > 70"); // Filtro base para calidad
             whereConditions.push("rating_count > 10");
         }
 
-        // Filtro de generos
+        // ... (Filtros de generos y tematicas omitidos por brevedad en este chunk)
         if (genres) {
             const genresArr = Array.isArray(genres) ? genres : [genres];
             const genresString = genresArr.map(g => `"${g}"`).join(",");
             whereConditions.push(`genres.name = (${genresString})`);
         }
-
-        // Filtro de tematicas
         if (themes) {
             const themesArr = Array.isArray(themes) ? themes : [themes];
             const themesString = themesArr.map(t => `"${t}"`).join(",");
@@ -54,7 +52,7 @@ module.exports = async function handler(req, res) {
 
         // Limite y paginacion
         queryParts.push(`limit 20;`);
-        queryParts.push(`offset ${offset || 0};`); // Asegurar que offset siempre tenga valor
+        queryParts.push(`offset ${offset || 0};`);
 
         const body = queryParts.join(" ");
 
@@ -79,9 +77,24 @@ module.exports = async function handler(req, res) {
             }
             const rating = game.rating || 60;
             const ratingCount = game.rating_count || 0;
-            const basePrice = (rating * 45) + (ratingCount / 10);
+            
+            // Cálculo base más balanceado
+            let price = (rating * 45) + (Math.min(ratingCount, 1000) / 5);
+            
+            // Multiplicadores por edición
+            const name = (game.name || "").toLowerCase();
+            if (name.includes('collector')) price *= 1.6;
+            else if (name.includes('ultimate')) price *= 1.5;
+            else if (name.includes('premium')) price *= 1.4;
+            else if (name.includes('platinum')) price *= 1.4;
+            else if (name.includes('gold')) price *= 1.3;
+            else if (name.includes('deluxe')) price *= 1.25;
+            else if (name.includes('goty') || name.includes('game of the year')) price *= 1.2;
+            else if (name.includes('complete')) price *= 1.15;
+            else if (name.includes('edition')) price *= 1.1;
+
             // Redondear al 99 mas cercano (ej: 4999)
-            return Math.max(999, Math.floor(basePrice / 100) * 100 + 99);
+            return Math.max(999, Math.floor(price / 100) * 100 + 99);
         };
 
         // Procesar cada juego para añadir el precio
@@ -91,7 +104,7 @@ module.exports = async function handler(req, res) {
             // También a contenido adicional si existe
             if (game.dlcs) game.dlcs = game.dlcs.map(d => ({ ...d, peppixPrice: calculatePeppixPrice(d, true) }));
             if (game.expansions) game.expansions = game.expansions.map(e => ({ ...e, peppixPrice: calculatePeppixPrice(e, true) }));
-            if (game.bundles) game.bundles = game.bundles.map(b => ({ ...b, peppixPrice: calculatePeppixPrice(b, true) * 1.2 })); // Bundles algo más caros
+            if (game.bundles) game.bundles = game.bundles.map(b => ({ ...b, peppixPrice: calculatePeppixPrice(b, true) * 1.5 })); // Bundles notablemente más caros
 
             return game;
         });

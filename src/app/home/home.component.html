@@ -5,7 +5,7 @@
         <p class="hero-subtitle">
             Descubre nuevos mundos, conecta con jugadores y comparte tus creaciones en Omnis.
         </p>
-        <a routerLink="/register" class="btn btn-cta">Comencemos</a>
+        <a [routerLink]="authService.currentUser() ? '/catalogo' : '/register'" class="btn btn-cta">Comencemos</a>
     </section>
 
     <!-- Games Section -->

@@ -14,7 +14,7 @@ import { DailyRewardComponent } from '../daily-reward/daily-reward.component';
 })
 export class HomeComponent implements OnInit {
     private gameService = inject(GameService);
-    private authService = inject(AuthService);
+    public authService = inject(AuthService);
     private router = inject(Router);
     games: Game[] = [];
     loading = true;
