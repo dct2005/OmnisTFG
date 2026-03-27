@@ -372,4 +372,24 @@ export class AuthService {
       userId
     });
   }
+
+  createSupportTicket(userId: number, category: string, productName: string | null, subject: string, details: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'create-ticket',
+      userId,
+      category,
+      productName,
+      subject,
+      details
+    });
+  }
+
+  getSupportTickets(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user`, {
+      params: {
+        action: 'get-tickets',
+        userId: userId.toString()
+      }
+    });
+  }
 }

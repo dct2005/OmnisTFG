@@ -1,32 +1,61 @@
 .support-container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 60px 20px;
   color: white;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
+.support-header {
+  margin-bottom: 50px;
+  text-align: left;
+}
+
+.btn-back {
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  color: #a78bfa;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+  background: rgba(124, 58, 237, 0.2);
+  color: white;
+  transform: translateX(-4px);
+}
+
 h1 {
-  font-size: 2.2rem;
-  font-weight: 500;
+  font-size: 2.8rem;
+  font-weight: 700;
   margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
-  font-size: 1.1rem;
-  color: #b0b0b0;
-  margin-bottom: 50px;
+  font-size: 1.25rem;
+  color: #94a3b8;
 }
 
+/* Main Menu Options */
 .support-options {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+  animation: fadeIn 0.4s ease-out;
 }
 
 .support-card {
-  background: rgba(50, 48, 68, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  background: rgba(30, 27, 50, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   padding: 24px 30px;
   display: flex;
@@ -36,21 +65,374 @@ h1 {
   font-size: 1.1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
-  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  backdrop-filter: blur(16px);
   text-align: left;
+  width: 100%;
   outline: none;
 }
 
 .support-card:hover {
-  background: rgba(68, 65, 90, 0.6);
+  background: rgba(45, 42, 75, 0.7);
+  border-color: rgba(139, 92, 246, 0.4);
   transform: translateY(-2px);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.support-card .icon {
+.icon-arrow {
   font-size: 0.8rem;
   color: #fff;
-  opacity: 0.9;
+  opacity: 0.7;
+}
+
+.request-shortcut {
+  margin-top: 10px;
+}
+
+.btn-view-tickets {
+  background: rgba(30, 27, 50, 0.5);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: 8px;
+  padding: 24px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #a78bfa;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(16px);
+  width: 100%;
+  outline: none;
+}
+
+.btn-view-tickets:hover {
+  background: rgba(45, 42, 75, 0.7);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Sections */
+.section-title {
+  margin-bottom: 30px;
+}
+
+.section-title h2 {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.section-title p {
+  color: #64748b;
+}
+
+/* Content Container */
+.support-content {
+  background: rgba(15, 12, 30, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 20px;
+  padding: 40px;
+  backdrop-filter: blur(20px);
+  animation: slideUp 0.4s ease-out;
+}
+
+/* Game Selection Grid */
+.game-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.game-select-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.game-select-item:hover {
+  background: rgba(124, 58, 237, 0.1);
+  border-color: rgba(124, 58, 237, 0.3);
+  transform: scale(1.01);
+}
+
+.mini-cover {
+  width: 50px;
+  height: 65px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.game-identity {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #f1f5f9;
+}
+
+.game-platform {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* Form Styling */
+.form-header-premium {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.form-item-img {
+  width: 80px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.form-icon-large {
+  font-size: 3rem;
+  width: 90px;
+  height: 90px;
+  background: rgba(124, 58, 237, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+}
+
+.form-title-group h2 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.form-category {
+  color: #7c3aed;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 30px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 12px;
+}
+
+textarea, input[type="text"] {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px 20px;
+  color: white;
+  font-family: inherit;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+textarea {
+  height: 180px;
+  resize: vertical;
+}
+
+input[type="text"] {
+  height: 56px;
+}
+
+textarea:focus, input[type="text"]:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.input-hint {
+  display: block;
+  font-size: 0.85rem;
+  color: #475569;
+  margin-top: 10px;
+}
+
+.btn-submit-premium {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  color: white;
+  border: none;
+  padding: 16px 40px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  max-width: 250px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+}
+
+.btn-submit-premium:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(124, 58, 237, 0.6);
+}
+
+.btn-submit-premium:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+/* Ticket Grid */
+.ticket-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.ticket-card-premium {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 24px;
+  transition: border-color 0.3s;
+}
+
+.ticket-card-premium:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.ticket-subject-display {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.ticket-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.ticket-badge {
+  background: rgba(124, 58, 237, 0.15);
+  color: #a78bfa;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.ticket-id {
+  color: #475569;
+  font-family: monospace;
+}
+
+.ticket-target {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 8px;
+}
+
+.ticket-text-preview {
+  color: #94a3b8;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  white-space: pre-wrap;
+}
+
+.ticket-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ticket-date {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.ticket-status-pill {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(248, 113, 113, 0.1);
+  color: #f87171;
+}
+
+.ticket-status-pill.status-open {
+  background: rgba(52, 211, 153, 0.1);
+  color: #34d399;
+}
+
+/* States */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #475569;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 40px;
+  color: #94a3b8;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(124, 58, 237, 0.2);
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }

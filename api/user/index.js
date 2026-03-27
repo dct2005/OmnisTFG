@@ -15,13 +15,15 @@ module.exports = async function handler(req, res) {
         console.log(`[API User] ${req.method} request received. Action: ${req.body?.action || req.query?.action}`);
         const sql = neon(process.env.DATABASE_URL);
 
-        // Update last activity for the current user (the requester)
-        const requesterEmail = req.query?.email || req.body?.email;
-        const requesterUsername = req.query?.username || req.body?.username;
-        if (requesterEmail) {
-            await sql`UPDATE users SET last_activity = CURRENT_TIMESTAMP WHERE email = ${requesterEmail}`;
-        } else if (requesterUsername) {
-            await sql`UPDATE users SET last_activity = CURRENT_TIMESTAMP WHERE username = ${requesterUsername}`;
+        // Update last activity ONLY for actions performed by the current user
+        // Actions that identify the requester: log in, register, or any POST update
+        // We avoid updating last_activity on generic GET lookups for other users (like profile view)
+        const possibleEmail = req.body?.email || req.body?.username || (req.method === 'GET' && req.query?.action === 'get' ? req.query?.email : null);
+        const isAction = req.method === 'POST';
+        
+        if (possibleEmail && isAction || (req.method === 'GET' && req.query?.action === 'get' && req.query?.email)) {
+             const emailForUpdate = possibleEmail;
+             await sql`UPDATE users SET last_activity = CURRENT_TIMESTAMP WHERE email = ${emailForUpdate}`;
         }
 
         async function getUserWithBadges(user) {
@@ -68,6 +70,23 @@ module.exports = async function handler(req, res) {
                 await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_name_color TEXT DEFAULT '#ffffff'`;
                 await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_activity TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP`;
                 return res.status(200).json({ message: 'Migración completada' });
+            }
+
+            if (action === 'migrate-support') {
+                await sql`
+                    CREATE TABLE IF NOT EXISTS support_tickets (
+                        id SERIAL PRIMARY KEY,
+                        user_id INTEGER REFERENCES users(id),
+                        category TEXT NOT NULL,
+                        product_name TEXT,
+                        subject TEXT,
+                        details TEXT NOT NULL,
+                        status TEXT DEFAULT 'open',
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                    )
+                `;
+                await sql`ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS subject TEXT`;
+                return res.status(200).json({ message: 'Soporte migrado correctamente' });
             }
 
             if (action === 'get-profile-comments') {
@@ -133,6 +152,17 @@ module.exports = async function handler(req, res) {
                     AND u.id != ${userId}
                 `;
                 return res.status(200).json(friends);
+            }
+
+            if (action === 'get-tickets') {
+                const { userId } = req.query;
+                if (!userId) return res.status(400).json({ error: 'Falta userId' });
+                const tickets = await sql`
+                    SELECT * FROM support_tickets 
+                    WHERE user_id = ${userId} 
+                    ORDER BY created_at DESC
+                `;
+                return res.status(200).json(tickets);
             }
 
             if (action === 'check-daily-reward') {
@@ -224,6 +254,17 @@ module.exports = async function handler(req, res) {
                     author_name: commenter[0].author_name,
                     author_image: commenter[0].author_image
                 });
+            }
+
+            if (action === 'create-ticket') {
+                const { userId, category, productName, subject, details } = req.body;
+                if (!userId || !category || !details) return res.status(400).json({ error: 'Faltan datos' });
+                const inserted = await sql`
+                    INSERT INTO support_tickets (user_id, category, product_name, subject, details)
+                    VALUES (${userId}, ${category}, ${productName}, ${subject}, ${details})
+                    RETURNING *
+                `;
+                return res.status(201).json(inserted[0]);
             }
 
             if (action === 'delete-profile-comment') {

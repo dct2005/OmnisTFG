@@ -1,31 +1,203 @@
 <div class="support-container">
-  <h1>Soporte de Omnis</h1>
-  <p class="subtitle">¿En qué podemos ayudarte?</p>
+  <div class="support-header">
+    <button *ngIf="currentView() !== 'main'" class="btn-back" (click)="setView('main')">
+      &larr; Volver al menú principal
+    </button>
+    <h1>Soporte de Omnis</h1>
+    <p class="subtitle" *ngIf="currentView() === 'main'">¿En qué podemos ayudarte?</p>
+  </div>
 
-  <div class="support-options">
-    <button class="support-card" (click)="checkLoginAndRedirect()">
+  <!-- Main Menu -->
+  <div class="support-options" *ngIf="currentView() === 'main'">
+    <button class="support-card" (click)="setView('games')">
       <span>Juegos, software, etc.</span>
-      <span class="icon">&#9654;</span>
+      <span class="icon-arrow">&#9654;</span>
     </button>
-    <button class="support-card" (click)="checkLoginAndRedirect()">
+    <button class="support-card" (click)="setView('purchases')">
       <span>Compras</span>
-      <span class="icon">&#9654;</span>
+      <span class="icon-arrow">&#9654;</span>
     </button>
-    <button class="support-card" (click)="checkLoginAndRedirect()">
+    <button class="support-card" (click)="setView('store')">
       <span>Tienda</span>
-      <span class="icon">&#9654;</span>
+      <span class="icon-arrow">&#9654;</span>
     </button>
-    <button class="support-card" (click)="checkLoginAndRedirect()">
-      <span>Mis productos</span>
-      <span class="icon">&#9654;</span>
-    </button>
-    <button class="support-card" (click)="checkLoginAndRedirect()">
+    <button class="support-card" (click)="setView('community')">
       <span>Comunidad de Omnis</span>
-      <span class="icon">&#9654;</span>
+      <span class="icon-arrow">&#9654;</span>
     </button>
-    <button class="support-card" (click)="checkLoginAndRedirect()">
-      <span>Ver mis solicitudes de ayuda al soporte de omnis</span>
-      <span class="icon">&#9654;</span>
+    
+    <div class="request-shortcut">
+      <button class="btn-view-tickets" (click)="setView('tickets')">
+        <span>Ver mis solicitudes de ayuda al soporte de omnis</span>
+        <span class="icon-arrow">&#9654;</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Games Selection -->
+  <div class="support-content" *ngIf="currentView() === 'games'">
+    <div class="section-title">
+      <h2>Selecciona un producto</h2>
+      <p>Mostrando los juegos de tu biblioteca de Omnis.</p>
+    </div>
+    
+    <div class="game-selector-grid" *ngIf="!loadingGames(); else loading">
+      <div class="game-list" *ngIf="ownedGames().length > 0; else noGames">
+        <div *ngFor="let game of ownedGames()" class="game-select-item" (click)="selectGame(game)">
+          <img [src]="game.cover?.url || 'https://placehold.co/60x80/1a1a2e/ffffff?text=Game'" class="mini-cover">
+          <div class="game-identity">
+            <span class="game-name">{{ game.name }}</span>
+            <span class="game-platform">Omnis Digital Library</span>
+          </div>
+          <span class="icon-arrow">&#9654;</span>
+        </div>
+      </div>
+      <ng-template #noGames>
+        <div class="empty-state">
+          <span class="empty-icon">📂</span>
+          <p>No tienes juegos en tu biblioteca aún.</p>
+        </div>
+      </ng-template>
+    </div>
+    <ng-template #loading>
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando tu biblioteca...</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Game Details Form -->
+  <div class="support-content" *ngIf="currentView() === 'game-details'">
+    <div class="form-header-premium">
+      <img [src]="selectedGame()?.cover?.url" class="form-item-img" *ngIf="selectedGame()?.cover">
+      <div class="form-title-group">
+        <span class="form-category">ASISTENCIA TÉCNICA</span>
+        <h2>Problema con {{ selectedGame()?.name }}</h2>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Asunto</label>
+      <input type="text" [(ngModel)]="ticketSubject" placeholder="Resumen corto del problema (ej. No inicia, error gráfico...)">
+    </div>
+
+    <div class="form-group">
+      <label>Describe tu problema</label>
+      <textarea [(ngModel)]="ticketDetails" placeholder="Explica detalladamente qué sucede con el juego o software..."></textarea>
+      <span class="input-hint">Por favor, sé lo más específico posible para ayudarnos a resolverlo rápido.</span>
+    </div>
+    
+    <div class="form-actions">
+      <button class="btn-submit-premium" (click)="submitTicket('games')" [disabled]="!ticketSubject.trim() || !ticketDetails.trim() || submitting()">
+        <span *ngIf="!submitting()">Enviar Solicitud</span>
+        <span *ngIf="submitting()" class="loader-small"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Generic Professional Form Template -->
+  <div class="support-content" *ngIf="['purchases', 'store', 'community-question', 'community-report'].includes(currentView())">
+    <div class="form-header-premium">
+      <div class="form-icon-large">
+        <span *ngIf="currentView() === 'purchases'">💳</span>
+        <span *ngIf="currentView() === 'store'">🛍️</span>
+        <span *ngIf="currentView() === 'community-question'">❓</span>
+        <span *ngIf="currentView() === 'community-report'">🛡️</span>
+      </div>
+      <div class="form-title-group">
+        <span class="form-category">SOPORTE DE OMNIS</span>
+        <h2 *ngIf="currentView() === 'purchases'">Problema con una compra</h2>
+        <h2 *ngIf="currentView() === 'store'">Consulta sobre la tienda</h2>
+        <h2 *ngIf="currentView() === 'community-question'">Consulta de comunidad</h2>
+        <h2 *ngIf="currentView() === 'community-report'">Denunciar un jugador</h2>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Asunto</label>
+      <input type="text" [(ngModel)]="ticketSubject" [placeholder]="
+        currentView() === 'purchases' ? 'Ej: Error en cargo de Peppix' :
+        currentView() === 'store' ? 'Ej: Duda sobre oferta Platinum' :
+        currentView() === 'community-question' ? 'Ej: Problema con clan' :
+        'Ej: Reporte por conducta antideportiva'
+      ">
+    </div>
+
+    <div class="form-group">
+      <label>Detalles de tu solicitud</label>
+      <textarea [(ngModel)]="ticketDetails" [placeholder]="
+        currentView() === 'purchases' ? 'Indica fecha, importe y el problema ocurrido...' :
+        currentView() === 'store' ? 'Escribe aquí tu duda sobre productos, precios o bazar...' :
+        currentView() === 'community-question' ? 'Escribe aquí tu consulta sobre la comunidad...' :
+        'Indica el nombre del jugador y describe su comportamiento...'
+      "></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-submit-premium" (click)="submitTicket(currentView().replace('-', '_'))" [disabled]="!ticketSubject.trim() || !ticketDetails.trim() || submitting()">
+        {{ submitting() ? 'Procesando...' : 'Enviar Solicitud' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Community Options -->
+  <div class="support-options" *ngIf="currentView() === 'community'">
+    <div class="section-title">
+      <h2>Comunidad de Omnis</h2>
+      <p>¿Cómo podemos ayudarte con otros jugadores o dudas generales?</p>
+    </div>
+    <button class="support-card" (click)="setView('community-question')">
+      <span>Tengo una duda</span>
+      <span class="icon-arrow">&#9654;</span>
     </button>
+    <button class="support-card" (click)="setView('community-report')">
+      <span>Quiero denunciar a un jugador</span>
+      <span class="icon-arrow">&#9654;</span>
+    </button>
+  </div>
+
+  <!-- Ticket List -->
+  <div class="support-content" *ngIf="currentView() === 'tickets'">
+    <div class="section-title">
+      <h2>Mis solicitudes de ayuda</h2>
+      <p>Listado de tickets enviados al equipo de soporte.</p>
+    </div>
+
+    <div class="ticket-history" *ngIf="!loadingTickets(); else loading">
+      <div *ngIf="tickets().length > 0; else noTickets" class="ticket-grid">
+        <div *ngFor="let ticket of tickets()" class="ticket-card-premium">
+          <div class="ticket-head">
+            <span class="ticket-badge">{{ getCategoryLabel(ticket.category) }}</span>
+            <span class="ticket-id">#{{ ticket.id }}</span>
+          </div>
+          <div class="ticket-body">
+            <div class="ticket-subject-display">{{ ticket.subject }}</div>
+            <div class="ticket-target" *ngIf="ticket.product_name">
+              <strong>Producto:</strong> {{ ticket.product_name }}
+            </div>
+            <p class="ticket-text-preview">{{ ticket.details }}</p>
+          </div>
+          <div class="ticket-foot">
+            <span class="ticket-date">{{ ticket.created_at | date:'d MMM, yyyy' }}</span>
+            <span class="ticket-status-pill" [class.status-open]="ticket.status === 'open'">
+              {{ ticket.status === 'open' ? 'En proceso' : 'Cerrado' }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <ng-template #noTickets>
+        <div class="empty-state">
+          <span class="empty-icon">📨</span>
+          <p>Aún no tienes ninguna solicitud de ayuda registrada.</p>
+        </div>
+      </ng-template>
+    </div>
+    <ng-template #loading>
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Recuperando tus tickets...</p>
+      </div>
+    </ng-template>
   </div>
 </div>

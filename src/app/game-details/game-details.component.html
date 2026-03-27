@@ -91,14 +91,20 @@
 
         <!-- Review Form -->
         @if (currentUser()) {
-        <div class="review-form">
-          <textarea [(ngModel)]="reviewContent" placeholder="¿Qué te ha parecido el juego? Escribe tu opinión..." [disabled]="submittingReview"></textarea>
-          <div class="form-footer">
-            <button class="btn-submit-review" (click)="submitReview()" [disabled]="!reviewContent.trim() || submittingReview">
-              {{ submittingReview ? 'Enviando...' : 'Publicar Opinión' }}
-            </button>
-          </div>
-        </div>
+          @if (isOwned) {
+            <div class="review-form">
+              <textarea [(ngModel)]="reviewContent" placeholder="¿Qué te ha parecido el juego? Escribe tu opinión..." [disabled]="submittingReview"></textarea>
+              <div class="form-footer">
+                <button class="btn-submit-review" (click)="submitReview()" [disabled]="!reviewContent.trim() || submittingReview">
+                  {{ submittingReview ? 'Enviando...' : 'Publicar Opinión' }}
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div class="login-prompt-review ownership-prompt">
+              <p>Debes tener el juego en tu biblioteca para publicar una opinión.</p>
+            </div>
+          }
         } @else {
         <div class="login-prompt-review">
           <p>Debes iniciar sesión para publicar una opinión.</p>

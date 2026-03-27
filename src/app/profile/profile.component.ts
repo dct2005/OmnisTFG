@@ -90,6 +90,9 @@ export class ProfileComponent implements OnDestroy {
     profile_bg_color: '#00f2ff',
     profile_name_color: '#ffffff'
   });
+  
+  currentTime = signal(Date.now());
+  private refreshInterval: any;
 
   commentInput = signal('');
   commentsOffset = signal(0);
@@ -111,6 +114,8 @@ export class ProfileComponent implements OnDestroy {
     // Tanto invisible como desconectado muestran "Desconectado"
     // Pero desconectado muestra el tiempo transcurrido
     if (estado === 'desconectado' && user?.last_activity) {
+      // Usamos currentTime() para que el computed se reevalúe periódicamente
+      this.currentTime(); 
       const timeStr = this.formatRelativeTime(new Date(user.last_activity));
       return `Desconectado hace ${timeStr}`;
     }
@@ -156,6 +161,11 @@ export class ProfileComponent implements OnDestroy {
 
   constructor() {
     this.loadInitialData();
+    
+    // Iniciar timer para actualizar el contador de "hace X min" cada minuto
+    this.refreshInterval = setInterval(() => {
+      this.currentTime.set(Date.now());
+    }, 60000);
 
     // Reaccionamos a cambios en la ruta (username)
     this.route.params.subscribe(params => {
@@ -260,6 +270,10 @@ export class ProfileComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
+    // Limpiar el timer para evitar memory leaks
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
     // Cuando salimos del perfil, restauramos el fondo por defecto de la aplicación
     this.renderer.setStyle(document.body, 'background-image', "url('/images/background.webp')");
   }

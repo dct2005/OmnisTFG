@@ -70,11 +70,13 @@
   color: #d0d0e0;
   display: flex;
   flex-direction: column;
+  overflow-x: auto; /* Scroll horizontal si el contenido es muy ancho */
 }
 
 .summary-text {
   margin: 0;
   overflow-y: hidden;
+  min-width: 600px; /* Ancho mínimo para forzar el scroll y evitar que se aplaste */
 }
 
 .game-summary.expanded .summary-text {
