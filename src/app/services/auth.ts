@@ -429,14 +429,15 @@ export class AuthService {
   /**
    * Actualiza el estado de un reporte - Solo administradores
    */
-  updateReportStatus(reportId: number, newStatus: string): Observable<any> {
+  updateReportStatus(reportId: number, newStatus: string, adminResponse?: string): Observable<any> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
     return this.http.post(`${this.apiUrl}/user`, {
       action: 'update-report-status',
       adminEmail: adminEmail,
       reportId: reportId,
-      newStatus: newStatus
+      newStatus: newStatus,
+      adminResponse: adminResponse
     });
   }
 
