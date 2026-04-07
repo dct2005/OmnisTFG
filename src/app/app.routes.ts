@@ -68,5 +68,6 @@ export const routes: Routes = [
     { path: 'account', title: 'Detalles de la Cuenta', loadComponent: () => import('./account-details/account-details.component').then(m => m.AccountDetailsComponent) },
     { path: 'perfil/:username', title: 'Perfil', loadComponent: () => import('./profile/profile.component').then(m => m.ProfileComponent) },
     { path: 'mensajes', title: 'Mensajes', loadComponent: () => import('./direct-messages/direct-messages').then(m => m.DirectMessagesComponent), canActivate: [authGuard] },
+    { path: 'social', title: 'Social', loadComponent: () => import('./social/social.component').then(m => m.SocialComponent) },
     { path: 'perfil', redirectTo: 'perfil/me', pathMatch: 'full' }
 ];

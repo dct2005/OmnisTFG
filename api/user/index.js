@@ -286,7 +286,7 @@ module.exports = async function handler(req, res) {
 
                 const roleCounts = await sql`SELECT role, COUNT(*) as count FROM users GROUP BY role`;
                 stats.adminCount = parseInt(roleCounts.find(r => r.role === 'administrador')?.count || 0, 10);
-                stats.userCount = parseInt(roleCounts.find(r => r.role === 'user')?.count || 0, 10);
+                stats.userCount = parseInt(roleCounts.find(r => r.role === 'cliente')?.count || 0, 10);
 
                 const activeToday = await sql`SELECT COUNT(*) as active FROM users WHERE last_activity >= CURRENT_DATE`;
                 stats.activeToday = parseInt(activeToday[0].active, 10);
@@ -572,7 +572,7 @@ module.exports = async function handler(req, res) {
                 const hashedPassword = await bcrypt.hash(password, 10);
                 const inserted = await sql`
                     INSERT INTO users (username, email, password, peppix, estado, role) 
-                    VALUES (${name}, ${username}, ${hashedPassword}, 0, 'desconectado', 'user')
+                    VALUES (${name}, ${username}, ${hashedPassword}, 0, 'desconectado', 'cliente')
                     RETURNING id, username, email, peppix, estado, role, created_at
                 `;
                 return res.status(201).json({ message: 'Registrado correctamente', user: inserted[0] });

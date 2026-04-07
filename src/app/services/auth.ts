@@ -133,12 +133,16 @@ export class AuthService {
   fetchCurrentUser() {
     const user = this.currentUser();
     const userEmail = user?.email;
+    const userId = user?.id;
 
     if (userEmail) {
       this.http.get(`${this.apiUrl}/user?email=${userEmail}&action=get`)
         .subscribe({
           next: (res: any) => {
-            if (res.user) {
+            // VERIFICACIÓN CRÍTICA: Solo actualizar si el usuario actual sigue siendo el mismo
+            // para evitar que peticiones "viejas" en vuelo sobreescriban una nueva sesión o un logout
+            const currentUser = this.currentUser();
+            if (res.user && currentUser && currentUser.id === res.user.id) {
               this.currentUser.set(res.user);
             }
           },

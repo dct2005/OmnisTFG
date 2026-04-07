@@ -1,0 +1,116 @@
+<div class="social-container">
+  <div class="header-section">
+    <h1 class="title">Hall of Fame</h1>
+    <p class="subtitle">Conoce a los usuarios más destacados de nuestra comunidad</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando rankings...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <span class="material-icons-round">error_outline</span>
+      <p>Hubo un error al cargar los rankings. Por favor, inténtalo de nuevo más tarde.</p>
+    </div>
+  } @else {
+    <div class="rankings-grid">
+      <!-- Top Buyers -->
+      <div class="ranking-card glass">
+        <div class="card-header">
+          <span class="material-icons-round icon-buyers">shopping_bag</span>
+          <h2>Coleccionistas</h2>
+          <p>Usuarios con más juegos</p>
+        </div>
+        <div class="ranking-list">
+          @for (user of rankings()?.top_buyers?.slice(0, 5); track user.id; let i = $index) {
+            <div class="ranking-item" [routerLink]="['/perfil', user.username]">
+              <div class="rank-pos" [class.top-three]="i < 3">{{ i + 1 }}</div>
+              <div class="user-avatar-container">
+                <img [src]="getProfileImage(user.profile_image)" alt="Avatar" class="user-avatar">
+                <div class="status-indicator" [class]="user.estado"></div>
+              </div>
+              <div class="user-info">
+                <span class="username">{{ user.username }}</span>
+                <span class="count">{{ user.count }} juegos</span>
+              </div>
+              @if (i < 3) {
+                <div class="medal">
+                  <span class="material-icons-round gold" *ngIf="i === 0">workspace_premium</span>
+                  <span class="material-icons-round silver" *ngIf="i === 1">workspace_premium</span>
+                  <span class="material-icons-round bronze" *ngIf="i === 2">workspace_premium</span>
+                </div>
+              }
+            </div>
+          }
+          <button class="view-more-btn" (click)="showFullRanking('buyers')">Ver Ranking Completo</button>
+        </div>
+      </div>
+
+      <!-- Top Community Members -->
+      <div class="ranking-card glass">
+        <div class="card-header">
+          <span class="material-icons-round icon-communities">groups</span>
+          <h2>Líderes Sociales</h2>
+          <p>Usuarios en más comunidades</p>
+        </div>
+        <div class="ranking-list">
+          @for (user of rankings()?.top_communities?.slice(0, 5); track user.id; let i = $index) {
+            <div class="ranking-item" [routerLink]="['/perfil', user.username]">
+              <div class="rank-pos" [class.top-three]="i < 3">{{ i + 1 }}</div>
+              <div class="user-avatar-container">
+                <img [src]="getProfileImage(user.profile_image)" alt="Avatar" class="user-avatar">
+                <div class="status-indicator" [class]="user.estado"></div>
+              </div>
+              <div class="user-info">
+                <span class="username">{{ user.username }}</span>
+                <span class="count">{{ user.count }} grupos</span>
+              </div>
+              @if (i < 3) {
+                <div class="medal">
+                  <span class="material-icons-round gold" *ngIf="i === 0">workspace_premium</span>
+                  <span class="material-icons-round silver" *ngIf="i === 1">workspace_premium</span>
+                  <span class="material-icons-round bronze" *ngIf="i === 2">workspace_premium</span>
+                </div>
+              }
+            </div>
+          }
+          <button class="view-more-btn" (click)="showFullRanking('communities')">Ver Ranking Completo</button>
+        </div>
+      </div>
+
+      <!-- Top Socialites (Friends) -->
+      <div class="ranking-card glass">
+        <div class="card-header">
+          <span class="material-icons-round icon-friends">person_add</span>
+          <h2>Más Influyentes</h2>
+          <p>Usuarios con más amigos</p>
+        </div>
+        <div class="ranking-list">
+          @for (user of rankings()?.top_friends?.slice(0, 5); track user.id; let i = $index) {
+            <div class="ranking-item" [routerLink]="['/perfil', user.username]">
+              <div class="rank-pos" [class.top-three]="i < 3">{{ i + 1 }}</div>
+              <div class="user-avatar-container">
+                <img [src]="getProfileImage(user.profile_image)" alt="Avatar" class="user-avatar">
+                <div class="status-indicator" [class]="user.estado"></div>
+              </div>
+              <div class="user-info">
+                <span class="username">{{ user.username }}</span>
+                <span class="count">{{ user.count }} amigos</span>
+              </div>
+              @if (i < 3) {
+                <div class="medal">
+                  <span class="material-icons-round gold" *ngIf="i === 0">workspace_premium</span>
+                  <span class="material-icons-round silver" *ngIf="i === 1">workspace_premium</span>
+                  <span class="material-icons-round bronze" *ngIf="i === 2">workspace_premium</span>
+                </div>
+              }
+            </div>
+          }
+          <button class="view-more-btn" (click)="showFullRanking('friends')">Ver Ranking Completo</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

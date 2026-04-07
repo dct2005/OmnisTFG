@@ -1,15 +1,16 @@
-import { Component, OnInit, inject, signal, effect } from '@angular/core';
+import { Component, OnInit, inject, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth';
 import { CommunityService } from '../services/community.service';
 import { RouterLink, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 declare var Swal: any;
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
 })
@@ -27,6 +28,19 @@ export class AdminDashboardComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   activeTab = signal('users');
+  searchQuery = signal('');
+
+  filteredUsers = computed(() => {
+    const q = this.searchQuery().toLowerCase().trim();
+    const all = this.users();
+    if (!q) return all;
+    
+    return all.filter(u => 
+      u.username?.toLowerCase().includes(q) || 
+      u.email?.toLowerCase().includes(q) ||
+      u.id?.toString().includes(q)
+    );
+  });
 
   constructor() {}
 
@@ -439,6 +453,11 @@ export class AdminDashboardComponent implements OnInit {
             <button id="reject-report-btn" class="swal-custom-btn" style="flex: 1; background: rgba(255, 68, 68, 0.1); border: 1px solid #ff4444; color: #ff4444; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
               <i class="fas fa-times-circle"></i> Rechazar Reporte
             </button>
+            ${report.category === 'community_report' ? `
+              <button id="ban-user-btn" class="swal-custom-btn" style="flex: 1; background: rgba(255, 68, 68, 0.1); border: 1px solid #ff4444; color: #ff4444; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                <i class="fas fa-user-slash"></i> Banear Usuario
+              </button>
+            ` : ''}
             ${report.category === 'games' && report.game_api_id ? `
               <button id="refund-btn" class="swal-custom-btn" style="flex: 1; background: rgba(255, 170, 0, 0.1); border: 1px solid #ffaa00; color: #ffaa00; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
                 <i class="fas fa-undo"></i> Realizar Reembolso
@@ -483,6 +502,79 @@ export class AdminDashboardComponent implements OnInit {
               if (rejResult.isConfirmed) {
                 this.updateReportStatus(report.id, 'rejected', rejResult.value || 'Reporte rechazado por administración');
                 Swal.close();
+              }
+            });
+          };
+        }
+
+        const banBtn = document.getElementById('ban-user-btn');
+        if (banBtn) {
+          banBtn.onclick = () => {
+            Swal.fire({
+              title: 'Banear Jugador',
+              text: 'Introduce el nombre de usuario exacto del jugador a eliminar.',
+              input: 'text',
+              inputPlaceholder: 'Username...',
+              showCancelButton: true,
+              confirmButtonText: 'Buscar y Revisar',
+              confirmButtonColor: '#7c3aed',
+              background: '#1a103c',
+              color: '#fff',
+              inputValidator: (value: string) => {
+                if (!value) return 'Debes introducir un nombre';
+                return null;
+              }
+            }).then((searchRes: any) => {
+              if (searchRes.isConfirmed) {
+                const searchUsername = searchRes.value;
+                Swal.showLoading();
+                this.authService.getUserByUsername(searchUsername).subscribe({
+                  next: (userRes: any) => {
+                    const targetUser = userRes.user;
+                    if (!targetUser) {
+                      Swal.fire('No encontrado', 'No existe ningún usuario con ese nombre.', 'error');
+                      return;
+                    }
+
+                    // Confirmación final con detalles del usuario
+                    Swal.fire({
+                      title: '¿Confirmar Baneo Permanente?',
+                      html: `
+                        <div style="text-align: left; color: #fff;">
+                          <p><b>Usuario:</b> ${targetUser.username}</p>
+                          <p><b>Email:</b> ${targetUser.email}</p>
+                          <p><b>ID:</b> ${targetUser.id}</p>
+                          <hr style="border-top: 1px solid rgba(255,255,255,0.1);">
+                          <p style="color: #ff4444; font-weight: bold;">Esta acción eliminará TODOS los datos de este usuario de forma irreversible.</p>
+                        </div>
+                      `,
+                      icon: 'warning',
+                      showCancelButton: true,
+                      confirmButtonText: 'Sí, banear (Eliminar)',
+                      confirmButtonColor: '#ff4444',
+                      background: '#1a103c',
+                      color: '#fff'
+                    }).then((finalRes: any) => {
+                      if (finalRes.isConfirmed) {
+                        this.authService.deleteUser(targetUser.id).subscribe({
+                          next: () => {
+                            Swal.fire('Usuario Baneado', 'El usuario ha sido eliminado del sistema.', 'success');
+                            this.loadReports();
+                            this.loadUsers();
+                          },
+                          error: (err) => {
+                            Swal.fire('Error', 'No se pudo eliminar al usuario.', 'error');
+                            console.error(err);
+                          }
+                        });
+                      }
+                    });
+                  },
+                  error: (err) => {
+                    Swal.fire('Error', 'Hubo un problema al buscar al usuario.', 'error');
+                    console.error(err);
+                  }
+                });
               }
             });
           };
