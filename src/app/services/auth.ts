@@ -22,7 +22,7 @@ export class AuthService {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         // Seteamos lo mínimo necesario para que fetchCurrentUser pueda funcionar
-        this.currentUser.set({ email: payload.email, id: payload.id });
+        this.currentUser.set({ email: payload.email, id: payload.id, role: payload.role });
         this.fetchCurrentUser(); // Sincronizamos con el servidor
       } catch (e) {
         localStorage.removeItem('token');
@@ -391,5 +391,61 @@ export class AuthService {
         userId: userId.toString()
       }
     });
+  }
+
+  // --- ACCIONES DE ADMINISTRADOR ---
+
+  /**
+   * Obtiene todos los usuarios (solo para administradores)
+   */
+  getAllUsers(): Observable<any[]> {
+    const userEmail = this.currentUser()?.email;
+    if (!userEmail) throw new Error('Usuario no autenticado');
+    return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-users&requesterEmail=${userEmail}`);
+  }
+
+  /**
+   * Elimina un usuario y todos sus datos asociados (solo para administradores)
+   */
+  deleteUser(userIdToDelete: number): Observable<any> {
+    const adminEmail = this.currentUser()?.email;
+    if (!adminEmail) throw new Error('Usuario no autenticado');
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'delete-user',
+      adminEmail: adminEmail,
+      userIdToDelete: userIdToDelete
+    });
+  }
+
+  /**
+   * Obtiene todos los reportes (tickets de soporte) - Solo administradores
+   */
+  getAllReports(): Observable<any[]> {
+    const userEmail = this.currentUser()?.email;
+    if (!userEmail) throw new Error('Usuario no autenticado');
+    return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-reports&requesterEmail=${userEmail}`);
+  }
+
+  /**
+   * Actualiza el estado de un reporte - Solo administradores
+   */
+  updateReportStatus(reportId: number, newStatus: string): Observable<any> {
+    const adminEmail = this.currentUser()?.email;
+    if (!adminEmail) throw new Error('Usuario no autenticado');
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'update-report-status',
+      adminEmail: adminEmail,
+      reportId: reportId,
+      newStatus: newStatus
+    });
+  }
+
+  /**
+   * Obtiene estadísticas globales - Solo administradores
+   */
+  getAdminStats(): Observable<any> {
+    const userEmail = this.currentUser()?.email;
+    if (!userEmail) throw new Error('Usuario no autenticado');
+    return this.http.get<any>(`${this.apiUrl}/user?action=get-admin-stats&requesterEmail=${userEmail}`);
   }
 }

@@ -52,7 +52,12 @@ export class LoginComponent {
                     timer: 1500,
                     showConfirmButton: false
                 }).then(() => {
-                    this.router.navigate(['/catalogo']);
+                    const user = response.user;
+                    if (user && user.role === 'administrador') {
+                        this.router.navigate(['/admin']);
+                    } else {
+                        this.router.navigate(['/catalogo']);
+                    }
                 });
             },
             error: (error) => {

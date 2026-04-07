@@ -181,14 +181,155 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ canClaim: lastDate !== today });
             }
 
-            if (!email && !username) return res.status(400).json({ error: 'Falta email o username' });
+            if (action === 'get-all-users') {
+                const { requesterEmail } = req.query;
+                if (!requesterEmail) return res.status(400).json({ error: 'Falta email del solicitante' });
+                
+                const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
+
+                const allUsers = await sql`SELECT id, username, email, role, created_at, last_activity, peppix, estado FROM users ORDER BY id ASC`;
+                return res.status(200).json(allUsers);
+            }
+
+            if (action === 'get-all-reports') {
+                const { requesterEmail } = req.query;
+                if (!requesterEmail) return res.status(400).json({ error: 'Falta email del solicitante' });
+                
+                const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
+
+                const allReports = await sql`
+                    SELECT st.*, u.username as user_name, u.email as user_email 
+                    FROM support_tickets st
+                    JOIN users u ON st.user_id = u.id
+                    ORDER BY st.created_at DESC
+                `;
+                return res.status(200).json(allReports);
+            }
+
+            if (action === 'bootstrap-admin') {
+                const { email: emailToBootstrap } = req.query;
+                if (!emailToBootstrap) return res.status(400).json({ error: 'Falta email' });
+                
+                const updated = await sql`UPDATE users SET role = 'administrador' WHERE email = ${emailToBootstrap} RETURNING id, email, role`;
+                if (updated.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
+                
+                return res.status(200).json({ message: '¡Ahora eres administrador!', user: updated[0] });
+            }
+
+            if (action === 'get-admin-stats') {
+                const { requesterEmail } = req.query;
+                if (!requesterEmail) return res.status(400).json({ error: 'Falta email del solicitante' });
+                
+                const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
+
+                const stats = {};
+                
+                const userCounts = await sql`SELECT COUNT(*) as total, SUM(peppix) as total_peppix FROM users`;
+                stats.totalUsers = parseInt(userCounts[0].total, 10);
+                stats.totalPeppix = parseInt(userCounts[0].total_peppix || 0, 10);
+
+                const roleCounts = await sql`SELECT role, COUNT(*) as count FROM users GROUP BY role`;
+                stats.adminCount = parseInt(roleCounts.find(r => r.role === 'administrador')?.count || 0, 10);
+                stats.userCount = parseInt(roleCounts.find(r => r.role === 'user')?.count || 0, 10);
+
+                const activeToday = await sql`SELECT COUNT(*) as active FROM users WHERE last_activity >= CURRENT_DATE`;
+                stats.activeToday = parseInt(activeToday[0].active, 10);
+
+                const revenue = await sql`SELECT SUM(real_money_euro) as total_revenue FROM transactions`;
+                stats.totalRevenue = parseFloat(revenue[0].total_revenue || 0);
+
+                const gamesSold = await sql`SELECT COUNT(*) as sold FROM user_games`;
+                stats.totalGamesSold = parseInt(gamesSold[0].sold, 10);
+
+                const tickets = await sql`SELECT status, COUNT(*) as count FROM support_tickets GROUP BY status`;
+                stats.openTickets = parseInt(tickets.find(t => t.status === 'open')?.count || 0, 10);
+                stats.closedTickets = parseInt(tickets.find(t => t.status === 'closed')?.count || 0, 10);
+
+                const communities = await sql`SELECT COUNT(*) as count FROM communities`;
+                stats.totalCommunities = parseInt(communities[0].count, 10);
+
+                // --- HIGHLIGHTS / HALL OF FAME ---
+                
+                // 1. Juego más vendido (Histórico)
+                const topGame = await sql`
+                    SELECT game_api_id, COUNT(*) as count 
+                    FROM user_games 
+                    GROUP BY game_api_id 
+                    ORDER BY count DESC 
+                    LIMIT 1
+                `;
+                stats.topGame = topGame.length > 0 ? topGame[0] : null;
+
+                // 2. Comunidad más popular
+                const topCommunity = await sql`
+                    SELECT c.id, c.name, c.description, c.image_url, c.categoria, COUNT(cm.user_id) as total_members
+                    FROM communities c
+                    JOIN community_members cm ON c.id = cm.community_id
+                    GROUP BY c.id, c.name, c.description, c.image_url, c.categoria
+                    ORDER BY total_members DESC
+                    LIMIT 1
+                `;
+                stats.topCommunity = topCommunity.length > 0 ? { 
+                    ...topCommunity[0], 
+                    total_members: parseInt(topCommunity[0].total_members, 10) 
+                } : null;
+
+                // 3. Mayor Comprador (Histórico)
+                const topBuyer = await sql`
+                    SELECT u.username, u.profile_image, SUM(t.real_money_euro) as total_spent, MAX(t.created_at) as last_purchase
+                    FROM transactions t
+                    JOIN users u ON t.user_id = u.id
+                    GROUP BY u.id, u.username, u.profile_image
+                    ORDER BY total_spent DESC
+                    LIMIT 1
+                `;
+                stats.topBuyer = topBuyer.length > 0 ? { 
+                    username: topBuyer[0].username, 
+                    profile_image: topBuyer[0].profile_image,
+                    total_spent: parseFloat(topBuyer[0].total_spent || 0),
+                    last_purchase: topBuyer[0].last_purchase
+                } : null;
+
+                // 4. Coleccionista de Élite (Más juegos)
+                const topCollector = await sql`
+                    SELECT u.username, u.profile_image, COUNT(ug.game_api_id) as total_games
+                    FROM user_games ug
+                    JOIN users u ON ug.user_id = u.id
+                    GROUP BY u.id, u.username, u.profile_image
+                    ORDER BY total_games DESC
+                    LIMIT 1
+                `;
+                stats.topCollector = topCollector.length > 0 ? { 
+                    username: topCollector[0].username, 
+                    profile_image: topCollector[0].profile_image,
+                    total_games: parseInt(topCollector[0].total_games, 10) 
+                } : null;
+
+                console.log('[Admin Stats] Detailed highlights calculated');
+                return res.status(200).json(stats);
+            }
+
+            if (!email && !username && !['get-any-game', 'get-profile-comments', 'get-tickets', 'check-daily-reward', 'get-transactions', 'get-friends', 'get-user-comments', 'get-all-reports', 'get-admin-stats'].includes(action)) {
+                return res.status(400).json({ error: 'Falta email o username' });
+            }
 
             let user;
             if (email) {
                 const users = await sql`SELECT * FROM users WHERE email = ${email}`;
-                if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+                if (users.length === 0 && !['get-any-game', 'get-profile-comments', 'get-tickets', 'check-daily-reward', 'get-transactions', 'get-friends', 'get-user-comments'].includes(action)) {
+                    return res.status(404).json({ error: 'User no encontrado' });
+                }
                 user = users[0];
-            } else {
+            } else if (username) {
                 const users = await sql`SELECT * FROM users WHERE username = ${username}`;
                 if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
                 user = users[0];
@@ -283,6 +424,52 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ message: 'Comentario eliminado' });
             }
 
+            if (action === 'delete-user') {
+                const { adminEmail, userIdToDelete } = req.body;
+                if (!adminEmail || !userIdToDelete) return res.status(400).json({ error: 'Faltan datos' });
+
+                const requester = await sql`SELECT role FROM users WHERE email = ${adminEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
+
+                // Borrar datos relacionados antes de borrar al usuario
+                await sql`DELETE FROM profile_comments WHERE profile_user_id = ${userIdToDelete} OR author_user_id = ${userIdToDelete}`;
+                await sql`DELETE FROM community_messages WHERE user_id = ${userIdToDelete}`;
+                await sql`DELETE FROM community_members WHERE user_id = ${userIdToDelete}`;
+                await sql`DELETE FROM user_games WHERE user_id = ${userIdToDelete}`;
+                await sql`DELETE FROM user_wishlist WHERE user_id = ${userIdToDelete}`;
+                await sql`DELETE FROM support_tickets WHERE user_id = ${userIdToDelete}`;
+                await sql`DELETE FROM transactions WHERE user_id = ${userIdToDelete}`;
+                await sql`DELETE FROM friendships WHERE sender_id = ${userIdToDelete} OR receiver_id = ${userIdToDelete}`;
+                
+                const deleted = await sql`DELETE FROM users WHERE id = ${userIdToDelete} RETURNING id`;
+                if (deleted.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+                return res.status(200).json({ message: 'Usuario y todos sus datos asociados han sido eliminados' });
+            }
+
+            if (action === 'update-report-status') {
+                const { adminEmail, reportId, newStatus, adminResponse } = req.body;
+                if (!adminEmail || !reportId || !newStatus) return res.status(400).json({ error: 'Faltan datos' });
+
+                const requester = await sql`SELECT role FROM users WHERE email = ${adminEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
+
+                let updated;
+                if (adminResponse !== undefined) {
+                    updated = await sql`UPDATE support_tickets SET status = ${newStatus}, admin_response = ${adminResponse} WHERE id = ${reportId} RETURNING *`;
+                } else {
+                    updated = await sql`UPDATE support_tickets SET status = ${newStatus} WHERE id = ${reportId} RETURNING *`;
+                }
+
+                if (updated.length === 0) return res.status(404).json({ error: 'Reporte no encontrado' });
+
+                return res.status(200).json({ message: 'Estado del reporte actualizado', report: updated[0] });
+            }
+
             if (action === 'register') {
                 if (!name || !username || !password) return res.status(400).json({ error: 'Faltan datos' });
 
@@ -291,9 +478,9 @@ module.exports = async function handler(req, res) {
 
                 const hashedPassword = await bcrypt.hash(password, 10);
                 const inserted = await sql`
-                    INSERT INTO users (username, email, password, peppix, estado) 
-                    VALUES (${name}, ${username}, ${hashedPassword}, 0, 'desconectado')
-                    RETURNING id, username, email, peppix, estado, created_at
+                    INSERT INTO users (username, email, password, peppix, estado, role) 
+                    VALUES (${name}, ${username}, ${hashedPassword}, 0, 'desconectado', 'user')
+                    RETURNING id, username, email, peppix, estado, role, created_at
                 `;
                 return res.status(201).json({ message: 'Registrado correctamente', user: inserted[0] });
             }
@@ -307,7 +494,7 @@ module.exports = async function handler(req, res) {
                 const valid = await bcrypt.compare(password, user.password);
                 if (!valid) return res.status(401).json({ error: 'Contraseña incorrecta' });
 
-                const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
+                const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
                 return res.status(200).json({
                     token, message: 'Login exitoso', user: {
                         id: user.id,
@@ -319,6 +506,7 @@ module.exports = async function handler(req, res) {
                         phone: user.phone,
                         peppix: user.peppix,
                         estado: user.estado,
+                        role: user.role,
                         created_at: user.created_at
                     }
                 });

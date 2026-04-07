@@ -471,3 +471,18 @@
   background-color: rgba(255, 85, 85, 0.1);
   color: #ff7777;
 }
+
+.admin-link {
+    color: #ff4d4d !important;
+    font-weight: bold !important;
+    border: 1px solid #ff4d4d !important;
+    padding: 5px 10px !important;
+    border-radius: 5px !important;
+    transition: all 0.3s ease !important;
+    margin-left: 1rem;
+}
+
+.admin-link:hover {
+    background-color: #ff4d4d !important;
+    color: white !important;
+}

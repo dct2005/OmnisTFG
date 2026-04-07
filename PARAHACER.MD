@@ -12,5 +12,3 @@
 -- Que en el perfil de cada usuario, otros usuarios puedan hacer comentarios. Quitar la seccion de comentarios en comunidades del perfil de usuario. Que el usuario pueda eliminar sus propios comentarios. 
 
 -- Hacer el sistema de amistades funcional. Que puedas enviar solicitudes de amistad, aceptarlas, rechazarlas, eliminarlas, etc...
-
-

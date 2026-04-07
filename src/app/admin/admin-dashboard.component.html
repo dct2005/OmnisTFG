@@ -1,0 +1,360 @@
+<div class="admin-container">
+    <header class="admin-header">
+        <h1>Panel de Administración</h1>
+        <div class="admin-tabs">
+            <button [class.active]="activeTab() === 'users'" (click)="setTab('users')">Usuarios</button>
+            <button [class.active]="activeTab() === 'stats'" (click)="setTab('stats')">Estadísticas</button>
+            <button [class.active]="activeTab() === 'reports'" (click)="setTab('reports')">Reportes</button>
+        </div>
+    </header>
+
+    <main class="admin-content">
+        @if (activeTab() === 'users') {
+            <section class="users-section">
+                <div class="section-header">
+                    <h2>Gestión de Usuarios</h2>
+                    <button class="btn-refresh" (click)="loadUsers()" [disabled]="loading()">
+                        {{ loading() ? 'Cargando...' : 'Refrescar' }}
+                    </button>
+                </div>
+
+                @if (error()) {
+                    <div class="error-msg">{{ error() }}</div>
+                }
+
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Registro</th>
+                                <th>Última Actividad</th>
+                                <th>Peppix</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (user of users(); track user.id) {
+                                <tr>
+                                    <td>{{ user.id }}</td>
+                                    <td>
+                                        <div class="user-cell">
+                                            <span class="username">{{ user.username }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        <span class="role-badge" [ngClass]="user.role">{{ user.role }}</span>
+                                    </td>
+                                    <td>{{ user.created_at | date:'dd/MM/yyyy' }}</td>
+                                    <td>{{ user.last_activity | date:'dd/MM/yyyy HH:mm' }}</td>
+                                    <td>{{ user.peppix }}</td>
+                                    <td>
+                                        <span class="status-dot" [ngClass]="user.estado"></span>
+                                        {{ user.estado }}
+                                    </td>
+                                    <td>
+                                        <div class="actions">
+                                            <button class="btn-action delete" (click)="deleteUser(user.id, user.username)" 
+                                                    [disabled]="user.role === 'administrador'">
+                                                Borrar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+
+        @if (activeTab() === 'stats') {
+            <section class="stats-section">
+                <div class="section-header">
+                    <h2>Estadísticas del Sistema</h2>
+                    <button class="btn-refresh" (click)="loadStats()" [disabled]="loading()">
+                        {{ loading() ? 'Cargando...' : 'Refrescar' }}
+                    </button>
+                </div>
+
+                @if (error()) {
+                    <div class="error-msg">{{ error() }}</div>
+                }
+
+                @if (stats()) {
+                    <div class="stats-grid">
+                        <div class="stat-card users" (click)="showDetail('users')">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-info">
+                                <h3>Usuarios Totales</h3>
+                                <p class="stat-value">{{ stats().totalUsers }}</p>
+                                <p class="stat-sub">{{ stats().activeToday }} activos hoy</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card revenue" (click)="showDetail('revenue')">
+                            <div class="stat-icon">💶</div>
+                            <div class="stat-info">
+                                <h3>Ingresos Reales</h3>
+                                <p class="stat-value">{{ stats().totalRevenue | currency:'EUR' }}</p>
+                                <p class="stat-sub">Ventas históricas</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card economy" (click)="showDetail('economy')">
+                            <div class="stat-icon">🪙</div>
+                            <div class="stat-info">
+                                <h3>Peppix en Circulación</h3>
+                                <p class="stat-value">{{ stats().totalPeppix }}</p>
+                                <p class="stat-sub">Balance total usuarios</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card games" (click)="showDetail('games')">
+                            <div class="stat-icon">🎮</div>
+                            <div class="stat-info">
+                                <h3>Juegos Vendidos</h3>
+                                <p class="stat-value">{{ stats().totalGamesSold }}</p>
+                                <p class="stat-sub">Copias en bibliotecas</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card support" (click)="showDetail('support')">
+                            <div class="stat-icon">🎫</div>
+                            <div class="stat-info">
+                                <h3>Tickets de Soporte</h3>
+                                <p class="stat-value">{{ stats().openTickets }}</p>
+                                <p class="stat-sub">{{ stats().closedTickets }} cerrados</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card communities" (click)="showDetail('communities')">
+                            <div class="stat-icon">🌐</div>
+                            <div class="stat-info">
+                                <h3>Comunidades</h3>
+                                <p class="stat-value">{{ stats().totalCommunities }}</p>
+                                <p class="stat-sub">Grupos creados</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlights-container">
+                        <h2 class="highlights-main-title">📊 Informe Ejecutivo de Destacados</h2>
+                        
+                        <div class="banner-highlights">
+                            <!-- Banner Juego Top -->
+                            <div class="highlight-banner game-banner" *ngIf="stats().topGame">
+                                <div class="banner-badge">LÍDER DE VENTAS</div>
+                                <div class="banner-content">
+                                    <div class="banner-visual">
+                                        <img [src]="stats().topGame.image || 'images/game_placeholder.png'" alt="Top Game" class="game-img">
+                                        <div class="visual-overlay"></div>
+                                    </div>
+                                    <div class="banner-info">
+                                        <div class="banner-header">
+                                            <span class="category">GAMING E INTELEGENCIA</span>
+                                            <h3 class="title">{{ stats().topGame.name || 'Juego #' + stats().topGame.game_api_id }}</h3>
+                                        </div>
+                                        <div class="banner-body">
+                                            <div class="metric-row">
+                                                <div class="metric">
+                                                    <span class="label">Ventas Totales</span>
+                                                    <span class="value">{{ stats().topGame.count }} unidades</span>
+                                                </div>
+                                                <div class="metric">
+                                                    <span class="label">Puntuación Media</span>
+                                                    <span class="value">{{ stats().topGame.rating }}%</span>
+                                                </div>
+                                                <div class="metric">
+                                                    <span class="label">Géneros</span>
+                                                    <span class="value">{{ stats().topGame.genres }}</span>
+                                                </div>
+                                            </div>
+                                            <p class="insight">Este título representa el {{ ((stats().topGame.count / (stats().totalGamesSold || 1)) * 100).toFixed(1) }}% de todas las ventas históricas de la plataforma.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Banner Comunidad Top -->
+                            <div class="highlight-banner community-banner" *ngIf="stats().topCommunity">
+                                <div class="banner-badge">PUNTO DE ENCUENTRO</div>
+                                <div class="banner-content">
+                                    <div class="banner-visual">
+                                        <img [src]="stats().topCommunity.image_url || 'images/comunidad_default.png'" alt="Community" class="comm-img">
+                                    </div>
+                                    <div class="banner-info">
+                                        <div class="banner-header">
+                                            <span class="category">COMUNIDAD Y SOCIAL</span>
+                                            <h3 class="title">{{ stats().topCommunity.name }}</h3>
+                                        </div>
+                                        <div class="banner-body">
+                                            <div class="metric-row">
+                                                <div class="metric">
+                                                    <span class="label">Miembros</span>
+                                                    <span class="value">{{ stats().topCommunity.total_members }} usuarios</span>
+                                                </div>
+                                                <div class="metric">
+                                                    <span class="label">Categoría</span>
+                                                    <span class="value">{{ stats().topCommunity.categoria }}</span>
+                                                </div>
+                                                <div class="metric">
+                                                    <span class="label">Estado</span>
+                                                    <span class="value">Activa</span>
+                                                </div>
+                                            </div>
+                                            <p class="description">{{ stats().topCommunity.description || 'Sin descripción detallada.' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Banner Comprador Top -->
+                            <div class="highlight-banner buyer-banner" *ngIf="stats().topBuyer">
+                                <div class="banner-badge">MECENAS DE LA PLATAFORMA</div>
+                                <div class="banner-content">
+                                    <div class="banner-visual">
+                                        <div class="avatar-container" [style.background-image]="'url(' + (stats().topBuyer.profile_image || 'images/default-avatar.png') + ')'"></div>
+                                    </div>
+                                    <div class="banner-info">
+                                        <div class="banner-header">
+                                            <span class="category">ECONOMÍA Y LEALTAD</span>
+                                            <h3 class="title">{{ stats().topBuyer.username }}</h3>
+                                        </div>
+                                        <div class="banner-body">
+                                            <div class="metric-row">
+                                                <div class="metric">
+                                                    <span class="label">Total Invertido</span>
+                                                    <span class="value gold">{{ stats().topBuyer.total_spent | currency:'EUR' }}</span>
+                                                </div>
+                                                <div class="metric">
+                                                    <span class="label">Ratio de Gasto</span>
+                                                    <span class="value">Máximo</span>
+                                                </div>
+                                                <div class="metric">
+                                                    <span class="label">Última Recarga</span>
+                                                    <span class="value">{{ stats().topBuyer.last_purchase | date:'dd MMM yyyy' }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Banner Coleccionista -->
+                            <div class="highlight-banner collector-banner" *ngIf="stats().topCollector">
+                                <div class="banner-badge">BIBLIOTECA LEGENDARIA</div>
+                                <div class="banner-content">
+                                    <div class="banner-visual">
+                                        <div class="avatar-container" [style.background-image]="'url(' + (stats().topCollector.profile_image || 'images/default-avatar.png') + ')'"></div>
+                                    </div>
+                                    <div class="banner-info">
+                                        <div class="banner-header">
+                                            <span class="category">CONTENIDO Y COLECCIÓN</span>
+                                            <h3 class="title">{{ stats().topCollector.username }}</h3>
+                                        </div>
+                                        <div class="banner-body">
+                                            <div class="metric-row">
+                                                <div class="metric">
+                                                    <span class="label">Juegos en Biblioteca</span>
+                                                    <span class="value">{{ stats().topCollector.total_games }} títulos</span>
+                                                </div>
+                                                <div class="metric">
+                                                    <span class="label">Media de Carga</span>
+                                                    <span class="value">Alta</span>
+                                                </div>
+                                                <div class="metric">
+                                                    <span class="label">Insignia</span>
+                                                    <span class="value">Frozen Mind Legend</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                } @else if (loading()) {
+                    <div class="loading-stats">Calculando métricas...</div>
+                }
+            </section>
+        }
+
+        @if (activeTab() === 'reports') {
+            <section class="reports-section">
+                <div class="section-header">
+                    <h2>Reportes y Tickets de Soporte</h2>
+                    <button class="btn-refresh" (click)="loadReports()" [disabled]="loading()">
+                        {{ loading() ? 'Cargando...' : 'Refrescar' }}
+                    </button>
+                </div>
+
+                @if (error()) {
+                    <div class="error-msg">{{ error() }}</div>
+                }
+
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Categoría</th>
+                                <th>Producto</th>
+                                <th>Asunto</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (report of reports(); track report.id) {
+                                <tr [class.closed]="report.status === 'closed'">
+                                    <td>#{{ report.id }}</td>
+                                    <td>
+                                        <div class="user-info">
+                                            <strong>{{ report.user_name }}</strong>
+                                            <span>{{ report.user_email }}</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="category-tag">{{ report.category }}</span></td>
+                                    <td>{{ report.product_name || '-' }}</td>
+                                    <td>
+                                        <div class="subject-cell">
+                                            <strong>{{ report.subject }}</strong>
+                                            <p>{{ report.details }}</p>
+                                        </div>
+                                    </td>
+                                    <td>{{ report.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+                                    <td>
+                                        <span class="status-badge" [ngClass]="report.status">
+                                            {{ report.status === 'open' ? 'Abierto' : 'Cerrado' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="actions">
+                                            @if (report.status === 'open') {
+                                                <button class="btn-action close-btn" (click)="updateReportStatus(report.id, 'closed')">
+                                                    Cerrar
+                                                </button>
+                                            } @else {
+                                                <button class="btn-action open-btn" (click)="updateReportStatus(report.id, 'open')">
+                                                    Reabrir
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+    </main>
+</div>
