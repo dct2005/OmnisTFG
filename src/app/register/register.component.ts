@@ -12,10 +12,9 @@ declare var Swal: any;
     styleUrl: './register.component.css'
 })
 export class RegisterComponent {
-    // Estructura exacta que espera tu Backend (api/register.js)
     user = {
-        name: "",            // Nombre completo (irá a 'username' en la BD)
-        username: "",        // Email (el backend lo recibe como 'username')
+        name: "",
+        username: "",
         password: "",
         confirmPassword: "",
         acceptedTerms: false
