@@ -54,6 +54,15 @@ module.exports = async function handler(req, res) {
         if (req.method === 'GET') {
             const { email, username, action } = req.query;
 
+            if (action === 'get-by-id') {
+                const { id } = req.query;
+                if (!id) return res.status(400).json({ error: 'Falta id' });
+                const users = await sql`SELECT * FROM users WHERE id = ${id}`;
+                if (users.length === 0) return res.status(404).json({ error: 'No encontrado' });
+                const richUser = await getUserWithBadges(users[0]);
+                return res.status(200).json(richUser);
+            }
+
             if (action === 'migrate-comments') {
                 await sql`
                     CREATE TABLE IF NOT EXISTS profile_comments (
@@ -190,7 +199,7 @@ module.exports = async function handler(req, res) {
                     return res.status(403).json({ error: 'No tienes permisos de administrador' });
                 }
 
-                const allUsers = await sql`SELECT id, username, email, role, created_at, last_activity, peppix, estado FROM users ORDER BY id ASC`;
+                const allUsers = await sql`SELECT id, username, email, role, created_at, last_activity, peppix, estado, profile_image FROM users ORDER BY id ASC`;
                 return res.status(200).json(allUsers);
             }
 
@@ -210,6 +219,44 @@ module.exports = async function handler(req, res) {
                     ORDER BY st.created_at DESC
                 `;
                 return res.status(200).json(allReports);
+            }
+
+            if (action === 'get-all-communities') {
+                const { requesterEmail } = req.query;
+                if (!requesterEmail) return res.status(400).json({ error: 'Falta email del solicitante' });
+                
+                const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
+
+                const communities = await sql`
+                    SELECT c.*, COUNT(cm.user_id) as num_members
+                    FROM communities c
+                    LEFT JOIN community_members cm ON c.id = cm.community_id
+                    GROUP BY c.id
+                    ORDER BY COUNT(cm.user_id) DESC
+                `;
+                return res.status(200).json(communities);
+            }
+
+            if (action === 'get-all-transactions-admin') {
+                const { requesterEmail } = req.query;
+                if (!requesterEmail) return res.status(400).json({ error: 'Falta email del solicitante' });
+                
+                const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
+
+                const transactions = await sql`
+                    SELECT t.*, u.username, u.email
+                    FROM transactions t
+                    JOIN users u ON t.user_id = u.id
+                    ORDER BY t.created_at DESC
+                    LIMIT 200
+                `;
+                return res.status(200).json(transactions);
             }
 
             if (action === 'bootstrap-admin') {
@@ -398,11 +445,11 @@ module.exports = async function handler(req, res) {
             }
 
             if (action === 'create-ticket') {
-                const { userId, category, productName, subject, details } = req.body;
+                const { userId, category, productName, gameId, subject, details } = req.body;
                 if (!userId || !category || !details) return res.status(400).json({ error: 'Faltan datos' });
                 const inserted = await sql`
-                    INSERT INTO support_tickets (user_id, category, product_name, subject, details)
-                    VALUES (${userId}, ${category}, ${productName}, ${subject}, ${details})
+                    INSERT INTO support_tickets (user_id, category, product_name, game_api_id, subject, details)
+                    VALUES (${userId}, ${category}, ${productName}, ${gameId}, ${subject}, ${details})
                     RETURNING *
                 `;
                 return res.status(201).json(inserted[0]);
@@ -449,6 +496,24 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ message: 'Usuario y todos sus datos asociados han sido eliminados' });
             }
 
+            if (action === 'delete-community') {
+                const { adminEmail, communityId } = req.body;
+                if (!adminEmail || !communityId) return res.status(400).json({ error: 'Faltan datos' });
+
+                const requester = await sql`SELECT role FROM users WHERE email = ${adminEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
+
+                await sql`DELETE FROM community_messages WHERE community_id = ${communityId}`;
+                await sql`DELETE FROM community_members WHERE community_id = ${communityId}`;
+                const deleted = await sql`DELETE FROM communities WHERE id = ${communityId} RETURNING id`;
+                
+                if (deleted.length === 0) return res.status(404).json({ error: 'Comunidad no encontrada' });
+
+                return res.status(200).json({ message: 'Comunidad eliminada correctamente' });
+            }
+
             if (action === 'update-report-status') {
                 const { adminEmail, reportId, newStatus, adminResponse } = req.body;
                 if (!adminEmail || !reportId || !newStatus) return res.status(400).json({ error: 'Faltan datos' });
@@ -468,6 +533,34 @@ module.exports = async function handler(req, res) {
                 if (updated.length === 0) return res.status(404).json({ error: 'Reporte no encontrado' });
 
                 return res.status(200).json({ message: 'Estado del reporte actualizado', report: updated[0] });
+            }
+
+            if (action === 'refund-game') {
+                const { adminEmail, reportId, userId, gameId, amount } = req.body;
+                if (!adminEmail || !reportId || !userId || !gameId || amount === undefined) return res.status(400).json({ error: 'Faltan datos' });
+
+                const requester = await sql`SELECT role FROM users WHERE email = ${adminEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
+
+                // 1. Eliminar juego de la biblioteca
+                await sql`DELETE FROM user_games WHERE user_id = ${userId} AND game_api_id = ${gameId.toString()}`;
+
+                // 2. Devolver Peppix al usuario
+                await sql`UPDATE users SET peppix = peppix + ${amount} WHERE id = ${userId}`;
+
+                // 3. Registrar transacción
+                await sql`
+                    INSERT INTO transactions (user_id, peppix_amount, real_money_euro, payment_method, created_at)
+                    VALUES (${userId}, ${amount}, 0, 'Reembolso Soporte', NOW())
+                `;
+
+                // 4. Cerrar el reporte con mensaje automático
+                const adminResponse = `REEMBOLSO PROCESADO: Se han devuelto ${amount} Peppix a tu cuenta y el juego ha sido retirado de tu biblioteca.`;
+                const updated = await sql`UPDATE support_tickets SET status = 'closed', admin_response = ${adminResponse} WHERE id = ${reportId} RETURNING *`;
+
+                return res.status(200).json({ message: 'Reembolso procesado correctamente', report: updated[0] });
             }
 
             if (action === 'register') {

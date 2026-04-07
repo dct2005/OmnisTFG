@@ -1,7 +1,8 @@
 import { Component, OnInit, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth';
-import { RouterLink } from '@angular/router';
+import { CommunityService } from '../services/community.service';
+import { RouterLink, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 declare var Swal: any;
 
@@ -14,11 +15,15 @@ declare var Swal: any;
 })
 export class AdminDashboardComponent implements OnInit {
   private authService = inject(AuthService);
+  private communityService = inject(CommunityService);
   private http = inject(HttpClient);
+  private router = inject(Router);
   
   users = signal<any[]>([]);
   reports = signal<any[]>([]);
   stats = signal<any>(null);
+  communities = signal<any[]>([]);
+  transactions = signal<any[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
   activeTab = signal('users');
@@ -36,6 +41,10 @@ export class AdminDashboardComponent implements OnInit {
       this.loadReports();
     } else if (this.activeTab() === 'stats') {
       this.loadStats();
+    } else if (this.activeTab() === 'communities') {
+      this.loadCommunities();
+    } else if (this.activeTab() === 'transactions') {
+      this.loadAllTransactions();
     }
   }
 
@@ -82,6 +91,167 @@ export class AdminDashboardComponent implements OnInit {
       error: (err) => {
         this.error.set('Error al cargar estadísticas');
         this.loading.set(false);
+        console.error(err);
+      }
+    });
+  }
+
+  loadCommunities() {
+    this.loading.set(true);
+    this.authService.getAllCommunities().subscribe({
+      next: (data) => {
+        this.communities.set(data);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set('Error al cargar comunidades');
+        this.loading.set(false);
+        console.error(err);
+      }
+    });
+  }
+
+  loadAllTransactions() {
+    this.loading.set(true);
+    this.authService.getAllTransactionsAdmin().subscribe({
+      next: (data) => {
+        this.transactions.set(data);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set('Error al cargar historial de transacciones');
+        this.loading.set(false);
+        console.error(err);
+      }
+    });
+  }
+
+  deleteCommunity(id: number, name: string) {
+    Swal.fire({
+      title: '¿Confirmar eliminación?',
+      text: `Se borrará la comunidad "${name}" y todos sus mensajes de forma permanente.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, borrar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#ff4444',
+      background: '#1a103c',
+      color: '#fff'
+    }).then((result: any) => {
+      if (result.isConfirmed) {
+        this.authService.deleteCommunity(id).subscribe({
+          next: () => {
+            Swal.fire('Borrada', 'La comunidad ha sido eliminada.', 'success');
+            this.loadCommunities();
+          },
+          error: (err) => {
+            Swal.fire('Error', 'No se pudo eliminar la comunidad.', 'error');
+            console.error(err);
+          }
+        });
+      }
+    });
+  }
+
+  showCommunityDetail(community: any) {
+    Swal.fire({
+      title: `<span style="color: #7c3aed">${community.name}</span>`,
+      html: `
+        <div style="text-align: left; color: #fff; font-family: 'Inter', sans-serif;">
+          <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+            <img src="${community.image_url}" style="width: 120px; height: 120px; border-radius: 12px; object-fit: cover; border: 2px solid #7c3aed; box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);">
+          </div>
+          
+          <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);">
+            <p style="margin: 0 0 5px 0; font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px;">Descripción</p>
+            <p style="margin: 0; line-height: 1.5; color: #ddd;">${community.description || 'Sin descripción disponible.'}</p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px;">
+               <p style="margin: 0 0 5px 0; font-size: 0.7rem; color: #888; text-transform: uppercase;">Categoría</p>
+               <p style="margin: 0; font-weight: 600;">${community.categoria}</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px;">
+               <p style="margin: 0 0 5px 0; font-size: 0.7rem; color: #888; text-transform: uppercase;">Miembros</p>
+               <p style="margin: 0; font-weight: 600;">${community.num_members} usuarios</p>
+            </div>
+          </div>
+
+          <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; margin-bottom: 20px;">
+             <p style="margin: 0 0 5px 0; font-size: 0.7rem; color: #888; text-transform: uppercase;">Fecha de Creación</p>
+             <p style="margin: 0; font-weight: 500;">${new Date(community.created_at).toLocaleDateString()}</p>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button id="view-members-btn" class="swal-custom-btn" style="flex: 1; background: rgba(124, 58, 237, 0.1); border: 1px solid #7c3aed; color: #fff; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+              <i class="fas fa-users"></i> Ver Miembros
+            </button>
+            <button id="delete-comm-detail-btn" class="swal-custom-btn" style="flex: 1; background: rgba(255, 68, 68, 0.1); border: 1px solid #ff4444; color: #ff4444; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+              <i class="fas fa-trash"></i> Eliminar
+            </button>
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      cancelButtonText: 'Cerrar',
+      showConfirmButton: false,
+      background: '#1a103c',
+      color: '#fff',
+      didOpen: () => {
+        const viewMembersBtn = document.getElementById('view-members-btn');
+        if (viewMembersBtn) {
+          viewMembersBtn.onclick = () => {
+            this.showMembersList(community.id, community.name);
+          };
+        }
+
+        const deleteBtn = document.getElementById('delete-comm-detail-btn');
+        if (deleteBtn) {
+          deleteBtn.onclick = () => {
+            this.deleteCommunity(community.id, community.name);
+            Swal.close();
+          };
+        }
+      }
+    });
+  }
+
+  showMembersList(communityId: number, communityName: string) {
+    this.loading.set(true);
+    this.communityService.getCommunityMembers(communityId.toString()).subscribe({
+      next: (members) => {
+        this.loading.set(false);
+        const membersHtml = members.map((m, index) => `
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <img src="${m.profile_image || 'assets/default-avatar.png'}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);">
+              <div style="display: flex; flex-direction: column;">
+                <span style="font-weight: 600; color: #fff;">${m.username}</span>
+                <span style="font-size: 0.7rem; color: #888;">Unido: ${new Date(m.joined_at).toLocaleDateString()}</span>
+              </div>
+            </div>
+            ${index === 0 ? '<span style="background: #a855f7; color: #fff; font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; text-transform: uppercase;">Creador</span>' : 
+              `<span style="color: #aaa; font-size: 0.7rem;">${m.role}</span>`}
+          </div>
+        `).join('');
+
+        Swal.fire({
+          title: `<span style="color: #7c3aed">Miembros de ${communityName}</span>`,
+          html: `
+            <div style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+              ${membersHtml || '<p style="color: #888; text-align: center;">No hay miembros registrados.</p>'}
+            </div>
+          `,
+          background: '#1a103c',
+          color: '#fff',
+          confirmButtonColor: '#7c3aed',
+          confirmButtonText: 'Regresar'
+        });
+      },
+      error: (err) => {
+        this.loading.set(false);
+        Swal.fire('Error', 'No se pudieron cargar los miembros.', 'error');
         console.error(err);
       }
     });
@@ -223,7 +393,14 @@ export class AdminDashboardComponent implements OnInit {
         <div style="text-align: left; color: #fff; font-family: 'Inter', sans-serif;">
           <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
             <p style="margin: 0 0 8px 0; font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px;">Usuario</p>
-            <p style="margin: 0; font-weight: bold; font-size: 1.1rem;">${report.user_name} <span style="font-weight: normal; font-size: 0.9rem; color: #aaa;">(${report.user_email})</span></p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <p style="margin: 0; font-weight: bold; font-size: 1.1rem;">${report.user_name} <span style="font-weight: normal; font-size: 0.9rem; color: #aaa;">(${report.user_email})</span></p>
+              </div>
+              <button id="view-profile-btn" class="swal-custom-btn" style="background: rgba(124, 58, 237, 0.2); border: 1px solid #7c3aed; color: #fff; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;">
+                <i class="fas fa-user"></i> Ver Perfil
+              </button>
+            </div>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
@@ -254,7 +431,19 @@ export class AdminDashboardComponent implements OnInit {
 
           <div id="reply-container" style="display: none;">
             <p style="margin: 0 0 8px 0; font-size: 0.8rem; color: #888; text-transform: uppercase;">Redactar Respuesta</p>
-            <textarea id="admin-reply-text" style="width: 100%; min-height: 100px; background: rgba(0,0,0,0.2); border: 1px solid #7c3aed; border-radius: 8px; color: #fff; padding: 10px; margin-bottom: 20px; outline: none;"></textarea>
+            <textarea id="admin-reply-text" placeholder="Escribe aquí tu respuesta para el usuario..." style="width: 100%; min-height: 100px; background: rgba(0,0,0,0.2); border: 1px solid #7c3aed; border-radius: 8px; color: #fff; padding: 12px; margin-bottom: 20px; outline: none; transition: border-color 0.2s;"></textarea>
+          </div>
+          
+          
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button id="reject-report-btn" class="swal-custom-btn" style="flex: 1; background: rgba(255, 68, 68, 0.1); border: 1px solid #ff4444; color: #ff4444; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+              <i class="fas fa-times-circle"></i> Rechazar Reporte
+            </button>
+            ${report.category === 'games' && report.game_api_id ? `
+              <button id="refund-btn" class="swal-custom-btn" style="flex: 1; background: rgba(255, 170, 0, 0.1); border: 1px solid #ffaa00; color: #ffaa00; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                <i class="fas fa-undo"></i> Realizar Reembolso
+              </button>
+            ` : ''}
           </div>
         </div>
       `,
@@ -267,8 +456,75 @@ export class AdminDashboardComponent implements OnInit {
       denyButtonColor: '#7c3aed',
       background: '#1a103c',
       color: '#fff',
-      customClass: {
-        popup: 'swal-premium-popup'
+      didOpen: () => {
+        // Listeners para botones personalizados
+        const viewProfileBtn = document.getElementById('view-profile-btn');
+        if (viewProfileBtn) {
+          viewProfileBtn.onclick = () => {
+            Swal.close();
+            this.router.navigate(['/perfil', report.user_name]);
+          };
+        }
+
+        const rejectBtn = document.getElementById('reject-report-btn');
+        if (rejectBtn) {
+          rejectBtn.onclick = () => {
+            Swal.fire({
+              title: '¿Rechazar reporte?',
+              text: 'Se marcará como rechazado y se notificará al usuario si incluyes una razón.',
+              input: 'textarea',
+              inputPlaceholder: 'Razón del rechazo...',
+              showCancelButton: true,
+              confirmButtonText: 'Rechazar definitivamente',
+              confirmButtonColor: '#ff4444',
+              background: '#1a103c',
+              color: '#fff'
+            }).then((rejResult: any) => {
+              if (rejResult.isConfirmed) {
+                this.updateReportStatus(report.id, 'rejected', rejResult.value || 'Reporte rechazado por administración');
+                Swal.close();
+              }
+            });
+          };
+        }
+
+        const refundBtn = document.getElementById('refund-btn');
+        if (refundBtn) {
+          refundBtn.onclick = () => {
+            Swal.fire({
+              title: 'Procesar Reembolso',
+              text: 'Se devolverán Peppix al usuario y se eliminará el juego de su biblioteca.',
+              input: 'number',
+              inputLabel: 'Cantidad de Peppix a devolver',
+              inputPlaceholder: 'Ej: 500',
+              showCancelButton: true,
+              confirmButtonText: 'Confirmar Reembolso',
+              confirmButtonColor: '#ffaa00',
+              background: '#1a103c',
+              color: '#fff',
+              inputValidator: (value: string | null) => {
+                if (!value || parseInt(value) <= 0) {
+                  return 'Debes ingresar una cantidad válida';
+                }
+                return null;
+              }
+            }).then((result: any) => {
+              if (result.isConfirmed) {
+                const amount = parseInt(result.value);
+                this.authService.refundGame(report.id, report.user_id, report.game_api_id, amount).subscribe({
+                  next: () => {
+                    Swal.fire('Reembolsado', 'El dinero ha sido devuelto y el ticket cerrado.', 'success');
+                    this.loadReports();
+                  },
+                  error: (err) => {
+                    Swal.fire('Error', 'No se pudo procesar el reembolso.', 'error');
+                    console.error(err);
+                  }
+                });
+              }
+            });
+          };
+        }
       },
       preDeny: () => {
         const container = document.getElementById('reply-container');

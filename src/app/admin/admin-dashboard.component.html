@@ -5,6 +5,8 @@
             <button [class.active]="activeTab() === 'users'" (click)="setTab('users')">Usuarios</button>
             <button [class.active]="activeTab() === 'stats'" (click)="setTab('stats')">Estadísticas</button>
             <button [class.active]="activeTab() === 'reports'" (click)="setTab('reports')">Reportes</button>
+            <button [class.active]="activeTab() === 'communities'" (click)="setTab('communities')">Comunidades</button>
+            <button [class.active]="activeTab() === 'transactions'" (click)="setTab('transactions')">Transacciones</button>
         </div>
     </header>
 
@@ -43,6 +45,8 @@
                                     <td>{{ user.id }}</td>
                                     <td>
                                         <div class="user-cell">
+                                            <img [src]="user.profile_image || 'https://ui-avatars.com/api/?name=' + user.username + '&background=6b46c1&color=fff'" 
+                                                 class="admin-user-avatar" [alt]="user.username">
                                             <span class="username">{{ user.username }}</span>
                                         </div>
                                     </td>
@@ -314,7 +318,7 @@
                         </thead>
                         <tbody>
                             @for (report of reports(); track report.id) {
-                                <tr [class.closed]="report.status === 'closed'">
+                                <tr [class.closed]="report.status === 'closed'" (click)="showReportDetail(report)" style="cursor: pointer;">
                                     <td>#{{ report.id }}</td>
                                     <td>
                                         <div class="user-info">
@@ -333,22 +337,110 @@
                                     <td>{{ report.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
                                     <td>
                                         <span class="status-badge" [ngClass]="report.status">
-                                            {{ report.status === 'open' ? 'Abierto' : 'Cerrado' }}
+                                            {{ report.status === 'open' ? 'Abierto' : (report.status === 'rejected' ? 'Rechazado' : 'Cerrado') }}
                                         </span>
                                     </td>
                                     <td>
                                         <div class="actions">
                                             @if (report.status === 'open') {
-                                                <button class="btn-action close-btn" (click)="updateReportStatus(report.id, 'closed')">
+                                                <button class="btn-action close-btn" (click)="$event.stopPropagation(); updateReportStatus(report.id, 'closed')">
                                                     Cerrar
                                                 </button>
                                             } @else {
-                                                <button class="btn-action open-btn" (click)="updateReportStatus(report.id, 'open')">
+                                                <button class="btn-action open-btn" (click)="$event.stopPropagation(); updateReportStatus(report.id, 'open')">
                                                     Reabrir
                                                 </button>
                                             }
                                         </div>
                                     </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+
+        @if (activeTab() === 'communities') {
+            <section class="communities-section">
+                <div class="section-header">
+                    <h2>Gestión de Comunidades</h2>
+                    <button class="btn-refresh" (click)="loadCommunities()" [disabled]="loading()">
+                        {{ loading() ? 'Cargando...' : 'Refrescar' }}
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Miembros</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (comm of communities(); track comm.id) {
+                                <tr class="clickable-row" (click)="showCommunityDetail(comm)">
+                                    <td>{{ comm.id }}</td>
+                                    <td>
+                                        <div class="user-cell">
+                                            <img [src]="comm.image_url" class="admin-avatar">
+                                            <span class="username">{{ comm.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ comm.categoria }}</td>
+                                    <td>{{ comm.num_members }}</td>
+                                    <td>
+                                        <button class="btn-action delete" (click)="deleteCommunity(comm.id, comm.name)">Eliminar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+
+        @if (activeTab() === 'transactions') {
+            <section class="transactions-section">
+                <div class="section-header">
+                    <h2>Historial Global de Transacciones</h2>
+                    <button class="btn-refresh" (click)="loadAllTransactions()" [disabled]="loading()">
+                        {{ loading() ? 'Cargando...' : 'Refrescar' }}
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Peppix</th>
+                                <th>Euros</th>
+                                <th>Método</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (tx of transactions(); track tx.id) {
+                                <tr>
+                                    <td>#{{ tx.id }}</td>
+                                    <td>
+                                        <div class="tx-user-info">
+                                            <span class="tx-username">{{ tx.username }}</span>
+                                            <span class="tx-email">{{ tx.email }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="tx-amount" [ngClass]="tx.peppix_amount > 0 ? 'positive' : 'negative'">
+                                        {{ tx.peppix_amount > 0 ? '+' : '' }}{{ tx.peppix_amount }}
+                                    </td>
+                                    <td>{{ tx.real_money_euro }}€</td>
+                                    <td>{{ tx.payment_method }}</td>
+                                    <td>{{ tx.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
                                 </tr>
                             }
                         </tbody>

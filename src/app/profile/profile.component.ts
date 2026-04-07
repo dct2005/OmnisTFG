@@ -189,7 +189,7 @@ export class ProfileComponent implements OnDestroy {
         this.loadUserData(user);
         this.checkFriendshipStatus(user);
       }
-    }, { allowSignalWrites: true });
+    });
 
     // Efecto para controlar el fondo global del body
     effect(() => {
@@ -267,6 +267,13 @@ export class ProfileComponent implements OnDestroy {
     this.authService.removeFriend(id).subscribe(() => {
       this.checkFriendshipStatus(this.viewedUser());
     });
+  }
+
+  goToChat() {
+    const user = this.viewedUser();
+    if (user) {
+      this.router.navigate(['/mensajes'], { queryParams: { userId: user.id } });
+    }
   }
 
   ngOnDestroy() {

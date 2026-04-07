@@ -151,6 +151,10 @@ export class AuthService {
     return this.http.get(`${this.apiUrl}/user?username=${username}&action=get`);
   }
 
+  getUserById(id: number | string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/user?id=${id}&action=get-by-id`);
+  }
+
   purchaseGame(gameId: number | string, price: number): Observable<any> {
     const user = this.currentUser();
     const userEmail = user?.email;
@@ -373,12 +377,13 @@ export class AuthService {
     });
   }
 
-  createSupportTicket(userId: number, category: string, productName: string | null, subject: string, details: string): Observable<any> {
+  createSupportTicket(userId: number, category: string, productName: string | null, gameId: string | null, subject: string, details: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/user`, {
       action: 'create-ticket',
       userId,
       category,
       productName,
+      gameId,
       subject,
       details
     });
@@ -448,5 +453,51 @@ export class AuthService {
     const userEmail = this.currentUser()?.email;
     if (!userEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any>(`${this.apiUrl}/user?action=get-admin-stats&requesterEmail=${userEmail}`);
+  }
+  /**
+   * Procesa un reembolso de juego - Solo administradores
+   */
+  refundGame(reportId: number, userId: number, gameId: string, amount: number): Observable<any> {
+    const adminEmail = this.currentUser()?.email;
+    if (!adminEmail) throw new Error('Usuario no autenticado');
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'refund-game',
+      adminEmail,
+      reportId,
+      userId,
+      gameId,
+      amount
+    });
+  }
+
+  /**
+   * Obtiene todas las comunidades - Solo administradores
+   */
+  getAllCommunities(): Observable<any[]> {
+    const adminEmail = this.currentUser()?.email;
+    if (!adminEmail) throw new Error('Usuario no autenticado');
+    return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-communities&requesterEmail=${adminEmail}`);
+  }
+
+  /**
+   * Elimina una comunidad - Solo administradores
+   */
+  deleteCommunity(communityId: number): Observable<any> {
+    const adminEmail = this.currentUser()?.email;
+    if (!adminEmail) throw new Error('Usuario no autenticado');
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'delete-community',
+      adminEmail,
+      communityId
+    });
+  }
+
+  /**
+   * Obtiene todas las transacciones globales - Solo administradores
+   */
+  getAllTransactionsAdmin(): Observable<any[]> {
+    const adminEmail = this.currentUser()?.email;
+    if (!adminEmail) throw new Error('Usuario no autenticado');
+    return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-transactions-admin&requesterEmail=${adminEmail}`);
   }
 }

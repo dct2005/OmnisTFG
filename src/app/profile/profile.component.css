@@ -72,6 +72,18 @@
     box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
 }
 
+.message-user {
+    background: rgba(168, 85, 247, 0.2);
+    border-color: rgba(168, 85, 247, 0.4);
+    color: #f3e8ff;
+    margin-left: 5px;
+}
+
+.message-user:hover {
+    background: rgba(168, 85, 247, 0.4);
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+}
+
 .friend-options {
     display: flex;
     gap: 10px;

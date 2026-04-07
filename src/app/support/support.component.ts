@@ -118,11 +118,13 @@ export class SupportComponent implements OnInit {
 
     this.submitting.set(true);
     const finalProductName = productName || this.selectedGame()?.name || null;
+    const gameId = productName ? null : (this.selectedGame()?.id?.toString() || null);
 
     this.authService.createSupportTicket(
       user.id,
       category,
       finalProductName,
+      gameId,
       this.ticketSubject,
       this.ticketDetails
     ).subscribe({

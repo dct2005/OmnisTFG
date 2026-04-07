@@ -25,6 +25,10 @@
             <span class="peppix-amount">{{ authService.currentUser()?.peppix || 0 }}</span>
         </div>
 
+        <div class="messages-nav-icon" title="Mensajes Directos" routerLink="/mensajes">
+            <span class="material-icons-round">chat_bubble</span>
+        </div>
+
         <div class="user-profile-btn" [ngClass]="userEstado" (click)="toggleDropdown()" title="Perfil">
             <div class="user-avatar-wrapper">
                 <img [src]="authService.currentUser()?.profile_image || 'https://ui-avatars.com/api/?name=' + usernameValue() + '&background=0d1b2a&color=fff'"

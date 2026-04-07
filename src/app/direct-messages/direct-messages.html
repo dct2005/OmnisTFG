@@ -1,0 +1,72 @@
+<div class="dm-container">
+    <!-- Sidebar: Lista de Conversaciones -->
+    <aside class="conversations-sidebar">
+        <div class="sidebar-header">
+            <h2>Mensajes Directos</h2>
+        </div>
+        <div class="conversations-list">
+            @for (conv of conversations(); track conv.id) {
+                <div class="conversation-item" 
+                     [class.active]="activeChat()?.id === conv.id"
+                     (click)="selectChat(conv)">
+                    <div class="avatar-wrapper">
+                        <img [src]="conv.profile_image || 'assets/default-avatar.png'" [alt]="conv.username">
+                        @if (!conv.is_read && conv.sender_id !== currentUser()?.id) {
+                            <span class="unread-dot"></span>
+                        }
+                    </div>
+                    <div class="conv-info">
+                        <span class="conv-name">{{ conv.username }}</span>
+                        <span class="conv-last-msg">{{ conv.last_message }}</span>
+                    </div>
+                </div>
+            } @empty {
+                <div class="no-conversations">
+                    <p>No tienes mensajes privados aún.</p>
+                </div>
+            }
+        </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="chat-area">
+        @if (activeChat()) {
+            <header class="chat-header">
+                <div class="active-user-info">
+                    <img [src]="activeChat().profile_image || 'assets/default-avatar.png'" alt="">
+                    <span>{{ activeChat().username }}</span>
+                </div>
+            </header>
+
+            <div class="messages-list" #scrollMe>
+                @for (msg of messages(); track msg.id) {
+                    <div class="message-wrapper" [class.own-message]="msg.sender_id === currentUser()?.id">
+                        <div class="message-content">
+                            <p>{{ msg.content }}</p>
+                            <span class="message-time">{{ msg.created_at | date:'shortTime' }}</span>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <footer class="chat-input-area">
+                <form (submit)="sendMessage(); $event.preventDefault()">
+                    <input type="text" 
+                           [(ngModel)]="newMessage" 
+                           name="messageInput"
+                           placeholder="Enviar mensaje a @{{ activeChat().username }}"
+                           autocomplete="off">
+                    <button type="submit" [disabled]="!newMessage().trim()">
+                        <span class="material-icons-round">send</span>
+                    </button>
+                </form>
+            </footer>
+        } @else {
+            <div class="empty-state">
+                <span class="material-icons-round large-icon">forum</span>
+                <h3>Tus Mensajes</h3>
+                <p>Selecciona una conversación para empezar a chatear.</p>
+            </div>
+        }
+    </main>
+</div>

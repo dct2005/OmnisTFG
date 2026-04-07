@@ -392,6 +392,37 @@ textarea:focus, input[type="text"]:focus {
   color: #34d399;
 }
 
+.ticket-status-pill.status-rejected {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.admin-reply-box {
+  margin-top: 15px;
+  background: rgba(124, 58, 237, 0.08);
+  border-left: 3px solid #7c3aed;
+  padding: 15px 20px;
+  border-radius: 0 12px 12px 0;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.admin-reply-header {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #a78bfa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.admin-reply-content {
+  color: #f1f5f9;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
 /* States */
 .empty-state {
   text-align: center;

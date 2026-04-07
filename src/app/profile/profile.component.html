@@ -49,8 +49,12 @@
             </button>
           </div>
 
-          <button class="btn-action friend-accepted" *ngIf="friendshipStatus() === 'accepted'" (click)="removeFriend()">
+          <button class="btn-action friend-accepted" *ngIf="friendshipStatus() === 'accepted'" (click)="$event.stopPropagation(); removeFriend()">
             <span class="material-icons-round">person_remove</span> Eliminar Amigo
+          </button>
+
+          <button class="btn-action message-user" (click)="$event.stopPropagation(); goToChat()">
+            <span class="material-icons-round">chat</span> Enviar Mensaje
           </button>
         </ng-container>
       </div>

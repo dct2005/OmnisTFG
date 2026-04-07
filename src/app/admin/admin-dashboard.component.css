@@ -174,6 +174,21 @@
     background: rgba(0, 242, 255, 0.1);
 }
 
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(168, 85, 247, 0.3);
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.1);
+}
+
 .user-info {
     display: flex;
     flex-direction: column;
@@ -223,6 +238,12 @@
     background: rgba(136, 136, 136, 0.1);
     color: #888;
     border: 1px solid #888;
+}
+
+.status-badge.rejected {
+    background: rgba(255, 68, 68, 0.1);
+    color: #ff4444;
+    border: 1px solid #ff4444;
 }
 
 .btn-action.close-btn {
@@ -520,4 +541,59 @@ tr.closed {
     .banner-visual { width: 150px; height: 200px; margin: 0 auto; }
     .metric-row { justify-content: center; flex-wrap: wrap; gap: 2rem; }
     .banner-badge { position: relative; top: 0; right: 0; display: inline-block; margin-bottom: 1rem; }
+}
+/* Estilos para nuevas secciones */
+.admin-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tx-amount {
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+}
+
+.tx-amount.positive {
+    color: #4ade80;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+}
+
+.tx-amount.negative {
+    color: #f87171;
+    text-shadow: 0 0 10px rgba(248, 113, 113, 0.3);
+}
+
+.tx-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tx-username {
+    font-weight: 600;
+    color: #fff;
+}
+
+.tx-email {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+/* Mejoras para la tabla de comunidades */
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.clickable-row:hover {
+    background: rgba(124, 58, 237, 0.1) !important;
+}
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }

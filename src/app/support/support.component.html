@@ -177,11 +177,18 @@
               <strong>Producto:</strong> {{ ticket.product_name }}
             </div>
             <p class="ticket-text-preview">{{ ticket.details }}</p>
+
+            <div class="admin-reply-box" *ngIf="ticket.admin_response">
+              <span class="admin-reply-header">Respuesta de Administración</span>
+              <p class="admin-reply-content">{{ ticket.admin_response }}</p>
+            </div>
           </div>
           <div class="ticket-foot">
             <span class="ticket-date">{{ ticket.created_at | date:'d MMM, yyyy' }}</span>
-            <span class="ticket-status-pill" [class.status-open]="ticket.status === 'open'">
-              {{ ticket.status === 'open' ? 'En proceso' : 'Cerrado' }}
+            <span class="ticket-status-pill" 
+                  [class.status-open]="ticket.status === 'open'" 
+                  [class.status-rejected]="ticket.status === 'rejected'">
+              {{ ticket.status === 'open' ? 'En proceso' : (ticket.status === 'rejected' ? 'Rechazado' : 'Cerrado') }}
             </span>
           </div>
         </div>

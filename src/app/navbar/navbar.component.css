@@ -486,3 +486,28 @@
     background-color: #ff4d4d !important;
     color: white !important;
 }
+
+.messages-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #a855f7;
+  margin-left: 0.5rem;
+}
+
+.messages-nav-icon:hover {
+  background: rgba(124, 58, 237, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+}
+
+.messages-nav-icon .material-icons-round {
+  font-size: 22px;
+}
