@@ -14,6 +14,7 @@ export interface SocialRankings {
   top_buyers: RankedUser[];
   top_communities: RankedUser[];
   top_friends: RankedUser[];
+  top_value: RankedUser[];
 }
 
 @Injectable({

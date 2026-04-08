@@ -26,6 +26,9 @@ export class InformacionCommunities implements OnInit {
   members: any[] = [];
   newMessage: string = '';
   posts: any[] = [];
+  currentTab: 'general' | 'media' = 'general';
+  mediaPreview: string | ArrayBuffer | null = null;
+  uploadingMedia: boolean = false;
 
   isEditing: boolean = false;
   editData = {
@@ -98,6 +101,57 @@ export class InformacionCommunities implements OnInit {
         }));
       },
       error: (err: any) => console.error('Error cargando mensajes:', err)
+    });
+  }
+
+  switchTab(tab: 'general' | 'media') {
+    this.currentTab = tab;
+  }
+
+  onMediaFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        Swal.fire('Error', 'La imagen es demasiado grande (máx 5MB)', 'error');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => this.mediaPreview = reader.result;
+      reader.readAsDataURL(file);
+    }
+  }
+
+  cancelMediaUpload() {
+    this.mediaPreview = null;
+  }
+
+  sendMedia() {
+    const userId = this.getUserIdFromToken();
+    if (!userId) return;
+    if (!this.mediaPreview) return;
+
+    this.uploadingMedia = true;
+    this.communityService.sendMessage(this.communityId, userId, this.newMessage, this.mediaPreview as string).subscribe({
+      next: () => {
+        this.loadMessages(this.communityId);
+        this.mediaPreview = null;
+        this.newMessage = '';
+        this.uploadingMedia = false;
+        Swal.fire({
+          title: '¡Publicado!',
+          text: 'Tu imagen ha sido compartida',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+          background: '#1a103c',
+          color: '#ffffff'
+        });
+      },
+      error: (err) => {
+        console.error('Error enviando media:', err);
+        this.uploadingMedia = false;
+        Swal.fire('Error', 'No se pudo subir la imagen', 'error');
+      }
     });
   }
 

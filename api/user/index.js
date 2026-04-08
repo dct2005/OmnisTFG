@@ -145,9 +145,65 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json(comments);
             }
 
+            if (action === 'get-game-sales-history') {
+                const { requesterEmail, gameId } = req.query;
+                if (!requesterEmail || !gameId) return res.status(400).json({ error: 'Faltan datos' });
+
+                const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
+
+                const history = await sql`
+                    SELECT DATE(purchase_date) as date, COUNT(*) as sales 
+                    FROM user_games 
+                    WHERE game_api_id = ${gameId.toString()} 
+                    GROUP BY DATE(purchase_date) 
+                    ORDER BY date ASC
+                `;
+                return res.status(200).json(history);
+            }
+
+            if (action === 'get-community-growth-history') {
+                const { requesterEmail, communityId } = req.query;
+                if (!requesterEmail || !communityId) return res.status(400).json({ error: 'Faltan datos' });
+
+                const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
+
+                // Obtener el conteo acumulativo de miembros por día
+                const history = await sql`
+                    SELECT DATE(joined_at) as date, COUNT(*) as daily_joins
+                    FROM community_members
+                    WHERE community_id = ${parseInt(communityId, 10)}
+                    GROUP BY DATE(joined_at)
+                    ORDER BY date ASC
+                `;
+                return res.status(200).json(history);
+            }
+
             if (action === 'get-transactions') {
                 const { userId } = req.query;
                 if (!userId) return res.status(400).json({ error: 'Falta userId' });
+
+                const transactions = await sql`
+                    SELECT id, peppix_amount, real_money_euro, payment_method, created_at 
+                    FROM transactions 
+                    WHERE user_id = ${userId} 
+                    ORDER BY created_at DESC
+                `;
+                return res.status(200).json(transactions);
+            }
+            if (action === 'get-user-transactions-admin') {
+                const { requesterEmail, userId } = req.query;
+                if (!requesterEmail || !userId) return res.status(400).json({ error: 'Faltan datos' });
+
+                const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
 
                 const transactions = await sql`
                     SELECT id, peppix_amount, real_money_euro, payment_method, created_at 
@@ -608,6 +664,31 @@ module.exports = async function handler(req, res) {
                 const updated = await sql`UPDATE support_tickets SET status = 'closed', admin_response = ${adminResponse} WHERE id = ${reportId} RETURNING *`;
 
                 return res.status(200).json({ message: 'Reembolso procesado correctamente', report: updated[0] });
+            }
+
+            if (action === 'resolve-purchase-report') {
+                const { adminEmail, reportId, userId, amount } = req.body;
+                if (!adminEmail || !reportId || !userId || amount === undefined) return res.status(400).json({ error: 'Faltan datos' });
+
+                const requester = await sql`SELECT role FROM users WHERE email = ${adminEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
+
+                // 1. Sumar Peppix al saldo del usuario
+                await sql`UPDATE users SET peppix = peppix + ${amount} WHERE id = ${userId}`;
+
+                // 2. Registrar transacción de ingreso manual
+                await sql`
+                    INSERT INTO transactions (user_id, peppix_amount, real_money_euro, payment_method, created_at)
+                    VALUES (${userId}, ${amount}, 0, 'Compra Manual (Soporte)', NOW())
+                `;
+
+                // 3. Cerrar el reporte con respuesta técnica
+                const resolutionMsg = `Soporte ha ingresado manualmente ${amount} Peppix tras verificar la reclamación.`;
+                await sql`UPDATE support_tickets SET status = 'closed', admin_response = ${resolutionMsg} WHERE id = ${reportId}`;
+
+                return res.status(200).json({ message: 'Peppix ingresados y reporte cerrado' });
             }
 
             if (action === 'register') {

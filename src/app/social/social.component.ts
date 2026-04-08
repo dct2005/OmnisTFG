@@ -83,7 +83,7 @@ export class SocialComponent implements OnInit, OnDestroy {
     this.searchSub?.unsubscribe();
   }
 
-  showFullRanking(type: 'buyers' | 'communities' | 'friends'): void {
+  showFullRanking(type: 'buyers' | 'communities' | 'friends' | 'value'): void {
     const data = this.rankings();
     if (!data) return;
 
@@ -111,6 +111,12 @@ export class SocialComponent implements OnInit, OnDestroy {
       color = '#f472b6';
       suffix = 'amigos';
       users = data.top_friends;
+    } else if (type === 'value') {
+      title = 'Inversores de Élite';
+      icon = 'account_balance_wallet';
+      color = '#10b981';
+      suffix = 'Peppix';
+      users = data.top_value;
     }
 
     let html = `<div style="max-height: 500px; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 10px;">`;

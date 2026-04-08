@@ -30,14 +30,16 @@ import { adminGuard } from './guards/admin.guard';
 // ... (existing guards)
 
 export const routes: Routes = [
-    { path: 'home', title: 'Inicio', loadComponent: () => import('./home/home.component').then(m => m.HomeComponent), canActivate: [() => {
-        const authService = inject(AuthService);
-        const router = inject(Router);
-        if (authService.currentUser()?.role === 'administrador') {
-            return router.parseUrl('/admin');
-        }
-        return true;
-    }] },
+    {
+        path: 'home', title: 'Inicio', loadComponent: () => import('./home/home.component').then(m => m.HomeComponent), canActivate: [() => {
+            const authService = inject(AuthService);
+            const router = inject(Router);
+            if (authService.currentUser()?.role === 'administrador') {
+                return router.parseUrl('/admin');
+            }
+            return true;
+        }]
+    },
     { path: 'catalogo', title: 'Catálogo', loadComponent: () => import('./catalog/catalog.component').then(m => m.CatalogComponent) },
     { path: 'game/:id', title: 'Detalles del Juego', loadComponent: () => import('./game-details/game-details.component').then(m => m.GameDetailsComponent) },
     { path: 'login', title: 'Iniciar Sesión', component: LoginComponent, canActivate: [guestGuard] },

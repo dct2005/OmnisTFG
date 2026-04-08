@@ -33,8 +33,8 @@ export class CommunityService {
         return this.http.get<any[]>(`/api/communities/${communityId}/messages`);
     }
 
-    sendMessage(communityId: string, userId: number, content: string): Observable<any> {
-        return this.http.post<any>(`/api/communities/${communityId}/messages`, { userId, content });
+    sendMessage(communityId: string, userId: number, content: string, imageUrl?: string): Observable<any> {
+        return this.http.post<any>(`/api/communities/${communityId}/messages`, { userId, content, image_url: imageUrl });
     }
     createCommunity(data: any): Observable<any> {
         return this.http.post<any>('/api/communities', data);

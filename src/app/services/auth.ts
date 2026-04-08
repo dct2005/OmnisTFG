@@ -523,7 +523,49 @@ export class AuthService {
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-games-admin&requesterEmail=${adminEmail}`);
   }
 
+  /**
+   * Obtiene la evolución de ventas de un juego - Solo administradores
+   */
+  getGameSalesHistory(gameId: string): Observable<any[]> {
+    const adminEmail = this.currentUser()?.email;
+    if (!adminEmail) throw new Error('Usuario no autenticado');
+    return this.http.get<any[]>(`${this.apiUrl}/user?action=get-game-sales-history&requesterEmail=${adminEmail}&gameId=${gameId}`);
+  }
+
+  /**
+   * Obtiene la evolución de miembros de una comunidad - Solo administradores
+   */
+  getCommunityGrowthHistory(communityId: number): Observable<any[]> {
+    const adminEmail = this.currentUser()?.email;
+    if (!adminEmail) throw new Error('Usuario no autenticado');
+    return this.http.get<any[]>(`${this.apiUrl}/user?action=get-community-growth-history&requesterEmail=${adminEmail}&communityId=${communityId}`);
+  }
+
   searchUsers(query: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/user?action=search-users&query=${query}`);
+  }
+
+  /**
+   * Obtiene las transacciones de un usuario específico - Solo administradores
+   */
+  getUserTransactionsAdmin(userId: number): Observable<any[]> {
+    const adminEmail = this.currentUser()?.email;
+    if (!adminEmail) throw new Error('Usuario no autenticado');
+    return this.http.get<any[]>(`${this.apiUrl}/user?action=get-user-transactions-admin&requesterEmail=${adminEmail}&userId=${userId}`);
+  }
+
+  /**
+   * Resuelve un reporte de compra ingresando Peppix manualmente - Solo administradores
+   */
+  resolvePurchaseReport(reportId: number, userId: number, amount: number): Observable<any> {
+    const adminEmail = this.currentUser()?.email;
+    if (!adminEmail) throw new Error('Usuario no autenticado');
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'resolve-purchase-report',
+      adminEmail,
+      reportId,
+      userId,
+      amount
+    }, this.getAuthHeaders());
   }
 }

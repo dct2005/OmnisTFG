@@ -148,10 +148,8 @@
 .active-user-info span {
     font-weight: 800;
     font-size: 1.2rem;
-    background: linear-gradient(to right, #fff, #a855f7);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #a855f7;
+    text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
 }
 
 .messages-list {

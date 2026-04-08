@@ -6,6 +6,7 @@ import { RouterLink, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 declare var Swal: any;
+declare var Chart: any;
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -475,53 +476,265 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
+  fillMissingDates(history: any[], valueKey: string): any[] {
+    if (history.length === 0) return [];
+    
+    // Normalizar fechas a medianoche local para comparar sin problemas de hora
+    const normalize = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+    const sorted = [...history].map(h => ({
+      ...h,
+      dateObj: normalize(new Date(h.date))
+    })).sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
+
+    const result = [];
+    const firstDate = sorted[0].dateObj;
+    const lastDate = normalize(new Date()); // Hasta hoy
+    
+    let current = new Date(firstDate);
+    while (current <= lastDate) {
+      const time = current.getTime();
+      const existing = sorted.find(h => h.dateObj.getTime() === time);
+      
+      result.push({
+        date: new Date(current),
+        [valueKey]: existing ? parseInt(existing[valueKey], 10) : 0
+      });
+      
+      current.setDate(current.getDate() + 1);
+      current = normalize(current);
+    }
+    
+    return result;
+  }
+
   showGameDetail(game: any) {
     this.http.get<any[]>(`/api/games?id=${game.game_api_id}`).subscribe({
       next: (games) => {
         if (games && games.length > 0) {
           const info = games[0];
-          Swal.fire({
-            title: `<span style="color: #7c3aed">${info.name}</span>`,
-            html: `
-              <div style="text-align: left; color: #fff; font-family: 'Inter', sans-serif;">
-                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-                  <img src="${info.cover?.url?.replace('t_thumb', 't_cover_big') || 'images/game_placeholder.png'}" 
-                       style="width: 150px; border-radius: 12px; border: 2px solid #7c3aed; box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);">
-                </div>
-                
-                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);">
-                  <p style="margin: 0 0 5px 0; font-size: 0.75rem; color: #888; text-transform: uppercase;">Estadísticas de Venta</p>
-                  <p style="margin: 0; font-size: 1.2rem; font-weight: bold; color: #00f2ff;">${game.sales_count} copias vendidas</p>
-                </div>
+          
+          this.authService.getGameSalesHistory(game.game_api_id).subscribe({
+            next: (rawHistory) => {
+              const history = this.fillMissingDates(rawHistory, 'sales');
+              Swal.fire({
+                title: `<span style="color: #7c3aed">${info.name}</span>`,
+                html: `
+                  <div style="text-align: left; color: #fff; font-family: 'Inter', sans-serif;">
+                    <div style="display: flex; gap: 20px; align-items: flex-start; margin-bottom: 20px;">
+                      <img src="${info.cover?.url?.replace('t_thumb', 't_cover_big') || 'images/game_placeholder.png'}" 
+                           style="width: 120px; border-radius: 12px; border: 2px solid #7c3aed; box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);">
+                      <div style="flex: 1;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+                          <p style="margin: 0 0 5px 0; font-size: 0.7rem; color: #888; text-transform: uppercase;">Total Ventas</p>
+                          <p style="margin: 0; font-size: 1.1rem; font-weight: bold; color: #00f2ff;">${game.sales_count} copias</p>
+                        </div>
+                        <div style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                          <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                            <p style="margin: 0; font-size: 0.6rem; color: #888;">PUNTUACIÓN</p>
+                            <p style="margin: 0; font-weight: 600; font-size: 0.9rem;">${info.rating ? Math.round(info.rating) + '%' : 'N/A'}</p>
+                          </div>
+                          <div style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                            <p style="margin: 0; font-size: 0.6rem; color: #888;">CATEGORÍA</p>
+                            <p style="margin: 0; font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${info.genres?.[0]?.name || 'N/A'}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
-                  <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px;">
-                     <p style="margin: 0 0 5px 0; font-size: 0.7rem; color: #888; text-transform: uppercase;">Puntuación</p>
-                     <p style="margin: 0; font-weight: 600;">${info.rating ? Math.round(info.rating) + '%' : 'N/A'}</p>
+                    <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(124, 58, 237, 0.2);">
+                      <p style="margin: 0 0 15px 0; font-size: 0.75rem; color: #a855f7; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Evolución Temporal de Ventas</p>
+                      <div style="height: 200px; position: relative;">
+                        <canvas id="salesEvolutionChart"></canvas>
+                      </div>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; max-height: 100px; overflow-y: auto; font-size: 0.85rem;">
+                      <p style="margin: 0; line-height: 1.4; color: #bbb;">${info.summary || 'Sin descripción disponible.'}</p>
+                    </div>
                   </div>
-                  <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px;">
-                     <p style="margin: 0 0 5px 0; font-size: 0.7rem; color: #888; text-transform: uppercase;">ID API</p>
-                     <p style="margin: 0; font-weight: 600;">${game.game_api_id}</p>
-                  </div>
-                </div>
+                `,
+                background: '#1a103c',
+                color: '#fff',
+                width: '600px',
+                confirmButtonColor: '#7c3aed',
+                confirmButtonText: 'Cerrar',
+                didOpen: () => {
+                  const ctx = (document.getElementById('salesEvolutionChart') as HTMLCanvasElement).getContext('2d');
+                  if (!ctx) return;
 
-                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 15px;">
-                  <p style="margin: 0 0 5px 0; font-size: 0.75rem; color: #888; text-transform: uppercase;">Géneros</p>
-                  <p style="margin: 0; color: #ddd;">${info.genres?.map((g: any) => g.name).join(', ') || 'N/A'}</p>
-                </div>
+                  const labels = history.map(h => new Date(h.date).toLocaleDateString());
+                  const data = history.map(h => h.sales);
 
-                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; max-height: 150px; overflow-y: auto;">
-                  <p style="margin: 0 0 5px 0; font-size: 0.75rem; color: #888; text-transform: uppercase;">Descripción</p>
-                  <p style="margin: 0; line-height: 1.4; color: #bbb; font-size: 0.9rem;">${info.summary || 'Sin descripción.'}</p>
-                </div>
-              </div>
-            `,
-            background: '#1a103c',
-            color: '#fff',
-            confirmButtonColor: '#7c3aed',
-            confirmButtonText: 'Cerrar'
+                  new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                      labels: labels,
+                      datasets: [{
+                        label: 'Ventas Diarias',
+                        data: data,
+                        borderColor: '#7c3aed',
+                        backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#00f2ff',
+                        pointBorderColor: '#fff',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                      }]
+                    },
+                    options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                          backgroundColor: 'rgba(26, 16, 60, 0.9)',
+                          titleColor: '#a855f7',
+                          bodyColor: '#fff',
+                          borderColor: '#7c3aed',
+                          borderWidth: 1,
+                          padding: 10,
+                          displayColors: false
+                        }
+                      },
+                      scales: {
+                        x: {
+                          grid: { display: false },
+                          ticks: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } }
+                        },
+                        y: {
+                          beginAtZero: true,
+                          grid: { color: 'rgba(255,255,255,0.05)' },
+                          ticks: { 
+                            color: 'rgba(255,255,255,0.5)', 
+                            font: { size: 10 },
+                            stepSize: 1
+                          }
+                        }
+                      }
+                    }
+                  });
+                }
+              });
+            },
+            error: () => {
+              Swal.fire('Error', 'No se pudo cargar el historial de ventas.', 'error');
+            }
           });
         }
+      }
+    });
+  }
+
+  showCommunityGrowthDetail(community: any) {
+    const communityId = community.id || community.community_id;
+    if (!communityId) {
+      console.error('Community ID not found', community);
+      Swal.fire('Error', 'No se pudo identificar la comunidad.', 'error');
+      return;
+    }
+    this.authService.getCommunityGrowthHistory(communityId).subscribe({
+      next: (rawHistory) => {
+        const history = this.fillMissingDates(rawHistory, 'daily_joins');
+        Swal.fire({
+          title: `<span style="color: #00f2ff">${community.name}</span>`,
+          html: `
+            <div style="text-align: left; color: #fff; font-family: 'Inter', sans-serif;">
+              <div style="display: flex; gap: 20px; align-items: flex-start; margin-bottom: 20px;">
+                <img src="${community.image_url || 'images/comunidad_default.png'}" 
+                     style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid #00f2ff; box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); object-fit: cover;">
+                <div style="flex: 1;">
+                  <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+                    <p style="margin: 0 0 5px 0; font-size: 0.7rem; color: #888; text-transform: uppercase;">Miembros Totales</p>
+                    <p style="margin: 0; font-size: 1.1rem; font-weight: bold; color: #7c3aed;">${community.member_count} usuarios</p>
+                  </div>
+                  <div style="margin-top: 10px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                    <p style="margin: 0; font-size: 0.6rem; color: #888; text-transform: uppercase;">Líder de la Comunidad</p>
+                    <p style="margin: 0; font-weight: 600; font-size: 0.9rem;">${community.creator_name || 'Admin'}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(0, 242, 255, 0.2);">
+                <p style="margin: 0 0 15px 0; font-size: 0.75rem; color: #00f2ff; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Crecimiento de Miembros (Uniones Diarias)</p>
+                <div style="height: 200px; position: relative;">
+                  <canvas id="communityGrowthChart"></canvas>
+                </div>
+              </div>
+
+              <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; font-size: 0.85rem; text-align: center;">
+                <p style="margin: 0; color: #aaa;">Esta comunidad representa una parte significativa de nuestra base social.</p>
+              </div>
+            </div>
+          `,
+          background: '#1a103c',
+          color: '#fff',
+          width: '600px',
+          confirmButtonColor: '#00f2ff',
+          confirmButtonText: 'Cerrar',
+          didOpen: () => {
+            const ctx = (document.getElementById('communityGrowthChart') as HTMLCanvasElement).getContext('2d');
+            if (!ctx) return;
+
+            const labels = history.map(h => new Date(h.date).toLocaleDateString());
+            const data = history.map(h => h.daily_joins);
+
+            new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: labels,
+                datasets: [{
+                  label: 'Nuevos Miembros',
+                  data: data,
+                  borderColor: '#00f2ff',
+                  backgroundColor: 'rgba(0, 242, 255, 0.1)',
+                  fill: true,
+                  tension: 0.4,
+                  borderWidth: 3,
+                  pointBackgroundColor: '#7c3aed',
+                  pointBorderColor: '#fff',
+                  pointRadius: 4,
+                  pointHoverRadius: 6
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                    backgroundColor: 'rgba(26, 16, 60, 0.9)',
+                    titleColor: '#00f2ff',
+                    bodyColor: '#fff',
+                    borderColor: '#00f2ff',
+                    borderWidth: 1,
+                    displayColors: false
+                  }
+                },
+                scales: {
+                  x: {
+                    grid: { display: false },
+                    ticks: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } }
+                  },
+                  y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { 
+                      color: 'rgba(255,255,255,0.5)', 
+                      font: { size: 10 },
+                      stepSize: 1
+                    }
+                  }
+                }
+              }
+            });
+          }
+        });
+      },
+      error: () => {
+        Swal.fire('Error', 'No se pudo cargar el historial de la comunidad.', 'error');
       }
     });
   }
@@ -604,6 +817,14 @@ export class AdminDashboardComponent implements OnInit {
             ${report.category === 'games' && report.game_api_id ? `
               <button id="refund-btn" class="swal-custom-btn" style="flex: 1; background: rgba(255, 170, 0, 0.1); border: 1px solid #ffaa00; color: #ffaa00; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
                 <i class="fas fa-undo"></i> Realizar Reembolso
+              </button>
+            ` : ''}
+            ${['purchases', 'store'].includes(report.category) ? `
+              <button id="view-transactions-btn" class="swal-custom-btn" style="flex: 1; background: rgba(34, 211, 238, 0.1); border: 1px solid #22d3ee; color: #22d3ee; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                <i class="fas fa-receipt"></i> Ver Transacciones
+              </button>
+              <button id="resolve-purchase-btn" class="swal-custom-btn" style="flex: 1; background: rgba(30, 215, 96, 0.1); border: 1px solid #1ed760; color: #1ed760; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                <i class="fas fa-check-double"></i> Ingresar Peppix
               </button>
             ` : ''}
           </div>
@@ -726,38 +947,21 @@ export class AdminDashboardComponent implements OnInit {
         const refundBtn = document.getElementById('refund-btn');
         if (refundBtn) {
           refundBtn.onclick = () => {
-            Swal.fire({
-              title: 'Procesar Reembolso',
-              text: 'Se devolverán Peppix al usuario y se eliminará el juego de su biblioteca.',
-              input: 'number',
-              inputLabel: 'Cantidad de Peppix a devolver',
-              inputPlaceholder: 'Ej: 500',
-              showCancelButton: true,
-              confirmButtonText: 'Confirmar Reembolso',
-              confirmButtonColor: '#ffaa00',
-              background: '#1a103c',
-              color: '#fff',
-              inputValidator: (value: string | null) => {
-                if (!value || parseInt(value) <= 0) {
-                  return 'Debes ingresar una cantidad válida';
-                }
-                return null;
-              }
-            }).then((result: any) => {
-              if (result.isConfirmed) {
-                const amount = parseInt(result.value);
-                this.authService.refundGame(report.id, report.user_id, report.game_api_id, amount).subscribe({
-                  next: () => {
-                    Swal.fire('Reembolsado', 'El dinero ha sido devuelto y el ticket cerrado.', 'success');
-                    this.loadReports();
-                  },
-                  error: (err) => {
-                    Swal.fire('Error', 'No se pudo procesar el reembolso.', 'error');
-                    console.error(err);
-                  }
-                });
-              }
-            });
+             this.handleRefund(report);
+          };
+        }
+
+        const viewTransactionsBtn = document.getElementById('view-transactions-btn');
+        if (viewTransactionsBtn) {
+          viewTransactionsBtn.onclick = () => {
+            this.showUserTransactionsAdmin(report.user_id, report.user_name);
+          };
+        }
+
+        const resolvePurchaseBtn = document.getElementById('resolve-purchase-btn');
+        if (resolvePurchaseBtn) {
+          resolvePurchaseBtn.onclick = () => {
+            this.handleResolvePurchase(report);
           };
         }
       },
@@ -803,6 +1007,120 @@ export class AdminDashboardComponent implements OnInit {
         }
       });
     }
+  }
+
+  handleRefund(report: any) {
+    Swal.fire({
+      title: 'Procesar Reembolso',
+      text: 'Se devolverán Peppix al usuario y se eliminará el juego de su biblioteca.',
+      input: 'number',
+      inputLabel: 'Cantidad de Peppix a devolver',
+      inputPlaceholder: 'Ej: 500',
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar Reembolso',
+      confirmButtonColor: '#ffaa00',
+      background: '#1a103c',
+      color: '#fff',
+      inputValidator: (value: string | null) => {
+        if (!value || parseInt(value) <= 0) {
+          return 'Debes ingresar una cantidad válida';
+        }
+        return null;
+      }
+    }).then((result: any) => {
+      if (result.isConfirmed) {
+        const amount = parseInt(result.value);
+        this.authService.refundGame(report.id, report.user_id, report.game_api_id, amount).subscribe({
+          next: () => {
+            Swal.fire('Reembolsado', 'El dinero ha sido devuelto y el ticket cerrado.', 'success');
+            this.loadReports();
+          },
+          error: (err) => {
+            Swal.fire('Error', 'No se pudo procesar el reembolso.', 'error');
+            console.error(err);
+          }
+        });
+      }
+    });
+  }
+
+  showUserTransactionsAdmin(userId: number, username: string) {
+    this.loading.set(true);
+    this.authService.getUserTransactionsAdmin(userId).subscribe({
+      next: (transactions) => {
+        this.loading.set(false);
+        const transHtml = transactions.map(t => `
+          <div style="padding: 12px; background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
+            <div style="text-align: left;">
+              <p style="margin: 0; font-weight: 600; color: #fff;">${t.peppix_amount} Peppix</p>
+              <p style="margin: 0; font-size: 0.75rem; color: #888;">${t.payment_method} | ${new Date(t.created_at).toLocaleString()}</p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0; font-weight: 700; color: #1ed760;">${t.real_money_euro}€</p>
+            </div>
+          </div>
+        `).join('');
+
+        Swal.fire({
+          title: `<span style="color: #22d3ee">Transacciones de ${username}</span>`,
+          html: `
+            <div style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+              ${transHtml || '<p style="color: #fff; opacity: 0.5; text-align: center; padding: 20px;">No se han encontrado transacciones para este usuario.</p>'}
+            </div>
+          `,
+          background: '#1a103c',
+          color: '#fff',
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#22d3ee'
+        });
+      },
+      error: (err) => {
+        this.loading.set(false);
+        Swal.fire('Error', 'No se pudo cargar el historial de transacciones.', 'error');
+        console.error(err);
+      }
+    });
+  }
+
+  handleResolvePurchase(report: any) {
+    Swal.fire({
+      title: 'Validar y Resolver Compra',
+      text: 'Introduce el importe de Peppix que el usuario reclama haber comprado y que no se le ha ingresado.',
+      input: 'number',
+      inputLabel: 'Peppix a ingresar',
+      inputPlaceholder: 'Ej: 500',
+      showCancelButton: true,
+      confirmButtonText: 'Ingresar Peppix y Cerrar Ticket',
+      confirmButtonColor: '#1ed760',
+      background: '#1a103c',
+      color: '#fff',
+      inputValidator: (value: string | null) => {
+        if (!value || parseInt(value) <= 0) {
+          return 'Debes ingresar una cantidad válida';
+        }
+        return null;
+      }
+    }).then((result: any) => {
+      if (result.isConfirmed) {
+        const amount = parseInt(result.value);
+        this.authService.resolvePurchaseReport(report.id, report.user_id, amount).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Reclamación Resuelta',
+              text: `Se han ingresado ${amount} Peppix al usuario y el reporte se ha cerrado con éxito.`,
+              background: '#1a103c',
+              color: '#fff'
+            });
+            this.loadReports();
+          },
+          error: (err) => {
+            Swal.fire('Error', 'No se pudo procesar el ingreso de Peppix.', 'error');
+            console.error(err);
+          }
+        });
+      }
+    });
   }
 
   setTab(tab: string) {

@@ -36,7 +36,6 @@ module.exports = async function handler(req, res) {
         `;
 
         // 3. Top Socialites (Users with most friends)
-        // Friendship counts both where user is sender and receiver
         const topFriends = await sql`
             SELECT u.id, u.username, u.profile_image, u.estado, COUNT(f.id) as count
             FROM users u
@@ -47,10 +46,21 @@ module.exports = async function handler(req, res) {
             LIMIT 50
         `;
 
+        // 4. Top Investors (Users with highest library value)
+        const topValue = await sql`
+            SELECT u.id, u.username, u.profile_image, u.estado, SUM(ug.price_paid) as count
+            FROM users u
+            JOIN user_games ug ON u.id = ug.user_id
+            GROUP BY u.id, u.username, u.profile_image, u.estado
+            ORDER BY count DESC
+            LIMIT 50
+        `;
+
         return res.status(200).json({
             top_buyers: topBuyers.map(u => ({ ...u, count: parseInt(u.count, 10) })),
             top_communities: topCommunities.map(u => ({ ...u, count: parseInt(u.count, 10) })),
-            top_friends: topFriends.map(u => ({ ...u, count: parseInt(u.count, 10) }))
+            top_friends: topFriends.map(u => ({ ...u, count: parseInt(u.count, 10) })),
+            top_value: topValue.map(u => ({ ...u, count: parseInt(u.count, 10) }))
         });
 
     } catch (error) {

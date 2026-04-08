@@ -11,10 +11,12 @@ module.exports = async function handler(req, res) {
         const sql = neon(process.env.DATABASE_URL);
         const communityId = req.query.id;
 
+        // Migración perezosa: asegurar que existe la columna image_url
+        await sql`ALTER TABLE community_messages ADD COLUMN IF NOT EXISTS image_url TEXT`;
 
         if (req.method === 'GET') {
             const messages = await sql`
-                SELECT m.id, m.content, m.created_at as time, u.username as author, u.profile_image
+                SELECT m.id, m.content, m.image_url, m.created_at as time, u.username as author, u.profile_image
                 FROM community_messages m
                 JOIN users u ON m.user_id = u.id
                 WHERE m.community_id = ${communityId}
@@ -23,16 +25,18 @@ module.exports = async function handler(req, res) {
             return res.status(200).json(messages);
         }
 
-        // ESCRIBIR MENSAJE
+        // ESCRIBIR MENSAJE (Soportando imágenes)
         if (req.method === 'POST') {
-            const { userId, content } = req.body;
+            const { userId, content, image_url } = req.body;
 
-            if (!userId || !content) return res.status(400).json({ message: 'Faltan datos.' });
+            if (!userId || (!content && !image_url)) {
+                return res.status(400).json({ message: 'Faltan datos.' });
+            }
 
             const newMessage = await sql`
-                INSERT INTO community_messages (community_id, user_id, content) 
-                VALUES (${communityId}, ${userId}, ${content})
-                RETURNING id, content, created_at
+                INSERT INTO community_messages (community_id, user_id, content, image_url) 
+                VALUES (${communityId}, ${userId}, ${content || ''}, ${image_url || null})
+                RETURNING id, content, image_url, created_at
             `;
             await sql`UPDATE communities SET total_messages = total_messages + 1 WHERE id = ${communityId}`;
 

@@ -19,7 +19,6 @@ export class AccountDetailsComponent {
   gameService = inject(GameService);
 
   // States
-  selectedCountry = signal('Andorra');
   userEmail = signal('');
   userPhone = signal('');
   
@@ -29,29 +28,12 @@ export class AccountDetailsComponent {
   transactions = signal<any[]>([]);
   gamePurchases = signal<any[]>([]);
 
-  countryData: any = {
-    'Andorra': { prefix: '+376', length: 6 },
-    'España': { prefix: '+34', length: 9 },
-    'Francia': { prefix: '+33', length: 9 },
-    'Portugal': { prefix: '+351', length: 9 },
-    'Reino Unido': { prefix: '+44', length: 10 },
-    'Alemania': { prefix: '+49', length: 11 },
-    'Italia': { prefix: '+39', length: 10 },
-    'Estados Unidos': { prefix: '+1', length: 10 },
-    'México': { prefix: '+52', length: 10 },
-    'Argentina': { prefix: '+54', length: 10 }
-  };
 
   maskedEmail = 'd*******n@u**.e*';
   maskedPhone = '*******46';
   currentPrefix = '+34';
 
   constructor() {
-    // Sincronizar país inicialmente con el de la base de datos
-    const user = this.authService.currentUser();
-    if (user?.location) {
-      this.selectedCountry.set(user.location);
-    }
   }
 
   loadTransactions() {
@@ -111,42 +93,6 @@ export class AccountDetailsComponent {
     }
   }
 
-  async changeCountry() {
-    const { value: country } = await Swal.fire({
-      title: 'Seleccionar país de la tienda',
-      input: 'select',
-      inputOptions: Object.keys(this.countryData).reduce((acc: any, key) => {
-        acc[key] = key;
-        return acc;
-      }, {}),
-      inputPlaceholder: 'Selecciona tu país',
-      showCancelButton: true,
-      background: '#1a103c',
-      color: '#ffffff',
-      confirmButtonColor: '#7c3aed',
-      cancelButtonColor: '#ff00ff'
-    });
-
-    if (country) {
-      this.selectedCountry.set(country);
-      this.currentPrefix = this.countryData[country].prefix;
-      
-      // PERSISTENCIA EN BD
-      this.authService.updateLocation(country).subscribe({
-        next: () => {
-          Swal.fire({
-            title: '¡País actualizado!',
-            text: `Tu país ahora es ${country}`,
-            icon: 'success',
-            background: '#1a103c',
-            color: '#ffffff',
-            confirmButtonColor: '#7c3aed'
-          });
-        },
-        error: (err) => console.error('Error al actualizar localización:', err)
-      });
-    }
-  }
 
   async changeEmail() {
     const { value: email } = await Swal.fire({

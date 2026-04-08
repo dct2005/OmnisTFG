@@ -222,7 +222,9 @@
                         
                         <div class="banner-highlights">
                             <!-- Banner Juego Top -->
-                            <div class="highlight-banner game-banner" *ngIf="stats().topGame">
+                            <div class="highlight-banner game-banner" *ngIf="stats().topGame" 
+                                 (click)="showGameDetail({ game_api_id: stats().topGame.game_api_id, sales_count: stats().topGame.count })"
+                                 style="cursor: pointer;">
                                 <div class="banner-badge">LÍDER DE VENTAS</div>
                                 <div class="banner-content">
                                     <div class="banner-visual">
@@ -256,7 +258,9 @@
                             </div>
 
                             <!-- Banner Comunidad Top -->
-                            <div class="highlight-banner community-banner" *ngIf="stats().topCommunity">
+                            <div class="highlight-banner community-banner" *ngIf="stats().topCommunity"
+                                 (click)="showCommunityGrowthDetail(stats().topCommunity)"
+                                 style="cursor: pointer;">
                                 <div class="banner-badge">PUNTO DE ENCUENTRO</div>
                                 <div class="banner-content">
                                     <div class="banner-visual">

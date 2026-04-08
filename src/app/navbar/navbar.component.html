@@ -7,14 +7,14 @@
 
     <div class="nav-links">
         @if (authService.currentUser()?.role !== 'administrador') {
-            <a routerLink="/home" class="nav-link" [routerLinkActiveOptions]="{exact: true}"
-                routerLinkActive="active">Inicio</a>
-            <a routerLink="/catalogo" class="nav-link" routerLinkActive="active">Catálogo</a>
-            <a routerLink="/communities" class="nav-link" routerLinkActive="active">Comunidad</a>
-            <a routerLink="/social" class="nav-link" routerLinkActive="active">Social</a>
-            <a routerLink="/soporte" class="nav-link" routerLinkActive="active">Soporte</a>
+        <a routerLink="/home" class="nav-link" [routerLinkActiveOptions]="{exact: true}"
+            routerLinkActive="active">Inicio</a>
+        <a routerLink="/catalogo" class="nav-link" routerLinkActive="active">Catálogo</a>
+        <a routerLink="/communities" class="nav-link" routerLinkActive="active">Comunidad</a>
+        <a routerLink="/social" class="nav-link" routerLinkActive="active">Social</a>
+        <a routerLink="/soporte" class="nav-link" routerLinkActive="active">Soporte</a>
         } @else {
-            <a routerLink="/admin" class="nav-link admin-link" routerLinkActive="active">Administración</a>
+        <a routerLink="/admin" class="nav-link admin-link" routerLinkActive="active">Administración</a>
         }
     </div>
 
@@ -47,18 +47,18 @@
             @if (isDropdownOpen()) {
             <div class="status-dropdown" (click)="$event.stopPropagation()">
                 @if (authService.currentUser()?.role !== 'administrador') {
-                    <div class="status-option" [routerLink]="['/perfil', usernameValue()]"
-                        (click)="isDropdownOpen.set(false)">
-                        <span>Ver mi perfil</span>
-                    </div>
-                    <div class="status-option" routerLink="/account" (click)="isDropdownOpen.set(false)">
-                        <span>Detalles de la cuenta</span>
-                    </div>
-                    <div class="status-option" [routerLink]="['/catalogo']" [queryParams]="{tab: 'mine'}"
-                        (click)="isDropdownOpen.set(false)">
-                        <span>Mis Juegos</span>
-                    </div>
-                    <div class="status-divider"></div>
+                <div class="status-option" [routerLink]="['/perfil', usernameValue()]"
+                    (click)="isDropdownOpen.set(false)">
+                    <span>Ver mi perfil</span>
+                </div>
+                <div class="status-option" routerLink="/account" (click)="isDropdownOpen.set(false)">
+                    <span>Detalles de la cuenta</span>
+                </div>
+                <div class="status-option" [routerLink]="['/catalogo']" [queryParams]="{tab: 'mine'}"
+                    (click)="isDropdownOpen.set(false)">
+                    <span>Mis Juegos</span>
+                </div>
+                <div class="status-divider"></div>
                 }
                 <div class="status-option logout" (click)="logout($event)">
                     <span>Cerrar Sesión</span>
