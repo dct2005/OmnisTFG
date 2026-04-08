@@ -16,6 +16,15 @@ export class AuthService {
     this.initializeFromToken();
   }
 
+  private getAuthHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    };
+  }
+
   private initializeFromToken() {
     const token = localStorage.getItem('token');
     if (token) {
@@ -197,7 +206,7 @@ export class AuthService {
       action: 'update-profile-image',
       email: user.email,
       profileImage: base64Image
-    }).pipe(
+    }, this.getAuthHeaders()).pipe(
       tap((res: any) => {
         if (res.user) {
           this.currentUser.set(res.user);
@@ -344,7 +353,7 @@ export class AuthService {
       action: 'update-profile-settings',
       email: user.email,
       ...settings
-    }).pipe(
+    }, this.getAuthHeaders()).pipe(
       tap((res: any) => {
         if (res.user) {
           this.currentUser.set(res.user);
@@ -512,5 +521,9 @@ export class AuthService {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-games-admin&requesterEmail=${adminEmail}`);
+  }
+
+  searchUsers(query: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user?action=search-users&query=${query}`);
   }
 }

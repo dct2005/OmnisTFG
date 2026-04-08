@@ -1,25 +1,41 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SocialService, SocialRankings, RankedUser } from '../services/social.service';
+import { AuthService } from '../services/auth';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, Subscription } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 
 declare var Swal: any;
 
 @Component({
   selector: 'app-social',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './social.component.html',
   styleUrls: ['./social.component.css']
 })
-export class SocialComponent implements OnInit {
+export class SocialComponent implements OnInit, OnDestroy {
   private socialService = inject(SocialService);
+  private authService = inject(AuthService);
   
   rankings = signal<SocialRankings | null>(null);
   loading = signal<boolean>(true);
   error = signal<boolean>(false);
 
+  // Búsqueda de usuarios
+  searchQuery = signal<string>('');
+  searchResults = signal<any[]>([]);
+  searching = signal<boolean>(false);
+  private searchSubject = new Subject<string>();
+  private searchSub?: Subscription;
+
   ngOnInit(): void {
+    this.loadRankings();
+    this.setupSearch();
+  }
+
+  loadRankings() {
     this.socialService.getRankings().subscribe({
       next: (data) => {
         this.rankings.set(data);
@@ -31,6 +47,40 @@ export class SocialComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  setupSearch() {
+    this.searchSub = this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => {
+        if (!query.trim()) {
+          this.searching.set(false);
+          return [[]];
+        }
+        this.searching.set(true);
+        return this.authService.searchUsers(query);
+      })
+    ).subscribe({
+      next: (results) => {
+        this.searchResults.set(results);
+        this.searching.set(false);
+      },
+      error: (err) => {
+        console.error('Error searching users:', err);
+        this.searching.set(false);
+      }
+    });
+  }
+
+  onSearchChange(event: Event) {
+    const query = (event.target as HTMLInputElement).value;
+    this.searchQuery.set(query);
+    this.searchSubject.next(query);
+  }
+
+  ngOnDestroy() {
+    this.searchSub?.unsubscribe();
   }
 
   showFullRanking(type: 'buyers' | 'communities' | 'friends'): void {

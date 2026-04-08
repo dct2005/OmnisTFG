@@ -26,6 +26,17 @@ module.exports = async function handler(req, res) {
              await sql`UPDATE users SET last_activity = CURRENT_TIMESTAMP WHERE email = ${emailForUpdate}`;
         }
 
+        async function verifyToken(req) {
+            const authHeader = req.headers.authorization;
+            if (!authHeader) return null;
+            const token = authHeader.split(' ')[1];
+            try {
+                return jwt.verify(token, SECRET_KEY);
+            } catch (e) {
+                return null;
+            }
+        }
+
         async function getUserWithBadges(user) {
             const gamesCountQuery = await sql`SELECT COUNT(*) as count FROM user_games WHERE user_id = ${user.id}`;
             const gamesCount = parseInt(gamesCountQuery[0].count, 10);
@@ -145,6 +156,21 @@ module.exports = async function handler(req, res) {
                     ORDER BY created_at DESC
                 `;
                 return res.status(200).json(transactions);
+            }
+
+            if (action === 'search-users') {
+                const { query } = req.query;
+                if (!query) return res.status(200).json([]);
+
+                const users = await sql`
+                    SELECT id, username, profile_image, xp, estado 
+                    FROM users 
+                    WHERE username ILIKE ${'%' + query + '%'}
+                    ORDER BY username ASC
+                    LIMIT 15
+                `;
+                
+                return res.status(200).json(users);
             }
 
             if (action === 'get-friends') {
@@ -678,6 +704,11 @@ module.exports = async function handler(req, res) {
             if (action === 'update-profile-image') {
                 const { profileImage } = req.body;
                 if (!email || !profileImage) return res.status(400).json({ error: 'Faltan datos' });
+
+                const decoded = await verifyToken(req);
+                if (!decoded || decoded.email !== email) {
+                    return res.status(403).json({ error: 'No autorizado para cambiar esta foto' });
+                }
 
                 const updated = await sql`
                     UPDATE users 

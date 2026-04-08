@@ -3,12 +3,14 @@
      [style.--profile-name-color]="viewedUser()?.profile_name_color || '#ffffff'">
   <div class="profile-header">
 
-    <div class="user-avatar-section" (click)="triggerFileInput(fileInput)">
+    <div class="user-avatar-section" 
+         (click)="isOwnProfile() ? triggerFileInput(fileInput) : null"
+         [style.cursor]="isOwnProfile() ? 'pointer' : 'default'">
       <div class="avatar-wrapper">
         <img
           [src]="user?.profile_image || user?.avatar || user?.profile_picture || 'https://ui-avatars.com/api/?name=' + user?.username + '&background=0d1b2a&color=fff'"
           class="profile-avatar" [alt]="user?.username">
-        <div class="avatar-overlay">
+        <div class="avatar-overlay" *ngIf="isOwnProfile()">
           <span class="upload-icon">📷</span>
         </div>
       </div>

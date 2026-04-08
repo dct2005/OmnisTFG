@@ -4,6 +4,42 @@
     <p class="subtitle">Conoce a los usuarios más destacados de nuestra comunidad</p>
   </div>
 
+  <div class="search-section glass">
+    <div class="search-input-wrapper">
+      <span class="material-icons-round search-icon">search</span>
+      <input 
+        type="text" 
+        [ngModel]="searchQuery()" 
+        (input)="onSearchChange($event)" 
+        placeholder="Buscar usuarios por nombre..."
+        class="search-input"
+      >
+      <div class="search-loader" *ngIf="searching()"></div>
+    </div>
+
+    <!-- Resultados de búsqueda -->
+    <div class="search-results-overlay" *ngIf="searchQuery().trim() !== ''">
+      <div class="results-list" *ngIf="searchResults().length > 0; else noResults">
+        <div class="result-item" *ngFor="let user of searchResults()" [routerLink]="['/perfil', user.username]">
+          <div class="avatar-container">
+            <img [src]="getProfileImage(user.profile_image)" alt="Avatar" class="mini-avatar">
+            <div class="status-indicator-mini" [class]="user.estado"></div>
+          </div>
+          <div class="user-details">
+            <div class="res-username">{{ user.username }}</div>
+            <div class="res-xp">{{ user.xp || 0 }} XP</div>
+          </div>
+          <span class="material-icons-round arrow">chevron_right</span>
+        </div>
+      </div>
+      <ng-template #noResults>
+        <div class="no-results-msg" *ngIf="!searching()">
+           No se han encontrado usuarios con ese nombre
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
   @if (loading()) {
     <div class="loading-state">
       <div class="spinner"></div>
