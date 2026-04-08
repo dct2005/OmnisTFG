@@ -40,10 +40,80 @@
     letter-spacing: -0.5px;
 }
 
-.conversations-list {
+.sidebar-content {
     flex: 1;
     overflow-y: auto;
-    padding: 15px 10px;
+    padding: 10px;
+}
+
+.sidebar-section {
+    margin-bottom: 25px;
+}
+
+.section-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1px;
+    padding: 0 15px;
+    margin-bottom: 15px;
+}
+
+.conversations-list, .friends-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.friend-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.friend-item.active {
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
+}
+
+.avatar-wrapper.small img {
+    width: 35px;
+    height: 35px;
+    border-radius: 12px;
+}
+
+.status-dot {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 10px;
+    height: 10px;
+    background: #444;
+    border: 2px solid #1a1a1a;
+    border-radius: 50%;
+}
+
+.status-dot.online {
+    background: #22c55e;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+}
+
+.friend-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.friend-item.active .friend-name {
+    color: #a855f7;
 }
 
 .conversation-item {

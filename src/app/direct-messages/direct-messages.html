@@ -4,27 +4,53 @@
         <div class="sidebar-header">
             <h2>Mensajes Directos</h2>
         </div>
-        <div class="conversations-list">
-            @for (conv of conversations(); track conv.id) {
-                <div class="conversation-item" 
-                     [class.active]="activeChat()?.id === conv.id"
-                     (click)="selectChat(conv)">
-                    <div class="avatar-wrapper">
-                        <img [src]="conv.profile_image || 'assets/default-avatar.png'" [alt]="conv.username">
-                        @if (!conv.is_read && conv.sender_id !== currentUser()?.id) {
-                            <span class="unread-dot"></span>
-                        }
-                    </div>
-                    <div class="conv-info">
-                        <span class="conv-name">{{ conv.username }}</span>
-                        <span class="conv-last-msg">{{ conv.last_message }}</span>
-                    </div>
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <h3 class="section-title">MENSAJES</h3>
+                <div class="conversations-list">
+                    @for (conv of conversations(); track conv.id) {
+                        <div class="conversation-item" 
+                             [class.active]="activeChat()?.id === conv.id"
+                             (click)="selectChat(conv)">
+                            <div class="avatar-wrapper">
+                                <img [src]="conv.profile_image || 'assets/default-avatar.png'" [alt]="conv.username">
+                                @if (!conv.is_read && conv.sender_id !== currentUser()?.id) {
+                                    <span class="unread-dot"></span>
+                                }
+                            </div>
+                            <div class="conv-info">
+                                <span class="conv-name">{{ conv.username }}</span>
+                                <span class="conv-last-msg">{{ conv.last_message }}</span>
+                            </div>
+                        </div>
+                    } @empty {
+                        <div class="no-conversations">
+                            <p>No hay mensajes recientes.</p>
+                        </div>
+                    }
                 </div>
-            } @empty {
-                <div class="no-conversations">
-                    <p>No tienes mensajes privados aún.</p>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">AMIGOS</h3>
+                <div class="friends-list">
+                    @for (friend of friends(); track friend.id) {
+                        <div class="friend-item" 
+                             [class.active]="activeChat()?.id === friend.id"
+                             (click)="startChatWith(friend.id)">
+                            <div class="avatar-wrapper small">
+                                <img [src]="friend.profile_image || 'assets/default-avatar.png'" [alt]="friend.username">
+                                <span class="status-dot" [class.online]="friend.estado === 'en-linea'"></span>
+                            </div>
+                            <span class="friend-name">{{ friend.username }}</span>
+                        </div>
+                    } @empty {
+                        <div class="no-conversations">
+                            <p>No tienes amigos agregados.</p>
+                        </div>
+                    }
                 </div>
-            }
+            </div>
         </div>
     </aside>
 

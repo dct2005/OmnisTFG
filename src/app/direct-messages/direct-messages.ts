@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, effect, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, inject, signal, effect, ElementRef, ViewChild, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatService } from '../services/chat.service';
@@ -22,6 +22,13 @@ export class DirectMessagesComponent implements OnInit {
 
   currentUser = this.authService.currentUser;
   conversations = signal<any[]>([]);
+  allFriends = signal<any[]>([]);
+  
+  friends = computed(() => {
+    const convIds = new Set(this.conversations().map(c => c.id));
+    return this.allFriends().filter(f => !convIds.has(f.id));
+  });
+
   activeChat = signal<any | null>(null);
   messages = signal<any[]>([]);
   newMessage = signal<string>('');
@@ -33,6 +40,7 @@ export class DirectMessagesComponent implements OnInit {
       const user = this.currentUser();
       if (user) {
         this.loadConversations();
+        this.loadFriends();
       }
     });
   }
@@ -86,6 +94,16 @@ export class DirectMessagesComponent implements OnInit {
     this.chatService.getConversations(user.id).subscribe({
       next: (data) => this.conversations.set(data),
       error: (err) => console.error('Error cargando conversaciones:', err)
+    });
+  }
+
+  loadFriends() {
+    const user = this.currentUser();
+    if (!user) return;
+
+    this.authService.getFriends(user.id).subscribe({
+      next: (data) => this.allFriends.set(data),
+      error: (err) => console.error('Error cargando amigos:', err)
     });
   }
 
