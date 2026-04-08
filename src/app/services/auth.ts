@@ -504,4 +504,13 @@ export class AuthService {
     if (!adminEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-transactions-admin&requesterEmail=${adminEmail}`);
   }
+
+  /**
+   * Obtiene todos los juegos vendidos (solo para administradores)
+   */
+  getAllGamesAdmin(): Observable<any[]> {
+    const adminEmail = this.currentUser()?.email;
+    if (!adminEmail) throw new Error('Usuario no autenticado');
+    return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-games-admin&requesterEmail=${adminEmail}`);
+  }
 }

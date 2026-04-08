@@ -24,4 +24,8 @@ export class ChatService {
   markAsRead(userId: number, otherId: number): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}?action=mark-read`, { userId, otherId });
   }
+
+  getUnreadMessages(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}?action=get-unread-messages&userId=${userId}`);
+  }
 }

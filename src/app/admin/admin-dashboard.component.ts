@@ -25,6 +25,7 @@ export class AdminDashboardComponent implements OnInit {
   stats = signal<any>(null);
   communities = signal<any[]>([]);
   transactions = signal<any[]>([]);
+  games = signal<any[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
   activeTab = signal('users');
@@ -40,6 +41,10 @@ export class AdminDashboardComponent implements OnInit {
       u.email?.toLowerCase().includes(q) ||
       u.id?.toString().includes(q)
     );
+  });
+
+  filteredGames = computed(() => {
+    return this.games();
   });
 
   constructor() {}
@@ -59,6 +64,8 @@ export class AdminDashboardComponent implements OnInit {
       this.loadCommunities();
     } else if (this.activeTab() === 'transactions') {
       this.loadAllTransactions();
+    } else if (this.activeTab() === 'games') {
+      this.searchGames(); // Usar búsqueda en lugar de carga estática
     }
   }
 
@@ -137,6 +144,91 @@ export class AdminDashboardComponent implements OnInit {
         this.loading.set(false);
         console.error(err);
       }
+    });
+  }
+
+  loadGames() {
+    this.loading.set(true);
+    this.authService.getAllGamesAdmin().subscribe({
+      next: (data) => {
+        this.games.set(data.map(g => ({ ...g, sales_count: parseInt(g.sales_count, 10) })));
+        this.loading.set(false);
+        this.resolveMultipleGames(data.map(g => g.game_api_id));
+      },
+      error: (err) => {
+        this.error.set('Error al cargar juegos');
+        this.loading.set(false);
+        console.error(err);
+      }
+    });
+  }
+
+  // Nueva función para buscar en el catálogo completo
+  searchGames() {
+    const query = this.searchQuery().trim();
+    if (!query) {
+      this.loadGames();
+      return;
+    }
+
+    this.loading.set(true);
+    // 1. Buscar en IGDB
+    this.http.get<any[]>(`/api/games?search=${query}`).subscribe({
+      next: (igdbGames) => {
+        // 2. Obtener ventas de todos los juegos para cruzar datos
+        this.authService.getAllGamesAdmin().subscribe({
+          next: (salesData) => {
+            const results = igdbGames.map(ig => {
+              const sales = salesData.find(s => s.game_api_id.toString() === ig.id.toString());
+              return {
+                game_api_id: ig.id.toString(),
+                name: ig.name,
+                image: ig.cover?.url?.replace('t_thumb', 't_cover_big'),
+                sales_count: sales ? parseInt(sales.sales_count, 10) : 0
+              };
+            });
+            this.games.set(results);
+            this.loading.set(false);
+          },
+          error: () => {
+             // Fallback: mostrar solo resultados de IGDB sin ventas
+             this.games.set(igdbGames.map(ig => ({
+               game_api_id: ig.id.toString(),
+               name: ig.name,
+               image: ig.cover?.url?.replace('t_thumb', 't_cover_big'),
+               sales_count: 0
+             })));
+             this.loading.set(false);
+          }
+        });
+      },
+      error: (err) => {
+        this.error.set('Error en la búsqueda del catálogo');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  resolveMultipleGames(ids: string[]) {
+    if (ids.length === 0) return;
+    
+    // Agrupar IDs para evitar peticiones demasiado largas
+    const chunks = [];
+    for (let i = 0; i < ids.length; i += 10) {
+      chunks.push(ids.slice(i, i + 10));
+    }
+
+    chunks.forEach(chunk => {
+      this.http.get<any[]>(`/api/games?id=${chunk.join(',')}`).subscribe({
+        next: (games) => {
+          this.games.update(current => 
+            current.map(g => {
+              const info = games.find(info => info.id.toString() === g.game_api_id.toString());
+              return info ? { ...g, name: info.name, image: info.cover?.url?.replace('t_thumb', 't_cover_big') } : g;
+            })
+          );
+        }
+      });
     });
   }
 
@@ -380,6 +472,57 @@ export class AdminDashboardComponent implements OnInit {
       color: '#ffffff',
       confirmButtonColor: '#7c3aed',
       confirmButtonText: 'Entendido'
+    });
+  }
+
+  showGameDetail(game: any) {
+    this.http.get<any[]>(`/api/games?id=${game.game_api_id}`).subscribe({
+      next: (games) => {
+        if (games && games.length > 0) {
+          const info = games[0];
+          Swal.fire({
+            title: `<span style="color: #7c3aed">${info.name}</span>`,
+            html: `
+              <div style="text-align: left; color: #fff; font-family: 'Inter', sans-serif;">
+                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                  <img src="${info.cover?.url?.replace('t_thumb', 't_cover_big') || 'images/game_placeholder.png'}" 
+                       style="width: 150px; border-radius: 12px; border: 2px solid #7c3aed; box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);">
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);">
+                  <p style="margin: 0 0 5px 0; font-size: 0.75rem; color: #888; text-transform: uppercase;">Estadísticas de Venta</p>
+                  <p style="margin: 0; font-size: 1.2rem; font-weight: bold; color: #00f2ff;">${game.sales_count} copias vendidas</p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+                  <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px;">
+                     <p style="margin: 0 0 5px 0; font-size: 0.7rem; color: #888; text-transform: uppercase;">Puntuación</p>
+                     <p style="margin: 0; font-weight: 600;">${info.rating ? Math.round(info.rating) + '%' : 'N/A'}</p>
+                  </div>
+                  <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px;">
+                     <p style="margin: 0 0 5px 0; font-size: 0.7rem; color: #888; text-transform: uppercase;">ID API</p>
+                     <p style="margin: 0; font-weight: 600;">${game.game_api_id}</p>
+                  </div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+                  <p style="margin: 0 0 5px 0; font-size: 0.75rem; color: #888; text-transform: uppercase;">Géneros</p>
+                  <p style="margin: 0; color: #ddd;">${info.genres?.map((g: any) => g.name).join(', ') || 'N/A'}</p>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; max-height: 150px; overflow-y: auto;">
+                  <p style="margin: 0 0 5px 0; font-size: 0.75rem; color: #888; text-transform: uppercase;">Descripción</p>
+                  <p style="margin: 0; line-height: 1.4; color: #bbb; font-size: 0.9rem;">${info.summary || 'Sin descripción.'}</p>
+                </div>
+              </div>
+            `,
+            background: '#1a103c',
+            color: '#fff',
+            confirmButtonColor: '#7c3aed',
+            confirmButtonText: 'Cerrar'
+          });
+        }
+      }
     });
   }
 

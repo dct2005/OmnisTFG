@@ -16,7 +16,10 @@ module.exports = async function handler(req, res) {
         queryParts.push("fields name, summary, cover.url, rating, rating_count, involved_companies.company.name, involved_companies.developer, genres.name, themes.name, dlcs.name, dlcs.cover.url, expansions.name, expansions.cover.url, bundles.name, bundles.cover.url;");
 
         // Condiciones
-        let whereConditions = ["cover != null"];
+        let whereConditions = [];
+        if (!id) {
+            whereConditions.push("cover != null");
+        }
         if (id) {
             const ids = Array.isArray(id) ? id : [id];
             if (ids.length > 0) {

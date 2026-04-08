@@ -259,6 +259,23 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json(transactions);
             }
 
+            if (action === 'get-all-games-admin') {
+                const { requesterEmail } = req.query;
+                if (!requesterEmail) return res.status(400).json({ error: 'Falta email del solicitante' });
+                
+                const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
+                if (requester.length === 0 || requester[0].role !== 'administrador') {
+                    return res.status(403).json({ error: 'No tienes permisos de administrador' });
+                }
+
+                const games = await sql`
+                    SELECT game_api_id, COUNT(*) as sales_count
+                    FROM user_games
+                    GROUP BY game_api_id
+                    ORDER BY sales_count DESC
+                `;
+                return res.status(200).json(games);
+            }
             if (action === 'bootstrap-admin') {
                 const { email: emailToBootstrap } = req.query;
                 if (!emailToBootstrap) return res.status(400).json({ error: 'Falta email' });
@@ -383,8 +400,12 @@ module.exports = async function handler(req, res) {
             }
 
             if (action === 'get-user-games') {
-                const games = await sql`SELECT game_api_id, purchase_date FROM user_games WHERE user_id = ${user.id} ORDER BY purchase_date DESC`;
-                return res.status(200).json({ games });
+                const games = await sql`SELECT game_api_id, purchase_date, price_paid FROM user_games WHERE user_id = ${user.id} ORDER BY purchase_date DESC`;
+                const totalValue = await sql`SELECT SUM(price_paid) as total FROM user_games WHERE user_id = ${user.id}`;
+                return res.status(200).json({ 
+                    games, 
+                    totalLibraryValue: parseInt(totalValue[0].total || 0, 10) 
+                });
             }
 
             if (action === 'get-wishlist') {
@@ -644,9 +665,9 @@ module.exports = async function handler(req, res) {
                 const updated = await sql`UPDATE users SET peppix = peppix - ${price}, xp = xp + ${price} WHERE email = ${email} RETURNING id, username, email, peppix, xp, estado, profile_background`;
 
                 await sql`
-                    INSERT INTO user_games (user_id, game_api_id, purchase_date)
-                    VALUES (${user.id}, ${gameId.toString()}, NOW())
-                    ON CONFLICT (user_id, game_api_id) DO NOTHING
+                    INSERT INTO user_games (user_id, game_api_id, purchase_date, price_paid)
+                    VALUES (${user.id}, ${gameId.toString()}, NOW(), ${price})
+                    ON CONFLICT (user_id, game_api_id) DO UPDATE SET price_paid = ${price}
                 `;
 
                 await sql`DELETE FROM user_wishlist WHERE user_id = ${user.id} AND game_api_id = ${gameId.toString()}`;

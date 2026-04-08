@@ -2,6 +2,7 @@ import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
 import { filter } from 'rxjs/operators';
+import { NotificationService } from './services/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,7 @@ export class App {
   showNavbar = signal(true);
 
   private router = inject(Router);
+  private notificationService = inject(NotificationService);
 
   constructor() {
     // Escuchamos cada vez que la navegación termina

@@ -67,6 +67,7 @@ export class ProfileComponent implements OnDestroy {
   purchasedGamesList = signal<any[]>([]);
   userCommunitiesList = signal<any[]>([]);
   userReviewsList = signal<any[]>([]);
+  totalLibraryValue = signal<number>(0);
 
   // Edit Profile signals
   isEditModalOpen = signal(false);
@@ -309,6 +310,7 @@ export class ProfileComponent implements OnDestroy {
       next: (res: any) => {
         const games = res.games || [];
         this.purchasedGamesList.set(games);
+        this.totalLibraryValue.set(res.totalLibraryValue || 0);
         const gameIds = games.map((g: any) => g.game_api_id);
         
         // Priorizar el juego favorito si está marcado, si no el primero

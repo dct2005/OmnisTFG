@@ -3,6 +3,7 @@
         <h1>Panel de Administración</h1>
         <div class="admin-tabs">
             <button [class.active]="activeTab() === 'users'" (click)="setTab('users')">Usuarios</button>
+            <button [class.active]="activeTab() === 'games'" (click)="setTab('games')">Juegos</button>
             <button [class.active]="activeTab() === 'stats'" (click)="setTab('stats')">Estadísticas</button>
             <button [class.active]="activeTab() === 'reports'" (click)="setTab('reports')">Reportes</button>
             <button [class.active]="activeTab() === 'communities'" (click)="setTab('communities')">Comunidades</button>
@@ -75,6 +76,66 @@
                                             <button class="btn-action delete" (click)="deleteUser(user.id, user.username)" 
                                                     [disabled]="user.role === 'administrador'">
                                                 Borrar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+
+        @if (activeTab() === 'games') {
+            <section class="games-section">
+                <div class="section-header">
+                    <div class="header-left">
+                        <h2>Gestión de Juegos</h2>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" 
+                                   [ngModel]="searchQuery()" 
+                                   (ngModelChange)="searchQuery.set($event)"
+                                   (keyup.enter)="searchGames()"
+                                   placeholder="Buscar por nombre o ID de API...">
+                        </div>
+                    </div>
+                    <button class="btn-refresh" (click)="loadGames()" [disabled]="loading()">
+                        {{ loading() ? 'Cargando...' : 'Refrescar' }}
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>API ID</th>
+                                <th>Juego</th>
+                                <th>Copias Vendidas</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (game of filteredGames(); track game.game_api_id) {
+                                <tr>
+                                    <td>{{ game.game_api_id }}</td>
+                                    <td>
+                                        <div class="user-cell">
+                                            <img [src]="game.image || 'images/game_placeholder.png'" 
+                                                 class="admin-user-avatar" [alt]="game.name"
+                                                 style="border-radius: 4px; object-fit: cover; width: 40px; height: 50px;">
+                                            <span class="username">{{ game.name || 'Cargando nombre...' }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span style="font-weight: bold; color: #00f2ff;">{{ game.sales_count }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="actions">
+                                            <button class="btn-action details" (click)="showGameDetail(game)" 
+                                                    style="background: rgba(124, 58, 237, 0.2); border-color: #7c3aed; color: #fff;">
+                                                Ver Detalles
                                             </button>
                                         </div>
                                     </td>

@@ -60,6 +60,21 @@ module.exports = async function handler(req, res) {
                 `;
                 return res.status(200).json(messages);
             }
+
+            // Obtener mensajes no leídos para notificaciones
+            if (action === 'get-unread-messages') {
+                const { userId } = req.query;
+                if (!userId) return res.status(400).json({ error: 'Falta userId' });
+
+                const unread = await sql`
+                    SELECT m.*, u.username as sender_name, u.profile_image as sender_image
+                    FROM direct_messages m
+                    JOIN users u ON m.sender_id = u.id
+                    WHERE receiver_id = ${userId} AND is_read = FALSE
+                    ORDER BY created_at DESC
+                `;
+                return res.status(200).json(unread);
+            }
         }
 
         if (req.method === 'POST') {

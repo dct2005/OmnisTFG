@@ -1137,3 +1137,16 @@
     font-size: 0.9rem;
     text-transform: uppercase;
 }
+
+.library-value {
+    background: rgba(0, 242, 255, 0.05) !important;
+    margin-top: 10px;
+    border: 1px dashed rgba(0, 242, 255, 0.2) !important;
+    cursor: default !important;
+}
+
+.peppix-value {
+    color: #ffd700;
+    font-weight: 800;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
