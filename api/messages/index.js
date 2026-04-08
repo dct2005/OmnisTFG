@@ -80,14 +80,21 @@ module.exports = async function handler(req, res) {
         if (req.method === 'POST') {
             // Enviar un mensaje
             if (action === 'send') {
-                const { senderId, receiverId, content } = req.body;
-                if (!senderId || !receiverId || !content) {
+                const { senderId, receiverId, content, imageUrl } = req.body;
+                if (!senderId || !receiverId || (!content && !imageUrl)) {
                     return res.status(400).json({ error: 'Faltan datos obligatorios' });
                 }
 
+                // Asegurar columna image_url si no existe (Neon soporta IF NOT EXISTS)
+                try {
+                    await sql`ALTER TABLE direct_messages ADD COLUMN IF NOT EXISTS image_url TEXT`;
+                } catch (e) {
+                    console.error('Error asegurando columna image_url:', e);
+                }
+
                 const newMessage = await sql`
-                    INSERT INTO direct_messages (sender_id, receiver_id, content)
-                    VALUES (${senderId}, ${receiverId}, ${content})
+                    INSERT INTO direct_messages (sender_id, receiver_id, content, image_url)
+                    VALUES (${senderId}, ${receiverId}, ${content || ''}, ${imageUrl || null})
                     RETURNING *
                 `;
                 return res.status(201).json(newMessage[0]);

@@ -17,8 +17,8 @@ export class ChatService {
     return this.http.get<any[]>(`${this.apiUrl}?action=get-chat&user1=${user1}&user2=${user2}`);
   }
 
-  sendMessage(senderId: number, receiverId: number, content: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}?action=send`, { senderId, receiverId, content });
+  sendMessage(senderId: number, receiverId: number, content: string, imageUrl?: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}?action=send`, { senderId, receiverId, content, imageUrl });
   }
 
   markAsRead(userId: number, otherId: number): Observable<any> {

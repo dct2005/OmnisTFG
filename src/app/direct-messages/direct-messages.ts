@@ -25,6 +25,7 @@ export class DirectMessagesComponent implements OnInit {
   activeChat = signal<any | null>(null);
   messages = signal<any[]>([]);
   newMessage = signal<string>('');
+  selectedImage = signal<string | null>(null);
   loading = signal<boolean>(false);
 
   constructor() {
@@ -108,17 +109,30 @@ export class DirectMessagesComponent implements OnInit {
     });
   }
 
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.selectedImage.set(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   sendMessage() {
     const content = this.newMessage().trim();
+    const imageUrl = this.selectedImage();
     const user = this.currentUser();
     const other = this.activeChat();
 
-    if (!content || !user || !other) return;
+    if ((!content && !imageUrl) || !user || !other) return;
 
-    this.chatService.sendMessage(user.id, other.id, content).subscribe({
+    this.chatService.sendMessage(user.id, other.id, content, imageUrl || undefined).subscribe({
       next: (msg) => {
         this.messages.update(msgs => [...msgs, msg]);
         this.newMessage.set('');
+        this.selectedImage.set(null);
         this.loadConversations(); // Update last message in list
         this.scrollToBottom();
       },

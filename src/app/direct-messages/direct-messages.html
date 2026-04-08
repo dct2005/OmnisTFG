@@ -42,7 +42,14 @@
                 @for (msg of messages(); track msg.id) {
                     <div class="message-wrapper" [class.own-message]="msg.sender_id === currentUser()?.id">
                         <div class="message-content">
-                            <p>{{ msg.content }}</p>
+                            @if (msg.image_url) {
+                                <div class="message-image">
+                                    <img [src]="msg.image_url" alt="Imagen adjunta" (click)="selectedImage.set(msg.image_url)">
+                                </div>
+                            }
+                            @if (msg.content) {
+                                <p>{{ msg.content }}</p>
+                            }
                             <span class="message-time">{{ msg.created_at | date:'shortTime' }}</span>
                         </div>
                     </div>
@@ -50,13 +57,27 @@
             </div>
 
             <footer class="chat-input-area">
+                @if (selectedImage()) {
+                    <div class="image-preview-bar">
+                        <div class="preview-thumb">
+                            <img [src]="selectedImage()" alt="Preview">
+                            <button class="remove-preview" (click)="selectedImage.set(null)">
+                                <span class="material-icons-round">close</span>
+                            </button>
+                        </div>
+                    </div>
+                }
                 <form (submit)="sendMessage(); $event.preventDefault()">
+                    <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden>
+                    <button type="button" class="attach-btn" (click)="fileInput.click()">
+                        <span class="material-icons-round">add_circle</span>
+                    </button>
                     <input type="text" 
                            [(ngModel)]="newMessage" 
                            name="messageInput"
                            placeholder="Enviar mensaje a @{{ activeChat().username }}"
                            autocomplete="off">
-                    <button type="submit" [disabled]="!newMessage().trim()">
+                    <button type="submit" [disabled]="!newMessage().trim() && !selectedImage()">
                         <span class="material-icons-round">send</span>
                     </button>
                 </form>
