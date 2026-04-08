@@ -24,36 +24,35 @@ export class ProfileComponent implements OnDestroy {
 
   // Profile data signal
   profileData = signal({
-    // ... existings fields ...
-    level: 21,
+    level: 1,
     currentBadge: {
-      name: 'Novato de Élite',
-      exp: 1000,
+      name: 'Sin Insignias',
+      exp: 0,
       icon: 'images/ins_nonecesito.png'
     },
     favoriteGroup: {
-      name: 'Frozen Mind PEEK',
-      type: 'Grupo Público',
-      image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=2070&ixlib=rb-4.0.3', // Placeholder banner
+      name: '',
+      type: '',
+      image: '',
       stats: {
-        members: '23.526',
-        playing: '10.532',
-        connected: '15.221'
+        members: '0',
+        playing: '0',
+        connected: '0'
       }
     },
     recentActivity: {
-      gameName: 'Grand Theft Auto V',
-      image: 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?auto=format&fit=crop&q=80&w=2070&ixlib=rb-4.0.3', // Placeholder game
-      hoursPlayed: '5.725',
-      lastSession: '20/10',
-      achievements: '47/51'
+      gameName: '',
+      image: '',
+      hoursPlayed: '0',
+      lastSession: '',
+      achievements: '0/0'
     },
     stats: {
-      awards: 99,
-      badges: 99,
-      friends: 99,
-      comments: 99,
-      reviews: 99,
+      awards: 0,
+      badges: 0,
+      friends: 0,
+      comments: 0,
+      reviews: 0,
       groups: 0,
       games: 0
     }

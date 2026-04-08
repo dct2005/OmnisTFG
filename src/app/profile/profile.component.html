@@ -85,7 +85,7 @@
     <div class="main-column">
       <div class="section-card favorite-group">
         <h2 class="section-title">Grupo Favorito</h2>
-        <div class="card-body">
+        <div class="card-body" *ngIf="userCommunitiesList().length > 0; else noGroup">
           <img *ngIf="profileData().favoriteGroup.image" [src]="profileData().favoriteGroup.image" class="group-img"
             alt="Group Image">
           <div class="group-info">
@@ -99,17 +99,27 @@
             </div>
           </div>
         </div>
+        <ng-template #noGroup>
+          <div class="card-body empty-state-card">
+            <p class="no-data-msg">Este usuario aún no pertenece a ninguna comunidad.</p>
+          </div>
+        </ng-template>
       </div>
 
       <div class="section-card recent-activity highlight-border">
         <h2 class="section-title">Juego Favorito</h2>
-        <div class="card-body">
+        <div class="card-body" *ngIf="purchasedGamesList().length > 0; else noGame">
           <img *ngIf="profileData().recentActivity.image" [src]="profileData().recentActivity.image" class="game-img"
             alt="Game Image">
           <div class="activity-info">
             <h3 class="game-name">{{ profileData().recentActivity.gameName }}</h3>
           </div>
         </div>
+        <ng-template #noGame>
+          <div class="card-body empty-state-card">
+            <p class="no-data-msg">Este usuario aún no tiene ningún juego en su biblioteca.</p>
+          </div>
+        </ng-template>
       </div>
 
       <!-- Sección de Comentarios Dinámica -->

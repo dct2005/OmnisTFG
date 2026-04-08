@@ -1150,3 +1150,19 @@
     font-weight: 800;
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
 }
+
+.empty-state-card {
+    justify-content: center;
+    align-items: center;
+    min-height: 130px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.no-data-msg {
+    color: #718096;
+    font-size: 0.95rem;
+    font-style: italic;
+    text-align: center;
+    max-width: 80%;
+}
