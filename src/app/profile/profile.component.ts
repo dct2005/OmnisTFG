@@ -4,6 +4,7 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { GameService, Game } from '../services/game.service';
 import { CommunityService } from '../services/community.service';
+import { SocialService } from '../services/social.service';
 import { FormsModule } from '@angular/forms';
 declare var Swal: any;
 
@@ -18,6 +19,7 @@ export class ProfileComponent implements OnDestroy {
   authService = inject(AuthService);
   gameService = inject(GameService);
   communityService = inject(CommunityService);
+  socialService = inject(SocialService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private renderer = inject(Renderer2);
@@ -58,8 +60,11 @@ export class ProfileComponent implements OnDestroy {
     }
   });
 
-  comments = signal<any[]>([]);
+  // Signals
   viewedUser = signal<any>(null);
+  pinnedAwards = computed(() => (this.authService.currentUser() as any)?.pinned_awards || []);
+  allAwardsList = signal<any[]>([]);
+  comments = signal<any[]>([]);
   friendshipStatus = signal<'none' | 'pending' | 'requested' | 'accepted'>('none');
   friendshipId = signal<number | null>(null);
   friendsList = signal<any[]>([]);
@@ -67,6 +72,7 @@ export class ProfileComponent implements OnDestroy {
   userCommunitiesList = signal<any[]>([]);
   userReviewsList = signal<any[]>([]);
   totalLibraryValue = signal<number>(0);
+  friendActivities = signal<any[]>([]);
 
   // Edit Profile signals
   isEditModalOpen = signal(false);
@@ -389,6 +395,17 @@ export class ProfileComponent implements OnDestroy {
           stats: { ...data.stats, reviews: reviews.length }
         }));
       }
+    });
+
+    this.loadFriendActivities(user.id);
+  }
+
+  loadFriendActivities(userId: number) {
+    this.socialService.getFriendActivities(userId).subscribe({
+      next: (activities) => {
+        this.friendActivities.set(activities);
+      },
+      error: (err) => console.error('Error loading friend activities:', err)
     });
   }
 
@@ -912,5 +929,99 @@ export class ProfileComponent implements OnDestroy {
 
   onProfileStatusChange(status: string) {
     this.editForm.update(form => ({ ...form, estado: status }));
+  }
+
+  openAwardsModal() {
+    this.socialService.getAwards(this.authService.currentUser()?.id).subscribe({
+      next: (awards) => {
+        this.allAwardsList.set(awards);
+        this.showAwardsGallery();
+      }
+    });
+  }
+
+  showAwardsGallery() {
+    const ownedAwards = this.allAwardsList().filter(award => award.owned);
+    
+    if (ownedAwards.length === 0) {
+      Swal.fire({
+        title: 'Tu Galería de Premios',
+        text: 'Aún no has desbloqueado ningún trofeo 3D. ¡Sigue comprando juegos de diferentes temáticas para encontrarlos!',
+        icon: 'info',
+        background: '#0d1b2a',
+        color: '#fff',
+        confirmButtonColor: '#00f2ff'
+      });
+      return;
+    }
+
+    let awardsHtml = `
+      <div class="awards-gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; max-height: 450px; overflow-y: auto; padding: 10px;">
+        ${ownedAwards.map(award => `
+          <div class="award-gallery-item owned" style="text-align: center; padding: 15px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,242,255,0.4); position: relative; transition: all 0.3s ease;">
+            <img src="${award.icon_url}" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(0,242,255,0.3));">
+            <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 4px;">${award.name}</div>
+            <div style="font-size: 0.7rem; color: #00f2ff; font-weight: 800; text-transform: uppercase; margin-bottom: 10px;">${award.rarity}</div>
+            <button onclick="window.togglePin(${award.id})" style="width: 100%; padding: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; background: ${award.is_pinned ? '#f56565' : '#48bb78'}; color: white; border: none; border-radius: 6px; transition: transform 0.2s ease;">
+              ${award.is_pinned ? 'Desanclar' : 'Anclar'}
+            </button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    // Expose togglePin to window for Swal
+    (window as any).togglePin = (awardId: number) => {
+      this.socialService.togglePinAward(this.authService.currentUser()!.id, awardId).subscribe({
+        next: (res) => {
+          Swal.close();
+          // Recargar datos de usuario para actualizar la vitrina
+          const currentId = this.viewedUser()?.id;
+          if (currentId) {
+            this.authService.getUserById(currentId.toString()).subscribe({
+              next: (userData) => {
+                if (this.isOwnProfile()) {
+                  this.authService.currentUser.set(userData);
+                }
+                this.viewedUser.set(userData);
+              }
+            });
+          }
+        },
+        error: (err) => {
+          Swal.fire('Error', err.error.error || 'No se pudo actualizar el premio', 'error');
+        }
+      });
+    };
+
+    Swal.fire({
+      title: 'Tu Galería de Premios',
+      html: awardsHtml,
+      width: '600px',
+      showConfirmButton: false,
+      showCloseButton: true,
+      background: '#0d1b2a',
+      color: '#fff'
+    });
+  }
+
+  showAwardDetail(award: any) {
+    Swal.fire({
+      title: award.name,
+      html: `
+        <div style="text-align: center; padding: 10px;">
+          <img src="${award.icon_url}" style="width: 150px; height: 150px; object-fit: contain; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(0,242,255,0.4));">
+          <p style="color: #cbd5e0; font-size: 1rem; margin-bottom: 15px; line-height: 1.5;">${award.description}</p>
+          <div style="display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 800; background: rgba(0,242,255,0.1); color: #00f2ff; border: 1px solid rgba(0,242,255,0.3); text-transform: uppercase; letter-spacing: 1px;">
+            ${award.rarity}
+          </div>
+        </div>
+      `,
+      background: '#0d1b2a',
+      color: '#fff',
+      showConfirmButton: false,
+      showCloseButton: true,
+      width: '450px'
+    });
   }
 }

@@ -46,6 +46,36 @@ module.exports = async function handler(req, res) {
             } else {
                 await sql`INSERT INTO community_members (user_id, community_id, joined_at, role) VALUES (${userId}, ${communityId}, NOW(), 'member')`;
                 await sql`UPDATE communities SET member_count = member_count + 1 WHERE id = ${communityId}`;
+                
+                // Obtener nombre de la comunidad para la actividad
+                const communityRows = await sql`SELECT name FROM communities WHERE id = ${communityId}`;
+                const communityName = communityRows.length > 0 ? communityRows[0].name : 'una comunidad';
+
+                // Registrar actividad
+                await sql`
+                    INSERT INTO activities (user_id, type, target_id, target_name)
+                    VALUES (${userId}, 'join_community', ${communityId.toString()}, ${communityName})
+                `;
+
+                // Comprobar premios
+                const communityCountQuery = await sql`SELECT COUNT(*) as count FROM community_members WHERE user_id = ${userId}`;
+                const communityCount = parseInt(communityCountQuery[0].count, 10);
+                
+                const potentialAwards = await sql`
+                    SELECT id FROM awards 
+                    WHERE type = 'communities' 
+                    AND requirement <= ${communityCount}
+                    AND id NOT IN (SELECT award_id FROM user_awards WHERE user_id = ${userId})
+                `;
+
+                for (const award of potentialAwards) {
+                    await sql`
+                        INSERT INTO user_awards (user_id, award_id, obtained_at)
+                        VALUES (${userId}, ${award.id}, NOW())
+                        ON CONFLICT DO NOTHING
+                    `;
+                }
+
                 return res.status(200).json({ message: 'Te has unido a la comunidad', isMember: true, role: 'member' });
             }
         }

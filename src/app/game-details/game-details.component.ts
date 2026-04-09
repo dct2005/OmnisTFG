@@ -180,7 +180,7 @@ export class GameDetailsComponent implements OnInit {
     const currentPeppix = typeof user.peppix === 'string' ? parseInt(user.peppix.toString().replace(/\./g, ''), 10) : (user.peppix || 0);
 
     if (currentPeppix >= price) {
-      this.authService.purchaseGame(this.game.id, price).subscribe({
+      this.authService.purchaseGame(this.game.id, price, this.game.name).subscribe({
         next: () => {
           this.isOwned = true;
           this.ownedGameIds.push(this.game!.id.toString());

@@ -1166,3 +1166,203 @@
     text-align: center;
     max-width: 80%;
 }
+/* Activity Feed */
+.friends-activity {
+    margin-bottom: 30px;
+}
+
+.activity-feed {
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.activity-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(0, 242, 255, 0.2);
+    transform: translateX(5px);
+}
+
+.activity-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(0, 242, 255, 0.3);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.activity-user-avatar:hover {
+    transform: scale(1.1);
+}
+
+.activity-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.activity-text {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #e2e8f0;
+}
+
+.activity-username {
+    color: #00f2ff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.activity-username:hover {
+    text-decoration: underline;
+}
+
+.activity-target {
+    color: #f687b3;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.activity-target:hover {
+    text-decoration: underline;
+}
+
+.activity-time {
+    font-size: 0.75rem;
+    color: #718096;
+}
+
+/* Vitrina de Premios */
+.section-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.btn-gallery {
+    background: rgba(0, 242, 255, 0.1);
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    color: #00f2ff;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-gallery:hover {
+    background: rgba(0, 242, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+}
+
+.vitrina-body {
+    padding: 20px;
+}
+
+.vitrina-body.has-awards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 20px;
+}
+
+.empty-vitrina {
+    text-align: center;
+    color: #718096;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.award-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.award-slot:hover {
+    transform: translateY(-5px);
+}
+
+.award-icon-wrapper {
+    position: relative;
+    width: 80px; /* Incrementado para trofeos 3D */
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.award-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 2;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.7));
+    transition: transform 0.3s ease;
+}
+
+.award-slot:hover .award-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.rarity-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    filter: blur(15px);
+    opacity: 0.4;
+    z-index: 1;
+}
+
+.award-name-mini {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    max-width: 90px;
+    line-height: 1.2;
+}
+
+/* Rarity Styles */
+.common .rarity-glow { background: #cbd5e0; }
+.rare .rarity-glow { background: #4299e1; opacity: 0.6; filter: blur(20px); }
+.epic .rarity-glow { background: #9f7aea; opacity: 0.7; filter: blur(25px); }
+.legendary .rarity-glow { 
+    background: #ecc94b; 
+    opacity: 0.8; 
+    filter: blur(30px);
+    animation: legendary-pulse 2s infinite alternate;
+}
+
+@keyframes legendary-pulse {
+    from { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+    to { opacity: 0.9; transform: translate(-50%, -50%) scale(1.3); }
+}

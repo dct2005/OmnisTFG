@@ -168,7 +168,7 @@ export class AuthService {
     return this.http.get(`${this.apiUrl}/user?id=${id}&action=get-by-id`);
   }
 
-  purchaseGame(gameId: number | string, price: number): Observable<any> {
+  purchaseGame(gameId: number | string, price: number, gameName: string): Observable<any> {
     const user = this.currentUser();
     const userEmail = user?.email;
 
@@ -178,7 +178,8 @@ export class AuthService {
       action: 'purchase-game',
       email: userEmail,
       gameId: gameId.toString(),
-      price: price
+      price: price,
+      gameName: gameName
     }).pipe(
       tap((res: any) => {
         if (res.user) {

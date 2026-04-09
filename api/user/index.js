@@ -38,27 +38,104 @@ module.exports = async function handler(req, res) {
         }
 
         async function getUserWithBadges(user) {
+            // 1. Insignias clásicas (Hardcoded based on games)
             const gamesCountQuery = await sql`SELECT COUNT(*) as count FROM user_games WHERE user_id = ${user.id}`;
             const gamesCount = parseInt(gamesCountQuery[0].count, 10);
 
-            const badges = [];
-            if (gamesCount >= 1) badges.push({ id: 1, name: 'Novato de Élite', icon: 'images/ins_nonecesito.png', tier: 1, description: 'Conseguida tras comprar 1 juego.' });
-            if (gamesCount >= 3) badges.push({ id: 2, name: 'Borracho de Época', icon: 'images/ins_borracho.png', tier: 2, description: 'Conseguida tras comprar 3 juegos.' });
-            if (gamesCount >= 5) badges.push({ id: 3, name: 'Cuñao Honorario', icon: 'images/ins_cunado.png', tier: 3, description: 'Conseguida tras comprar 5 juegos.' });
-            if (gamesCount >= 7) badges.push({ id: 4, name: 'Cállese y Tome mi Dinero', icon: 'images/ins_callese.png', tier: 4, description: 'Conseguida tras comprar 7 juegos.' });
-            if (gamesCount >= 10) badges.push({ id: 5, name: 'Frozen Mind Legend', icon: 'images/ins_frozenmind.png', tier: 5, description: 'Conseguida tras comprar 10 juegos.' });
+            const hardcodedBadges = [];
+            if (gamesCount >= 1) hardcodedBadges.push({ id: 101, name: 'Novato de Élite', icon: '/images/ins_nonecesito.png', description: 'Compraste 1 juego.' });
+            if (gamesCount >= 3) hardcodedBadges.push({ id: 102, name: 'Borracho de Época', icon: '/images/ins_borracho.png', description: 'Compraste 3 juegos.' });
+            if (gamesCount >= 5) hardcodedBadges.push({ id: 103, name: 'Cuñao Honorario', icon: '/images/ins_cunado.png', description: 'Compraste 5 juegos.' });
+            if (gamesCount >= 7) hardcodedBadges.push({ id: 104, name: 'Cállese y Tome mi Dinero', icon: '/images/ins_callese.png', description: 'Compraste 7 juegos.' });
+            if (gamesCount >= 10) hardcodedBadges.push({ id: 105, name: 'Frozen Mind Legend', icon: '/images/ins_frozenmind.png', description: 'Compraste 10 juegos.' });
 
-            let currentBadge = badges.find(b => b.id == user.selected_badge_id);
+            // 2. Premios del Perfil (3D Trophies from DB)
+            const userAwards = await sql`
+                SELECT a.*, a.icon_url as icon, ua.obtained_at, ua.is_pinned
+                FROM awards a
+                JOIN user_awards ua ON a.id = ua.award_id
+                WHERE ua.user_id = ${user.id}
+                ORDER BY a.requirement DESC
+            `;
+
+            // Identificar la insignia actual (lateral)
+            let currentBadge = hardcodedBadges.find(b => b.id == user.selected_badge_id);
+            if (!currentBadge && hardcodedBadges.length > 0) {
+                currentBadge = hardcodedBadges[hardcodedBadges.length - 1];
+            }
             if (!currentBadge) {
-                currentBadge = badges.length > 0 ? badges[badges.length - 1] : { name: 'Sin Insignias', icon: 'images/ins_nonecesito.png', tier: 0 };
+                currentBadge = { name: 'Sin Insignias', icon: 'images/ins_nonecesito.png' };
             }
 
             const { password: _, ...userWithoutPassword } = user;
             return {
                 ...userWithoutPassword,
-                badges,
-                current_badge: currentBadge
+                badges: hardcodedBadges, // Se mantienen como insignias secundarias
+                current_badge: currentBadge,
+                all_awards: userAwards, // Todos los premios obtenidos
+                pinned_awards: userAwards.filter(a => a.is_pinned) // Premios para la Vitrina
             };
+        }
+
+        async function checkAndGrantAwards(userId, type) {
+            if (type === 'genre') {
+                const userGamesMetadata = await sql`
+                    SELECT g.genres, g.themes 
+                    FROM user_games ug
+                    JOIN games g ON ug.game_api_id = CAST(g.id AS TEXT)
+                    WHERE ug.user_id = ${userId}
+                `;
+                
+                const allPlayerGenres = new Set();
+                userGamesMetadata.forEach(g => {
+                    if (g.genres) g.genres.forEach(gen => allPlayerGenres.add(gen));
+                    if (g.themes) g.themes.forEach(t => allPlayerGenres.add(t));
+                });
+
+                const potentialAwards = await sql`
+                    SELECT * FROM awards 
+                    WHERE type = 'genre' 
+                    AND id NOT IN (SELECT award_id FROM user_awards WHERE user_id = ${userId})
+                `;
+
+                for (const award of potentialAwards) {
+                    const requiredGenres = award.requirement.split(',');
+                    const hasAchievement = requiredGenres.some(req => allPlayerGenres.has(req));
+                    
+                    if (hasAchievement) {
+                        await sql`
+                            INSERT INTO user_awards (user_id, award_id, obtained_at)
+                            VALUES (${userId}, ${award.id}, NOW())
+                            ON CONFLICT DO NOTHING
+                        `;
+                    }
+                }
+                return;
+            }
+
+            let currentValue = 0;
+            if (type === 'games') {
+                const countQuery = await sql`SELECT COUNT(*) as count FROM user_games WHERE user_id = ${userId}`;
+                currentValue = parseInt(countQuery[0].count, 10);
+            } else if (type === 'communities') {
+                const countQuery = await sql`SELECT COUNT(*) as count FROM community_members WHERE user_id = ${userId}`;
+                currentValue = parseInt(countQuery[0].count, 10);
+            }
+
+            const potentialAwards = await sql`
+                SELECT id FROM awards 
+                WHERE type = ${type} 
+                AND CAST(requirement AS INTEGER) <= ${currentValue}
+                AND id NOT IN (SELECT award_id FROM user_awards WHERE user_id = ${userId})
+            `;
+
+            for (const award of potentialAwards) {
+                await sql`
+                    INSERT INTO user_awards (user_id, award_id, obtained_at)
+                    VALUES (${userId}, ${award.id}, NOW())
+                    ON CONFLICT DO NOTHING
+                `;
+            }
         }
 
         // OBTENER RECURSO DEL USUARIO
@@ -760,7 +837,7 @@ module.exports = async function handler(req, res) {
             }
 
             if (action === 'purchase-game') {
-                const { gameId, price } = req.body;
+                const { gameId, price, gameName } = req.body;
                 if (!email || !gameId || price === undefined) return res.status(400).json({ error: 'Faltan datos' });
 
                 const userCheck = await sql`SELECT id, peppix FROM users WHERE email = ${email}`;
@@ -769,6 +846,38 @@ module.exports = async function handler(req, res) {
                 const user = userCheck[0];
                 if (user.peppix < price) return res.status(400).json({ error: 'Saldo insuficiente' });
 
+                // Fetch game metadata from IGDB to cache it locally
+                try {
+                    const axios = require('axios');
+                    const gameInfoResponse = await axios.post(
+                        "https://api.igdb.com/v4/games",
+                        `fields name, genres.name, themes.name; where id = ${gameId};`,
+                        {
+                            headers: {
+                                "Client-ID": process.env.TWITCH_CLIENT_ID,
+                                "Authorization": `Bearer ${process.env.TWITCH_ACCESS_TOKEN}`
+                            }
+                        }
+                    );
+
+                    if (gameInfoResponse.data && gameInfoResponse.data.length > 0) {
+                        const g = gameInfoResponse.data[0];
+                        const genres = g.genres ? g.genres.map(gen => gen.name) : [];
+                        const themes = g.themes ? g.themes.map(t => t.name) : [];
+                        
+                        await sql`
+                            INSERT INTO games (id, name, genres, themes)
+                            VALUES (${g.id}, ${g.name}, ${genres}, ${themes})
+                            ON CONFLICT (id) DO UPDATE SET
+                                name = EXCLUDED.name,
+                                genres = EXCLUDED.genres,
+                                themes = EXCLUDED.themes
+                        `;
+                    }
+                } catch (err) {
+                    console.error("[Purchase] Error caching game metadata:", err.message);
+                }
+
                 const updated = await sql`UPDATE users SET peppix = peppix - ${price}, xp = xp + ${price} WHERE email = ${email} RETURNING id, username, email, peppix, xp, estado, profile_background`;
 
                 await sql`
@@ -776,6 +885,16 @@ module.exports = async function handler(req, res) {
                     VALUES (${user.id}, ${gameId.toString()}, NOW(), ${price})
                     ON CONFLICT (user_id, game_api_id) DO UPDATE SET price_paid = ${price}
                 `;
+
+                // Registrar actividad
+                await sql`
+                    INSERT INTO activities (user_id, type, target_id, target_name)
+                    VALUES (${user.id}, 'purchase', ${gameId.toString()}, ${gameName || 'un juego'})
+                `;
+
+                // Comprobar premios
+                await checkAndGrantAwards(user.id, 'games');
+                await checkAndGrantAwards(user.id, 'genre');
 
                 await sql`DELETE FROM user_wishlist WHERE user_id = ${user.id} AND game_api_id = ${gameId.toString()}`;
 
