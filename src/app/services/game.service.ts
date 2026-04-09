@@ -27,8 +27,8 @@ export interface Game {
 export class GameService {
   private http = inject(HttpClient);
   private apiUrl = '/api/games';
-  private genresUrl = '/api/genres';
-  private themesUrl = '/api/themes';
+  private genresUrl = '/api/metadata?type=genres';
+  private themesUrl = '/api/metadata?type=themes';
 
   getGames(search?: string, offset: number = 0, genres?: string[], themes?: string[], ids?: string[] | number[]): Observable<Game[]> {
     const params: any = { offset: offset.toString() };

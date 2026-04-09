@@ -26,29 +26,29 @@ export class CommunityService {
         return this.http.get<any>(`${this.apiUrl}/${id}`);
     }
     joinCommunity(communityId: string, userId: number): Observable<any> {
-        return this.http.post<any>(`/api/communities/${communityId}/join`, { userId });
+        return this.http.post<any>(`/api/communities/${communityId}?action=join`, { userId });
     }
 
     getMessages(communityId: string): Observable<any[]> {
-        return this.http.get<any[]>(`/api/communities/${communityId}/messages`);
+        return this.http.get<any[]>(`/api/communities/${communityId}?action=messages`);
     }
 
     sendMessage(communityId: string, userId: number, content: string, imageUrl?: string): Observable<any> {
-        return this.http.post<any>(`/api/communities/${communityId}/messages`, { userId, content, image_url: imageUrl });
+        return this.http.post<any>(`/api/communities/${communityId}?action=messages`, { userId, content, image_url: imageUrl });
     }
     createCommunity(data: any): Observable<any> {
         return this.http.post<any>('/api/communities', data);
     }
     checkMembership(communityId: string, userId: number): Observable<any> {
-        return this.http.get<any>(`/api/communities/${communityId}/join?userId=${userId}`);
+        return this.http.get<any>(`/api/communities/${communityId}?action=join&userId=${userId}`);
     }
 
     getCommunityMembers(communityId: string): Observable<any[]> {
-        return this.http.get<any[]>(`/api/communities/${communityId}/members`);
+        return this.http.get<any[]>(`/api/communities/${communityId}?action=members`);
     }
 
     kickMember(communityId: string, userId: number, adminId: number): Observable<any> {
-        return this.http.delete<any>(`/api/communities/${communityId}/members`, {
+        return this.http.delete<any>(`/api/communities/${communityId}?action=members`, {
             body: { userId, adminId }
         });
     }

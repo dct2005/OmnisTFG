@@ -22,23 +22,23 @@ export interface SocialRankings {
 })
 export class SocialService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/social/rankings';
+  private apiUrl = '/api/social?action=rankings';
 
   getRankings(): Observable<SocialRankings> {
     return this.http.get<SocialRankings>(this.apiUrl);
   }
 
   getFriendActivities(userId: number | string): Observable<any[]> {
-    return this.http.get<any[]>(`/api/social/activities?userId=${userId}`);
+    return this.http.get<any[]>(`/api/social?action=activities&userId=${userId}`);
   }
 
   getAwards(userId?: number | string): Observable<any[]> {
-    const url = userId ? `/api/social/awards?userId=${userId}` : '/api/social/awards';
+    const url = userId ? `/api/social?action=awards&userId=${userId}` : '/api/social?action=awards';
     return this.http.get<any[]>(url);
   }
 
   togglePinAward(userId: number, awardId: number): Observable<any> {
-    return this.http.post('/api/social/awards', {
+    return this.http.post('/api/social?action=awards', {
       userId,
       awardId,
       action: 'toggle-pin'
