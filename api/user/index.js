@@ -67,13 +67,24 @@ module.exports = async function handler(req, res) {
                 currentBadge = { name: 'Sin Insignias', icon: 'images/ins_nonecesito.png' };
             }
 
+            // 3. Mascota Activa
+            const activePetQuery = await sql`
+                SELECT p.* 
+                FROM pets p
+                JOIN user_pets up ON p.id = up.pet_id
+                WHERE up.user_id = ${user.id} AND up.is_active = TRUE
+                LIMIT 1
+            `;
+            const activePet = activePetQuery[0] || null;
+
             const { password: _, ...userWithoutPassword } = user;
             return {
                 ...userWithoutPassword,
                 badges: hardcodedBadges, // Se mantienen como insignias secundarias
                 current_badge: currentBadge,
                 all_awards: userAwards, // Todos los premios obtenidos
-                pinned_awards: userAwards.filter(a => a.is_pinned) // Premios para la Vitrina
+                pinned_awards: userAwards.filter(a => a.is_pinned), // Premios para la Vitrina
+                active_pet: activePet
             };
         }
 
@@ -108,6 +119,15 @@ module.exports = async function handler(req, res) {
                             VALUES (${userId}, ${award.id}, NOW())
                             ON CONFLICT DO NOTHING
                         `;
+                        // Auto-desbloquear mascota asociada
+                        const linkedPet = await sql`SELECT id FROM pets WHERE award_id = ${award.id} LIMIT 1`;
+                        if (linkedPet.length > 0) {
+                            await sql`
+                                INSERT INTO user_pets (user_id, pet_id, unlocked_at)
+                                VALUES (${userId}, ${linkedPet[0].id}, NOW())
+                                ON CONFLICT DO NOTHING
+                            `;
+                        }
                     }
                 }
                 return;
@@ -135,6 +155,15 @@ module.exports = async function handler(req, res) {
                     VALUES (${userId}, ${award.id}, NOW())
                     ON CONFLICT DO NOTHING
                 `;
+                // Auto-desbloquear mascota asociada
+                const linkedPet = await sql`SELECT id FROM pets WHERE award_id = ${award.id} LIMIT 1`;
+                if (linkedPet.length > 0) {
+                    await sql`
+                        INSERT INTO user_pets (user_id, pet_id, unlocked_at)
+                        VALUES (${userId}, ${linkedPet[0].id}, NOW())
+                        ON CONFLICT DO NOTHING
+                    `;
+                }
             }
         }
 
@@ -541,14 +570,14 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json(stats);
             }
 
-            if (!email && !username && !['get-any-game', 'get-profile-comments', 'get-tickets', 'check-daily-reward', 'get-transactions', 'get-friends', 'get-user-comments', 'get-all-reports', 'get-admin-stats'].includes(action)) {
+            if (!email && !username && !['get-any-game', 'get-profile-comments', 'get-pets', 'get-tickets', 'check-daily-reward', 'get-transactions', 'get-friends', 'get-user-comments', 'get-all-reports', 'get-admin-stats'].includes(action)) {
                 return res.status(400).json({ error: 'Falta email o username' });
             }
 
             let user;
             if (email) {
                 const users = await sql`SELECT * FROM users WHERE email = ${email}`;
-                if (users.length === 0 && !['get-any-game', 'get-profile-comments', 'get-tickets', 'check-daily-reward', 'get-transactions', 'get-friends', 'get-user-comments'].includes(action)) {
+                if (users.length === 0 && !['get-any-game', 'get-profile-comments', 'get-pets', 'get-tickets', 'check-daily-reward', 'get-transactions', 'get-friends', 'get-user-comments'].includes(action)) {
                     return res.status(404).json({ error: 'User no encontrado' });
                 }
                 user = users[0];
@@ -556,6 +585,20 @@ module.exports = async function handler(req, res) {
                 const users = await sql`SELECT * FROM users WHERE username = ${username}`;
                 if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
                 user = users[0];
+            }
+
+            if (action === 'get-pets') {
+                const { userId } = req.query;
+                const petUserId = userId || user?.id;
+                if (!petUserId) return res.status(400).json({ error: 'Falta userId' });
+
+                const allPets = await sql`
+                    SELECT p.*, (up.id IS NOT NULL) as unlocked, COALESCE(up.is_active, FALSE) as is_active
+                    FROM pets p
+                    LEFT JOIN user_pets up ON p.id = up.pet_id AND up.user_id = ${petUserId}
+                    ORDER BY p.id ASC
+                `;
+                return res.status(200).json(allPets);
             }
 
             if (action === 'get-user-games') {
@@ -1181,6 +1224,25 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ message: 'Solicitud aceptada' });
             }
 
+            if (action === 'update-active-pet') {
+                const { userId, petId, active } = req.body;
+                if (!userId) return res.status(400).json({ error: 'Falta userId' });
+
+                await sql`UPDATE user_pets SET is_active = FALSE WHERE user_id = ${userId}`;
+                
+                if (active && petId) {
+                    await sql`
+                        UPDATE user_pets 
+                        SET is_active = TRUE 
+                        WHERE user_id = ${userId} AND pet_id = ${petId}
+                    `;
+                }
+                
+                const userQuery = await sql`SELECT * FROM users WHERE id = ${userId}`;
+                const userData = await getUserWithBadges(userQuery[0]);
+                return res.status(200).json(userData);
+            }
+
             if (action === 'remove-friend') {
                 const { friendshipId, senderId, receiverId } = req.body;
 
@@ -1199,10 +1261,11 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ message: 'Amistad/Solicitud eliminada' });
             }
 
-            return res.status(400).json({ error: 'Acción no válida' });
+            return res.status(200).json({ message: 'Amistad/Solicitud eliminada' });
         }
 
-        return res.status(405).json({ error: 'Método no permitido' });
+        return res.status(400).json({ error: 'Acción no válida' });
+
     } catch (err) {
         console.error('Error in user API:', err);
         return res.status(500).json({ error: 'Error del servidor', details: err.message });

@@ -10,6 +10,13 @@
         <img
           [src]="user?.profile_image || user?.avatar || user?.profile_picture || 'https://ui-avatars.com/api/?name=' + user?.username + '&background=0d1b2a&color=fff'"
           class="profile-avatar" [alt]="user?.username">
+        <!-- Mascota Activa -->
+        <div class="active-pet-wrapper" *ngIf="activePet()" [title]="activePet().name"
+             [class.pet-dragon]="activePet().name.includes('Dragón')"
+             [class.pet-ghost]="activePet().name.includes('Fantasmitu')"
+             [class.pet-wizard]="activePet().name.includes('Mago')">
+          <img [src]="activePet().icon_url.replace('.png', '_v2.png') + '?v=' + cacheBuster" class="active-pet-sprite">
+        </div>
         <div class="avatar-overlay" *ngIf="isOwnProfile()">
           <span class="upload-icon">📷</span>
         </div>
@@ -95,7 +102,7 @@
           <div class="award-slot" *ngFor="let award of pinnedAwards()" [ngClass]="award.rarity" [title]="award.description"
             (click)="showAwardDetail(award)" style="cursor: pointer;">
             <div class="award-icon-wrapper">
-              <img [src]="award.icon_url" [alt]="award.name" class="award-icon">
+              <img [src]="award.icon_url.includes('pet_') ? award.icon_url.replace('.png', '_v2.png') + '?v=' + cacheBuster : award.icon_url" [alt]="award.name" class="award-icon">
               <div class="rarity-glow"></div>
             </div>
             <span class="award-name-mini">{{ award.name }}</span>

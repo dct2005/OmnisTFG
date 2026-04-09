@@ -44,4 +44,17 @@ export class SocialService {
       action: 'toggle-pin'
     });
   }
+
+  getPets(userId: number | string): Observable<any[]> {
+    return this.http.get<any[]>(`/api/user?action=get-pets&userId=${userId}`);
+  }
+
+  setActivePet(userId: number | string, petId: number | null, active: boolean): Observable<any> {
+    return this.http.post('/api/user', {
+      action: 'update-active-pet',
+      userId,
+      petId,
+      active
+    });
+  }
 }

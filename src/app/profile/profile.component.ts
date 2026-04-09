@@ -1,6 +1,7 @@
 import { Component, inject, signal, OnInit, effect, computed, Renderer2, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { AuthService } from '../services/auth';
 import { GameService, Game } from '../services/game.service';
 import { CommunityService } from '../services/community.service';
@@ -62,8 +63,11 @@ export class ProfileComponent implements OnDestroy {
 
   // Signals
   viewedUser = signal<any>(null);
-  pinnedAwards = computed(() => (this.authService.currentUser() as any)?.pinned_awards || []);
+  cacheBuster = Date.now();
+  pinnedAwards = computed(() => this.viewedUser()?.pinned_awards || []);
   allAwardsList = signal<any[]>([]);
+  allPetsList = signal<any[]>([]);
+  activePet = computed(() => this.viewedUser()?.active_pet);
   comments = signal<any[]>([]);
   friendshipStatus = signal<'none' | 'pending' | 'requested' | 'accepted'>('none');
   friendshipId = signal<number | null>(null);
@@ -932,77 +936,161 @@ export class ProfileComponent implements OnDestroy {
   }
 
   openAwardsModal() {
-    this.socialService.getAwards(this.authService.currentUser()?.id).subscribe({
+    // Intentar obtener ID por varias vías para asegurar que no sea undefined
+    const currentUser = this.authService.currentUser();
+    const viewedUser = this.viewedUser();
+    const userId = currentUser?.id || viewedUser?.id;
+    
+    if (!userId) {
+      console.warn('No se pudo encontrar ID de usuario para abrir galería');
+      return;
+    }
+
+    // Mostrar un pequeño indicador de carga para que el usuario sepa que está pasando algo
+    Swal.fire({
+      title: 'Abriendo Colección...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      background: '#0d1b2a',
+      color: '#fff'
+    });
+
+    this.socialService.getAwards(userId).subscribe({
       next: (awards) => {
         this.allAwardsList.set(awards);
-        this.showAwardsGallery();
+        this.socialService.getPets(userId).subscribe({
+          next: (pets) => {
+            this.allPetsList.set(pets);
+            // Cerramos el loading y abrimos la modal real
+            Swal.close();
+            setTimeout(() => {
+              this.showCollectionModal('premios');
+            }, 100);
+          },
+          error: (err) => {
+            console.error('Error cargando mascotas:', err);
+            Swal.close();
+            this.showCollectionModal('premios');
+          }
+        });
+      },
+      error: (err) => {
+        console.error('Error cargando premios:', err);
+        Swal.close();
+        Swal.fire('Error', 'No se pudo cargar tu colección', 'error');
       }
     });
   }
 
-  showAwardsGallery() {
+  showCollectionModal(tab: 'premios' | 'mascotas') {
+    const userId = this.authService.currentUser()?.id;
     const ownedAwards = this.allAwardsList().filter(award => award.owned);
-    
-    if (ownedAwards.length === 0) {
-      Swal.fire({
-        title: 'Tu Galería de Premios',
-        text: 'Aún no has desbloqueado ningún trofeo 3D. ¡Sigue comprando juegos de diferentes temáticas para encontrarlos!',
-        icon: 'info',
-        background: '#0d1b2a',
-        color: '#fff',
-        confirmButtonColor: '#00f2ff'
-      });
-      return;
-    }
+    const pets = this.allPetsList();
 
-    let awardsHtml = `
-      <div class="awards-gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; max-height: 450px; overflow-y: auto; padding: 10px;">
-        ${ownedAwards.map(award => `
-          <div class="award-gallery-item owned" style="text-align: center; padding: 15px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,242,255,0.4); position: relative; transition: all 0.3s ease;">
-            <img src="${award.icon_url}" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(0,242,255,0.3));">
-            <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 4px;">${award.name}</div>
-            <div style="font-size: 0.7rem; color: #00f2ff; font-weight: 800; text-transform: uppercase; margin-bottom: 10px;">${award.rarity}</div>
-            <button onclick="window.togglePin(${award.id})" style="width: 100%; padding: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; background: ${award.is_pinned ? '#f56565' : '#48bb78'}; color: white; border: none; border-radius: 6px; transition: transform 0.2s ease;">
-              ${award.is_pinned ? 'Desanclar' : 'Anclar'}
-            </button>
-          </div>
-        `).join('')}
+    const tabsHtml = `
+      <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+        <button onclick="window.switchCollectionTab('premios')" style="flex: 1; padding: 10px; border: none; border-radius: 8px; background: ${tab === 'premios' ? 'rgba(0,242,255,0.2)' : 'transparent'}; color: ${tab === 'premios' ? '#00f2ff' : '#a0aec0'}; cursor: pointer; font-weight: 700;">PREMIOS (${ownedAwards.length})</button>
+        <button onclick="window.switchCollectionTab('mascotas')" style="flex: 1; padding: 10px; border: none; border-radius: 8px; background: ${tab === 'mascotas' ? 'rgba(0,242,255,0.2)' : 'transparent'}; color: ${tab === 'mascotas' ? '#00f2ff' : '#a0aec0'}; cursor: pointer; font-weight: 700;">MASCOTAS (${pets.filter(p => p.unlocked).length})</button>
       </div>
     `;
 
-    // Expose togglePin to window for Swal
+    let contentHtml = '';
+    if (tab === 'premios') {
+      if (ownedAwards.length === 0) {
+        contentHtml = `<p style="text-align: center; color: #a0aec0; padding: 20px;">Aún no has desbloqueado ningún premio 3D.</p>`;
+      } else {
+        contentHtml = `
+          <div class="awards-gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto; padding: 10px;">
+            ${ownedAwards.map(award => `
+              <div class="award-gallery-item owned" style="text-align: center; padding: 15px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,242,255,0.4); position: relative;">
+                <img src="${award.icon_url}" 
+                     onclick="window.showDetail(${award.id})"
+                     style="width: 70px; height: 70px; object-fit: contain; margin-bottom: 10px; cursor: pointer; filter: drop-shadow(0 0 10px rgba(0,242,255,0.3));" 
+                     title="Ver detalles">
+                <div style="font-size: 0.8rem; font-weight: 700; color: #fff; margin-bottom: 5px;">${award.name}</div>
+                <button onclick="window.togglePin(${award.id})" style="width: 100%; padding: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; background: ${award.is_pinned ? '#f56565' : '#48bb78'}; color: white; border: none; border-radius: 6px;">
+                  ${award.is_pinned ? 'Desanclar' : 'Anclar'}
+                </button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+    } else {
+      contentHtml = `
+        <div class="pets-gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto; padding: 10px;">
+          ${pets.map(pet => `
+            <div class="pet-gallery-item ${pet.unlocked ? 'owned' : 'locked'}" style="text-align: center; padding: 15px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid ${pet.is_active ? 'rgba(0,242,255,0.6)' : 'rgba(255,255,255,0.1)'}; opacity: ${pet.unlocked ? '1' : '0.4'}; position: relative;">
+              <img src="${pet.icon_url}" style="width: 70px; height: 70px; object-fit: contain; margin-bottom: 10px; filter: ${pet.unlocked ? 'drop-shadow(0 0 10px rgba(0,242,255,0.3))' : 'grayscale(100%)'};">
+              <div style="font-size: 0.8rem; font-weight: 700; color: #fff; margin-bottom: 5px;">${pet.name}</div>
+              ${pet.unlocked ? `
+                <button onclick="window.togglePet(${pet.id}, ${pet.is_active})" style="width: 100%; padding: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; background: ${pet.is_active ? '#f56565' : '#48bb78'}; color: white; border: none; border-radius: 6px;">
+                  ${pet.is_active ? 'Desactivar' : 'Equipar'}
+                </button>
+              ` : `<div style="font-size: 0.65rem; color: #f56565; margin-top: 5px;">BLOQUEADO</div>`}
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    (window as any).switchCollectionTab = (newTab: 'premios' | 'mascotas') => {
+      this.showCollectionModal(newTab);
+    };
+
+    (window as any).showDetail = (awardId: number) => {
+      const award = this.allAwardsList().find(a => a.id === awardId);
+      if (award) this.showAwardDetail(award);
+    };
+
     (window as any).togglePin = (awardId: number) => {
-      this.socialService.togglePinAward(this.authService.currentUser()!.id, awardId).subscribe({
-        next: (res) => {
+      this.socialService.togglePinAward(userId!, awardId).subscribe({
+        next: () => {
           Swal.close();
-          // Recargar datos de usuario para actualizar la vitrina
-          const currentId = this.viewedUser()?.id;
-          if (currentId) {
-            this.authService.getUserById(currentId.toString()).subscribe({
-              next: (userData) => {
-                if (this.isOwnProfile()) {
-                  this.authService.currentUser.set(userData);
-                }
-                this.viewedUser.set(userData);
-              }
-            });
-          }
-        },
-        error: (err) => {
-          Swal.fire('Error', err.error.error || 'No se pudo actualizar el premio', 'error');
+          this.refreshProfileData();
+        }
+      });
+    };
+
+    (window as any).togglePet = (petId: number, currentActive: boolean) => {
+      this.socialService.setActivePet(userId!, petId, !currentActive).subscribe({
+        next: () => {
+          Swal.close();
+          this.refreshProfileData();
         }
       });
     };
 
     Swal.fire({
-      title: 'Tu Galería de Premios',
-      html: awardsHtml,
+      title: 'Tu Colección',
+      html: `
+        <div class="collection-modal">
+          ${tabsHtml}
+          ${contentHtml}
+        </div>
+      `,
       width: '600px',
       showConfirmButton: false,
       showCloseButton: true,
       background: '#0d1b2a',
       color: '#fff'
     });
+  }
+
+  refreshProfileData() {
+    const currentId = this.viewedUser()?.id;
+    if (currentId) {
+      this.authService.getUserById(currentId.toString()).subscribe({
+        next: (userData) => {
+          if (this.isOwnProfile()) {
+            this.authService.currentUser.set(userData);
+          }
+          this.viewedUser.set(userData);
+        }
+      });
+    }
   }
 
   showAwardDetail(award: any) {
