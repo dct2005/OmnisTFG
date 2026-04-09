@@ -83,6 +83,7 @@ export class ProfileComponent implements OnDestroy {
   userGames = signal<any[]>([]);
   userCommunities = signal<any[]>([]);
   editForm = signal({
+    username: '',
     favorite_group_id: null,
     favorite_game_id: '',
     country: '',
@@ -844,6 +845,7 @@ export class ProfileComponent implements OnDestroy {
     const user = this.isOwnProfile() ? this.viewedUser() : this.authService.currentUser();
     if (user) {
       this.editForm.set({
+        username: user.username || '',
         favorite_group_id: user.favorite_group_id || null,
         favorite_game_id: user.favorite_game_id || '',
         country: user.country || '',
@@ -912,10 +914,16 @@ export class ProfileComponent implements OnDestroy {
         this.closeEditModal();
         // Recargar el perfil visualizado si es el propio
         if (this.isOwnProfile()) {
+          const oldUsername = this.viewedUser()?.username;
           this.viewedUser.set(res.user);
           this.comments.set(res.initialComments || []);
           this.commentsOffset.set(res.initialComments?.length || 0);
           this.hasMoreComments.set((res.initialComments?.length || 0) === 5);
+
+          // Si el username cambió, redirigir a la nueva URL
+          if (oldUsername && res.user.username !== oldUsername) {
+            this.router.navigate(['/perfil', res.user.username]);
+          }
         }
       },
       error: (err) => {

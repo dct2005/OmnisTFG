@@ -1046,6 +1046,7 @@ module.exports = async function handler(req, res) {
 
             if (action === 'update-profile-settings') {
                 const {
+                    username,
                     favorite_group_id,
                     favorite_game_id,
                     country,
@@ -1069,6 +1070,7 @@ module.exports = async function handler(req, res) {
                 const updated = await sql`
                     UPDATE users 
                     SET 
+                        username = ${username},
                         favorite_group_id = ${favorite_group_id}, 
                         favorite_game_id = ${favorite_game_id}, 
                         country = ${country}, 

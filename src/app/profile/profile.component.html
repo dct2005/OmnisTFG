@@ -315,6 +315,10 @@
         <h3><span class="material-icons-round">person</span> Información General</h3>
         <div class="form-grid">
           <div class="form-group">
+            <label>Nombre de Usuario</label>
+            <input type="text" [(ngModel)]="editForm().username" placeholder="Tu nuevo nombre">
+          </div>
+          <div class="form-group">
             <label>Avatar y Fondo</label>
             <div class="media-edit-actions">
               <button class="btn-media-edit" (click)="fileInput.click()">
