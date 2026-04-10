@@ -39,6 +39,20 @@ export class InformacionCommunities implements OnInit {
 
   currentUser = this.authService.currentUser;
 
+  get communityLevel(): number {
+    if (!this.communityData?.xp) return 1;
+    return Math.floor(this.communityData.xp / 300) + 1;
+  }
+
+  get communityProgress(): number {
+    if (!this.communityData?.xp) return 0;
+    return (this.communityData.xp % 300) / 3 * 1; // Simplificando para que sea un %
+  }
+
+  get nextLevelXp(): number {
+    return 300 - (this.communityData?.xp % 300 || 0);
+  }
+
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {

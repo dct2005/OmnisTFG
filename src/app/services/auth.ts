@@ -223,6 +223,23 @@ export class AuthService {
     );
   }
 
+  updateProfileMusic(base64Music: string): Observable<any> {
+    const user = this.currentUser();
+    if (!user?.email) throw new Error('Usuario no autenticado');
+
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'update-profile-music',
+      email: user.email,
+      profileMusic: base64Music
+    }, this.getAuthHeaders()).pipe(
+      tap((res: any) => {
+        if (res.user) {
+          this.currentUser.set(res.user);
+        }
+      })
+    );
+  }
+
   getUserComments(userId: number | string, limit: number = 5, offset: number = 0): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/user`, {
       params: {

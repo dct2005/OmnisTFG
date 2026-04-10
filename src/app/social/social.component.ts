@@ -5,13 +5,14 @@ import { SocialService, SocialRankings, RankedUser } from '../services/social.se
 import { AuthService } from '../services/auth';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { QuestWidgetComponent } from '../shared/quest-widget.component';
 
 declare var Swal: any;
 
 @Component({
   selector: 'app-social',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, QuestWidgetComponent],
   templateUrl: './social.component.html',
   styleUrls: ['./social.component.css']
 })

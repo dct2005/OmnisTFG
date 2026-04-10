@@ -23,7 +23,7 @@
         </div>
         <div class="game-summary" [class.expanded]="isDescriptionExpanded">
           <p class="summary-text">{{ truncatedSummary }}</p>
-          @if ((game?.summary?.length || 0) > 840) {
+          @if ((game.summary?.length || 0) > 840) {
           <button class="btn-read-more" (click)="toggleDescription()">
             {{ isDescriptionExpanded ? 'Ver menos' : 'Ver más' }}
           </button>
@@ -89,7 +89,6 @@
       <div class="reviews-section">
         <h2 class="section-title">OPINIONES DE LOS USUARIOS</h2>
 
-        <!-- Review Form -->
         @if (currentUser()) {
           @if (isOwned) {
             <div class="review-form">
@@ -111,7 +110,6 @@
         </div>
         }
 
-        <!-- Reviews List -->
         <div class="reviews-list">
           @for (review of gameReviews(); track review.id) {
           <div class="review-card">

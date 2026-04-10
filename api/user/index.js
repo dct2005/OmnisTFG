@@ -4,6 +4,14 @@ const jwt = require('jsonwebtoken');
 
 const SECRET_KEY = 'mi_secreto_temporal';
 
+module.exports.config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '4mb' // Must be under 4.5MB for Vercel edge limits
+        }
+    }
+};
+
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -212,6 +220,88 @@ module.exports = async function handler(req, res) {
                 await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_activity TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP`;
                 await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS current_activity TEXT DEFAULT 'Explorando Omnis'`;
                 return res.status(200).json({ message: 'Migración completada' });
+            }
+
+            if (action === 'migrate-gamification') {
+                // 1. Tablas de Misiones
+                await sql`
+                    CREATE TABLE IF NOT EXISTS daily_quests (
+                        id SERIAL PRIMARY KEY,
+                        title TEXT NOT NULL,
+                        type TEXT NOT NULL, -- 'join_community', 'send_message', 'add_friend'
+                        requirement_value INTEGER DEFAULT 1,
+                        xp_reward INTEGER DEFAULT 100,
+                        points_reward INTEGER DEFAULT 50
+                    )
+                `;
+                await sql`
+                    CREATE TABLE IF NOT EXISTS user_quests (
+                        id SERIAL PRIMARY KEY,
+                        user_id INTEGER REFERENCES users(id),
+                        quest_id INTEGER REFERENCES daily_quests(id),
+                        current_value INTEGER DEFAULT 0,
+                        is_completed BOOLEAN DEFAULT FALSE,
+                        last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                        UNIQUE(user_id, quest_id)
+                    )
+                `;
+
+                // 2. XP y Nivel en Comunidades
+                await sql`ALTER TABLE communities ADD COLUMN IF NOT EXISTS xp INTEGER DEFAULT 0`;
+                await sql`ALTER TABLE communities ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1`;
+
+                // 3. Música en el Perfil
+                await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_music_url TEXT DEFAULT NULL`;
+
+                // 4. Insertar Misiones Iniciales si no existen
+                await sql`ALTER TABLE daily_quests ADD COLUMN IF NOT EXISTS description TEXT`;
+                await sql`ALTER TABLE daily_quests ADD COLUMN IF NOT EXISTS icon VARCHAR(50)`;
+
+                await sql`
+                    INSERT INTO daily_quests (title, type, requirement_value, xp_reward, points_reward, description, icon)
+                    VALUES 
+                        ('Explorador Social', 'join_community', 1, 150, 50, 'Interactúa con otros usuarios uniéndote a un nuevo grupo de la comunidad.', 'groups'),
+                        ('Mensajero Veloz', 'send_message', 1, 100, 30, 'Comparte tus pensamientos y mantén viva la conversación en cualquier comunidad.', 'chat')
+                    ON CONFLICT DO NOTHING
+                `;
+
+                // Actualizar las existentes por si acaso
+                await sql`UPDATE daily_quests SET description = 'Interactúa con otros usuarios uniéndote a un nuevo grupo de la comunidad.', icon = 'groups' WHERE type = 'join_community'`;
+                await sql`UPDATE daily_quests SET description = 'Comparte tus pensamientos y mantén viva la conversación en cualquier comunidad.', icon = 'chat' WHERE type = 'send_message'`;
+
+                return res.status(200).json({ message: 'Migración de gamificación completada' });
+            }
+
+            if (action === 'get-daily-quests') {
+                const { userId } = req.query;
+                if (!userId) return res.status(400).json({ error: 'Falta userId' });
+
+                // Asegurar schema por si no se corrió la migración manual
+                await sql`ALTER TABLE daily_quests ADD COLUMN IF NOT EXISTS description TEXT`;
+                await sql`ALTER TABLE daily_quests ADD COLUMN IF NOT EXISTS icon VARCHAR(50)`;
+
+                // Actualizar misiones base si no tienen descripción (solo una vez)
+                await sql`UPDATE daily_quests SET description = 'Interactúa con otros usuarios uniéndote a un nuevo grupo de la comunidad.', icon = 'groups' WHERE type = 'join_community' AND description IS NULL`;
+                await sql`UPDATE daily_quests SET description = 'Comparte tus pensamientos y mantén viva la conversación en cualquier comunidad.', icon = 'chat' WHERE type = 'send_message' AND description IS NULL`;
+
+                // Sincronizar misiones (asegurar que el usuario tenga registros en user_quests para hoy)
+                await sql`
+                    INSERT INTO user_quests (user_id, quest_id)
+                    SELECT ${userId}, id FROM daily_quests
+                    ON CONFLICT (user_id, quest_id) DO NOTHING
+                `;
+
+                const quests = await sql`
+                    SELECT 
+                        dq.id, dq.title, dq.type, dq.requirement_value, dq.xp_reward, dq.points_reward,
+                        dq.description, dq.icon,
+                        uq.current_value, uq.is_completed
+                    FROM daily_quests dq
+                    JOIN user_quests uq ON dq.id = uq.quest_id
+                    WHERE uq.user_id = ${userId}
+                `;
+
+                return res.status(200).json(quests);
             }
 
             if (action === 'migrate-support') {
@@ -687,7 +777,36 @@ module.exports = async function handler(req, res) {
         }
 
         if (req.method === 'POST') {
-            const { action, email, password, name, username, estado } = req.body;
+            const action = req.body?.action || req.query?.action;
+            const { email, password, name, username, estado } = req.body;
+
+            if (action === 'claim-quest-reward') {
+                const { userId, questId } = req.body;
+                if (!userId || !questId) return res.status(400).json({ error: 'Faltan datos' });
+
+                const questStatus = await sql`
+                    SELECT uq.*, dq.xp_reward, dq.points_reward, dq.requirement_value
+                    FROM user_quests uq
+                    JOIN daily_quests dq ON uq.quest_id = dq.id
+                    WHERE uq.user_id = ${userId} AND uq.quest_id = ${questId}
+                `;
+
+                if (questStatus.length === 0) return res.status(404).json({ error: 'Misión no encontrada' });
+                const quest = questStatus[0];
+
+                if (quest.is_completed) return res.status(400).json({ error: 'Misión ya reclamada' });
+                if (quest.current_value < quest.requirement_value) return res.status(400).json({ error: 'Misión no completada' });
+
+                // Marcar como completada y dar recompensas
+                await sql`UPDATE user_quests SET is_completed = TRUE WHERE id = ${quest.id}`;
+                await sql`UPDATE users SET xp = xp + ${quest.xp_reward} WHERE id = ${userId}`;
+                
+                return res.status(200).json({ 
+                    message: 'Recompensa reclamada con éxito',
+                    xp_reward: quest.xp_reward,
+                    points_reward: quest.points_reward
+                });
+            }
 
             if (action === 'add-profile-comment') {
                 const { profile_user_id, author_user_id, content } = req.body;
@@ -1034,6 +1153,30 @@ module.exports = async function handler(req, res) {
                 });
             }
 
+            if (action === 'update-profile-music') {
+                const { profileMusic } = req.body;
+                if (!email || profileMusic === undefined) return res.status(400).json({ error: 'Faltan datos' });
+
+                const decoded = await verifyToken(req);
+                if (!decoded || decoded.email !== email) {
+                    return res.status(403).json({ error: 'No autorizado para cambiar el audio' });
+                }
+
+                const updated = await sql`
+                    UPDATE users 
+                    SET profile_music_url = ${profileMusic} 
+                    WHERE email = ${email} 
+                    RETURNING id, username, email, peppix, xp, estado, profile_music_url
+                `;
+
+                if (updated.length === 0) return res.status(404).json({ error: 'User no encontrado' });
+
+                return res.status(200).json({
+                    message: 'Música actualizada con éxito',
+                    user: updated[0]
+                });
+            }
+
             if (action === 'update-location') {
                 const { location } = req.body;
                 if (!email || !location) return res.status(400).json({ error: 'Faltan datos' });
@@ -1128,7 +1271,8 @@ module.exports = async function handler(req, res) {
                     display_comments_type,
                     profile_theme_color,
                     profile_bg_color,
-                    profile_name_color
+                    profile_name_color,
+                    profile_music_url
                 } = req.body;
 
                 if (!email) return res.status(400).json({ error: 'Falta email' });
@@ -1152,7 +1296,8 @@ module.exports = async function handler(req, res) {
                         display_comments_type = ${display_comments_type || 'community'},
                         profile_theme_color = ${profile_theme_color || '#00f2ff'},
                         profile_bg_color = ${profile_bg_color || '#00f2ff'},
-                        profile_name_color = ${profile_name_color || '#ffffff'}
+                        profile_name_color = ${profile_name_color || '#ffffff'},
+                        profile_music_url = ${profile_music_url}
                     WHERE email = ${email}
                     RETURNING *
                 `;

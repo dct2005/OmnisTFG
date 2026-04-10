@@ -36,6 +36,22 @@
   letter-spacing: 1px;
 }
 
+/* Layout */
+.social-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 3rem;
+  align-items: start;
+}
+
+.social-sidebar {
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 /* Rankings Grid */
 .rankings-grid {
   display: grid;
@@ -265,6 +281,13 @@
 }
 
 /* Responsiveness */
+@media (max-width: 1280px) {
+  .social-main-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
 @media (max-width: 768px) {
   .title { font-size: 2.5rem; }
   .rankings-grid { grid-template-columns: 1fr; }

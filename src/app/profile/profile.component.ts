@@ -7,12 +7,13 @@ import { GameService, Game } from '../services/game.service';
 import { CommunityService } from '../services/community.service';
 import { SocialService } from '../services/social.service';
 import { FormsModule } from '@angular/forms';
+import { MusicHudComponent } from '../shared/music-hud.component';
 declare var Swal: any;
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, MusicHudComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
@@ -99,7 +100,8 @@ export class ProfileComponent implements OnDestroy {
     display_comments_type: 'community',
     profile_theme_color: '#00f2ff',
     profile_bg_color: '#00f2ff',
-    profile_name_color: '#ffffff'
+    profile_name_color: '#ffffff',
+    profile_music_url: ''
   });
   
   currentTime = signal(Date.now());
@@ -828,7 +830,6 @@ export class ProfileComponent implements OnDestroy {
       this.authService.updateProfileImage(base64Image).subscribe({
         next: (res) => {
           console.log('Imagen actualizada');
-          // El signal ya se actualiza en el service via tap
         },
         error: (err) => console.error('Error subiendo imagen:', err)
       });
@@ -848,6 +849,71 @@ export class ProfileComponent implements OnDestroy {
           console.log('Fondo actualizado');
         },
         error: (err) => console.error('Error subiendo fondo:', err)
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onMusicSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (file.size > 3 * 1024 * 1024) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Archivo muy grande',
+        text: 'Por restricciones del servidor (Vercel), la canción no puede superar los 3MB.',
+        background: '#0d1b2a',
+        color: '#ffffff',
+        confirmButtonColor: '#00f2ff'
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64Music = reader.result as string;
+      
+      Swal.fire({
+        title: 'Subiendo música...',
+        text: 'Esto puede tardar unos segundos dependiendo del tamaño.',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+      });
+
+      this.authService.updateProfileMusic(base64Music).subscribe({
+        next: (res) => {
+          Swal.close();
+          console.log('Música actualizada');
+          
+          if (this.isOwnProfile() && res.user) {
+            this.viewedUser.set({ ...this.viewedUser(), ...res.user });
+          }
+          this.editForm.update(form => ({ ...form, profile_music_url: base64Music }));
+          
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: '¡Música actualizada!',
+            showConfirmButton: false,
+            timer: 3000,
+            background: '#0d1b2a',
+            color: '#fff'
+          });
+        },
+        error: (err) => {
+          Swal.close();
+          console.error('Error subiendo música:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al subir',
+            text: 'No se pudo guardar la canción. Es posible que el archivo sea demasiado grande para el servidor.',
+            background: '#0d1b2a',
+            color: '#ffffff',
+            confirmButtonColor: '#00f2ff'
+          });
+        }
       });
     };
     reader.readAsDataURL(file);
@@ -882,14 +948,13 @@ export class ProfileComponent implements OnDestroy {
         display_comments_type: user.display_comments_type || 'community',
         profile_theme_color: user.profile_theme_color || '#00f2ff',
         profile_bg_color: user.profile_bg_color || '#00f2ff',
-        profile_name_color: user.profile_name_color || '#ffffff'
+        profile_name_color: user.profile_name_color || '#ffffff',
+        profile_music_url: user.profile_music_url || ''
       });
 
-      // Cargar juegos y comunidades para los selectores
       this.authService.getUserGames().subscribe({
         next: (res: any) => {
           this.userGames.set(res.games || []);
-          // También necesitamos obtener los detalles de los juegos para mostrar los nombres
           this.loadGameDetailsForSelect(res.games || []);
         }
       });
