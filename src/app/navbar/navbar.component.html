@@ -30,6 +30,51 @@
             <span class="material-icons-round">chat_bubble</span>
         </div>
 
+        <!-- Notificaciones -->
+        <div class="notifications-container" [class.active]="isNotificationsOpen()">
+            <div class="notifications-icon" (click)="toggleNotifications()" title="Notificaciones">
+                <span class="material-icons-round">notifications</span>
+                @if (unreadCount > 0) {
+                <span class="notification-badge">{{ unreadCount }}</span>
+                }
+            </div>
+
+            @if (isNotificationsOpen()) {
+            <div class="notifications-dropdown" (click)="$event.stopPropagation()">
+                <div class="notifications-header">
+                    <h3>Notificaciones</h3>
+                </div>
+                <div class="notifications-list">
+                    @if (notifications.length === 0) {
+                    <div class="no-notifications">
+                        <span class="material-icons-round">notifications_none</span>
+                        <p>No tienes notificaciones</p>
+                    </div>
+                    } @else {
+                    @for (note of notifications; track note.id) {
+                    <div class="notification-item" [class.unread]="!note.is_read"
+                        (click)="handleNotificationClick(note)">
+                        <div class="note-icon">
+                            <span class="material-icons-round">
+                                {{ 
+                                    note.type === 'friend_request' ? 'person_add' : 
+                                    note.type === 'message' ? 'chat' : 'comment' 
+                                }}
+                            </span>
+                        </div>
+                        <div class="note-content">
+                            <p class="note-title">{{ note.title }}</p>
+                            <p class="note-message">{{ note.message }}</p>
+                            <span class="note-time">{{ note.created_at | date:'shortTime' }}</span>
+                        </div>
+                    </div>
+                    }
+                    }
+                </div>
+            </div>
+            }
+        </div>
+
         <div class="user-profile-btn" [ngClass]="userEstado" (click)="toggleDropdown()" title="Perfil">
             <div class="user-avatar-wrapper">
                 <img [src]="authService.currentUser()?.profile_image || 'https://ui-avatars.com/api/?name=' + usernameValue() + '&background=0d1b2a&color=fff'"

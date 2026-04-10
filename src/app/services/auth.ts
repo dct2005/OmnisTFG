@@ -145,14 +145,17 @@ export class AuthService {
     const userId = user?.id;
 
     if (userEmail) {
-      this.http.get(`${this.apiUrl}/user?email=${userEmail}&action=get`)
+      this.http.get(`${this.apiUrl}/user?email=${userEmail}&action=get`, this.getAuthHeaders())
         .subscribe({
           next: (res: any) => {
             // VERIFICACIÓN CRÍTICA: Solo actualizar si el usuario actual sigue siendo el mismo
             // para evitar que peticiones "viejas" en vuelo sobreescriban una nueva sesión o un logout
             const currentUser = this.currentUser();
             if (res.user && currentUser && currentUser.id === res.user.id) {
-              this.currentUser.set(res.user);
+              this.currentUser.set({
+                ...res.user,
+                unreadNotifications: res.unreadNotifications || []
+              });
             }
           },
           error: (err) => console.error('Error sincronizando datos:', err)
@@ -162,6 +165,10 @@ export class AuthService {
 
   getUserByUsername(username: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/user?username=${username}&action=get`);
+  }
+
+  getUserStatus(username: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/user?username=${username}&action=get-status`);
   }
 
   getUserById(id: number | string): Observable<any> {
@@ -568,5 +575,24 @@ export class AuthService {
       userId,
       amount
     }, this.getAuthHeaders());
+  }
+  updateActivity(activity: string) {
+    const user = this.currentUser();
+    if (user?.email) {
+      this.http.post(`${this.apiUrl}/user`, {
+        action: 'update-activity',
+        email: user.email,
+        activity: activity
+      }).subscribe();
+    }
+  }
+
+  markNotificationsAsRead(): Observable<any> {
+    const user = this.currentUser();
+    if (!user?.id) throw new Error('Usuario no autenticado');
+    return this.http.post(`${this.apiUrl}/user`, {
+      action: 'mark-notifications-read',
+      userId: user.id
+    });
   }
 }

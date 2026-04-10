@@ -38,11 +38,18 @@ module.exports = async function handler(req, res) {
         }
 
         async function getUserWithBadges(user) {
-            // 1. Insignias clásicas (Hardcoded based on games)
             const gamesCountQuery = await sql`SELECT COUNT(*) as count FROM user_games WHERE user_id = ${user.id}`;
             const gamesCount = parseInt(gamesCountQuery[0].count, 10);
 
-            const hardcodedBadges = [];
+            // 1.2 Loyalty Badges (Time based)
+            const accountAgeInDays = Math.floor((new Date() - new Date(user.created_at)) / (1000 * 60 * 60 * 24));
+            const loyaltyBadges = [];
+            if (accountAgeInDays >= 7) loyaltyBadges.push({ id: 'loyalty_7d', name: 'Omnis: Iniciación al Tiempo', icon: '/images/badges/loyalty_7d.png', description: 'conseguida al entrar 7 días a la página' });
+            if (accountAgeInDays >= 30) loyaltyBadges.push({ id: 'loyalty_30d', name: 'Omnis: Custodia Mensual', icon: '/images/badges/loyalty_30d.png', description: 'conseguida al entrar 30 días a la página' });
+            if (accountAgeInDays >= 365) loyaltyBadges.push({ id: 'loyalty_1y', name: 'Omnis: Forja Anual', icon: '/images/badges/loyalty_1y.png', description: 'conseguida al entrar 365 días a la página' });
+            if (accountAgeInDays >= 1095) loyaltyBadges.push({ id: 'loyalty_3y', name: 'Omnis: Maestría Cósmica', icon: '/images/badges/loyalty_3y.png', description: 'conseguida al entrar 1000+ días a la página' });
+
+            const hardcodedBadges = [...loyaltyBadges];
             if (gamesCount >= 1) hardcodedBadges.push({ id: 101, name: 'Novato de Élite', icon: '/images/ins_nonecesito.png', description: 'Compraste 1 juego.' });
             if (gamesCount >= 3) hardcodedBadges.push({ id: 102, name: 'Borracho de Época', icon: '/images/ins_borracho.png', description: 'Compraste 3 juegos.' });
             if (gamesCount >= 5) hardcodedBadges.push({ id: 103, name: 'Cuñao Honorario', icon: '/images/ins_cunado.png', description: 'Compraste 5 juegos.' });
@@ -180,6 +187,14 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json(richUser);
             }
 
+            if (action === 'get-status') {
+                const { username } = req.query;
+                if (!username) return res.status(400).json({ error: 'Falta username' });
+                const users = await sql`SELECT id, username, estado, current_activity, last_activity FROM users WHERE username = ${username}`;
+                if (users.length === 0) return res.status(404).json({ error: 'No encontrado' });
+                return res.status(200).json(users[0]);
+            }
+
             if (action === 'migrate-comments') {
                 await sql`
                     CREATE TABLE IF NOT EXISTS profile_comments (
@@ -195,6 +210,7 @@ module.exports = async function handler(req, res) {
                 await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_bg_color TEXT DEFAULT '#00f2ff'`;
                 await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_name_color TEXT DEFAULT '#ffffff'`;
                 await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_activity TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP`;
+                await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS current_activity TEXT DEFAULT 'Explorando Omnis'`;
                 return res.status(200).json({ message: 'Migración completada' });
             }
 
@@ -325,7 +341,7 @@ module.exports = async function handler(req, res) {
                 if (!query) return res.status(200).json([]);
 
                 const users = await sql`
-                    SELECT id, username, profile_image, xp, estado 
+                    SELECT id, username, profile_image, xp, estado, current_activity 
                     FROM users 
                     WHERE username ILIKE ${'%' + query + '%'}
                     ORDER BY username ASC
@@ -341,7 +357,7 @@ module.exports = async function handler(req, res) {
 
                 const friends = await sql`
                     SELECT 
-                        u.id, u.username, u.profile_image, u.estado,
+                        u.id, u.username, u.profile_image, u.estado, u.current_activity,
                         f.status, f.sender_id, f.id as friendship_id
                     FROM friendships f
                     JOIN users u ON (u.id = f.sender_id OR u.id = f.receiver_id)
@@ -349,6 +365,19 @@ module.exports = async function handler(req, res) {
                     AND u.id != ${userId}
                 `;
                 return res.status(200).json(friends);
+            }
+
+            if (action === 'get-notifications') {
+                const { userId } = req.query;
+                if (!userId) return res.status(400).json({ error: 'Falta userId' });
+
+                const notifications = await sql`
+                    SELECT * FROM notifications 
+                    WHERE user_id = ${userId} 
+                    ORDER BY created_at DESC 
+                    LIMIT 20
+                `;
+                return res.status(200).json(notifications);
             }
 
             if (action === 'get-tickets') {
@@ -639,9 +668,21 @@ module.exports = async function handler(req, res) {
                 `;
             }
 
+            // Fetch unread notifications for logged in user (if applicable)
+            let unreadNotifications = [];
+            const decoded = await verifyToken(req);
+            if (decoded && decoded.email === user.email) {
+                unreadNotifications = await sql`
+                    SELECT * FROM notifications 
+                    WHERE user_id = ${user.id} AND is_read = FALSE 
+                    ORDER BY created_at DESC
+                `;
+            }
+
             return res.status(200).json({
                 user: fullUser,
-                initialComments
+                initialComments,
+                unreadNotifications
             });
         }
 
@@ -660,6 +701,18 @@ module.exports = async function handler(req, res) {
 
                 // Return with author info
                 const commenter = await sql`SELECT username as author_name, profile_image as author_image FROM users WHERE id = ${author_user_id}`;
+                
+                // Add notification for the profile owner
+                if (profile_user_id !== author_user_id) {
+                    const profileOwner = await sql`SELECT username FROM users WHERE id = ${profile_user_id}`;
+                    const profileOwnerName = profileOwner[0]?.username || '';
+                    
+                    await sql`
+                        INSERT INTO notifications (user_id, type, title, message, link)
+                        VALUES (${profile_user_id}, 'profile_comment', 'Nuevo comentario', 'Tienes un nuevo comentario de ' || ${commenter[0].author_name}, '/perfil/' || ${profileOwnerName})
+                    `;
+                }
+
                 return res.status(201).json({
                     ...inserted[0],
                     author_name: commenter[0].author_name,
@@ -756,6 +809,19 @@ module.exports = async function handler(req, res) {
                 if (updated.length === 0) return res.status(404).json({ error: 'Reporte no encontrado' });
 
                 return res.status(200).json({ message: 'Estado del reporte actualizado', report: updated[0] });
+            }
+
+            if (action === 'update-activity') {
+                const { email, activity } = req.body;
+                if (!email) return res.status(400).json({ error: 'Falta email' });
+
+                await sql`
+                    UPDATE users 
+                    SET current_activity = ${activity}, 
+                        last_activity = CURRENT_TIMESTAMP 
+                    WHERE email = ${email}
+                `;
+                return res.status(200).json({ success: true });
             }
 
             if (action === 'refund-game') {
@@ -1263,13 +1329,17 @@ module.exports = async function handler(req, res) {
                 return res.status(200).json({ message: 'Amistad/Solicitud eliminada' });
             }
 
-            return res.status(200).json({ message: 'Amistad/Solicitud eliminada' });
+            if (action === 'mark-notifications-read') {
+                const { userId } = req.body;
+                if (!userId) return res.status(400).json({ error: 'Falta userId' });
+                await sql`UPDATE notifications SET is_read = TRUE WHERE user_id = ${userId}`;
+                return res.status(200).json({ success: true });
+            }
+
+            return res.status(400).json({ error: 'Acción inválida' });
         }
-
-        return res.status(400).json({ error: 'Acción no válida' });
-
-    } catch (err) {
-        console.error('Error in user API:', err);
-        return res.status(500).json({ error: 'Error del servidor', details: err.message });
+    } catch (error) {
+        console.error('[API User Error]', error);
+        return res.status(500).json({ error: 'Error del servidor', details: error.message });
     }
 };

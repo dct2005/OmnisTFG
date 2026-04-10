@@ -28,4 +28,33 @@ export class ChatService {
   getUnreadMessages(userId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}?action=get-unread-messages&userId=${userId}`);
   }
+
+  setTypingStatus(userId: number, otherId: number, isTyping: boolean): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}?action=set-typing`, { userId, otherId, isTyping });
+  }
+
+  getTypingStatus(userId: number, otherId: number): Observable<{isTyping: boolean}> {
+    return this.http.get<{isTyping: boolean}>(`${this.apiUrl}?action=get-typing&userId=${userId}&otherId=${otherId}`);
+  }
+
+  // --- MÉTODOS DE GRUPOS ---
+  getGroups(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}?action=get-groups&userId=${userId}`);
+  }
+
+  getGroupChat(groupId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}?action=get-group-chat&groupId=${groupId}`);
+  }
+
+  getGroupMembers(groupId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}?action=get-group-members&groupId=${groupId}`);
+  }
+
+  createGroup(name: string, creatorId: number, memberIds: number[]): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}?action=create-group`, { name, creatorId, memberIds });
+  }
+
+  sendGroupMessage(groupId: number, senderId: number, content: string, imageUrl?: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}?action=send-group-message`, { groupId, senderId, content, imageUrl });
+  }
 }

@@ -135,7 +135,8 @@ export class SocialComponent implements OnInit, OnDestroy {
           </div>
           <div style="flex-grow: 1; text-align: left;">
             <div style="color: #fff; font-weight: 600;">${u.username}</div>
-            <div style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">${u.count} ${suffix}</div>
+            <div style="color: rgba(0, 242, 255, 0.8); font-size: 0.75rem; font-style: italic;">${u.current_activity || ''}</div>
+            <div style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 2px;">${u.count} ${suffix}</div>
           </div>
           ${isTop3 ? `<span class="material-icons-round" style="color: ${color};">workspace_premium</span>` : ''}
         </div>

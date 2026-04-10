@@ -7,6 +7,7 @@ export interface RankedUser {
   username: string;
   profile_image: string;
   estado: string;
+  current_activity?: string;
   count: number;
 }
 

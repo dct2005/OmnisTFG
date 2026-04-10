@@ -14,7 +14,8 @@
         <div class="active-pet-wrapper" *ngIf="activePet()" [title]="activePet().name"
              [class.pet-dragon]="activePet().name.includes('Dragón')"
              [class.pet-ghost]="activePet().name.includes('Fantasmitu')"
-             [class.pet-wizard]="activePet().name.includes('Mago')">
+             [class.pet-wizard]="activePet().name.includes('Mago')"
+             [class.pet-witch]="activePet().name.includes('Bruja')">
           <img [src]="activePet().icon_url.replace('.png', '_v2.png') + '?v=' + cacheBuster" class="active-pet-sprite">
         </div>
         <div class="avatar-overlay" *ngIf="isOwnProfile()">
@@ -31,10 +32,15 @@
           <img *ngIf="user?.country" [src]="'https://flagcdn.com/w40/' + user?.country?.toLowerCase() + '.png'"
             class="country-flag-title" [title]="user?.country">
           <span class="user-location-inline" *ngIf="user?.city || user?.state || user?.country">
-            {{ user?.city }}{{ user?.city && (user?.state || user?.country) ? ', ' : '' }}
-            {{ user?.state }}{{ user?.state && user?.country ? ', ' : '' }}
-            {{ user?.country }}
           </span>
+        </div>
+        <!-- Insignias de Lealtad -->
+        <div class="loyalty-badges-row" *ngIf="viewedUser()?.badges?.length > 0">
+            @for (badge of viewedUser().badges; track badge.id) {
+                <div class="premium-tooltip-container" [attr.data-tooltip]="badge.description">
+                    <div class="loyalty-badge-item" [class]="badge.id"></div>
+                </div>
+            }
         </div>
       </div>
 
@@ -73,6 +79,34 @@
         <span class="status-text">{{ user?.status_message }}</span>
         <span class="status-quote-icon">”</span>
       </div>
+
+      <!-- Premium HUD Activity Indicator -->
+      <div class="activity-hud-card" *ngIf="viewedUser()?.current_activity">
+        <div class="hud-glitch-overlay"></div>
+        <div class="hud-left-accent"></div>
+        <div class="hud-main-content">
+          <div class="hud-top-bar">
+            <div class="hud-live-indicator">
+              <span class="pulse-dot"></span>
+              <span class="live-text">EN VIVO</span>
+            </div>
+            <div class="hud-tag">SISTEMA OMNIS v2.4</div>
+          </div>
+          <div class="hud-middle-section">
+            <div class="hud-icon-container">
+              <span class="material-icons-round hud-icon">sensors</span>
+            </div>
+            <div class="hud-activity-text">
+              <span class="hud-label">RASTREO DE ACTIVIDAD</span>
+              <span class="hud-value">{{ viewedUser().current_activity }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="hud-decorations">
+          <div class="hud-corner top-right"></div>
+          <div class="hud-corner bottom-right"></div>
+        </div>
+      </div>
     </div>
     <div class="level-section">
       <div class="level-circle" [ngClass]="'tier-' + levelTier()">
@@ -102,7 +136,7 @@
           <div class="award-slot" *ngFor="let award of pinnedAwards()" [ngClass]="award.rarity" [title]="award.description"
             (click)="showAwardDetail(award)" style="cursor: pointer;">
             <div class="award-icon-wrapper">
-              <img [src]="award.icon_url.includes('pet_') ? award.icon_url.replace('.png', '_v2.png') + '?v=' + cacheBuster : award.icon_url" [alt]="award.name" class="award-icon">
+              <img [src]="(award.icon_url.includes('pet_') && !award.icon_url.includes('witch')) ? award.icon_url.replace('.png', '_v2.png') + '?v=' + cacheBuster : award.icon_url" [alt]="award.name" class="award-icon">
               <div class="rarity-glow"></div>
             </div>
             <span class="award-name-mini">{{ award.name }}</span>

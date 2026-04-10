@@ -104,6 +104,7 @@ export class ProfileComponent implements OnDestroy {
   
   currentTime = signal(Date.now());
   private refreshInterval: any;
+  private statusInterval: any;
 
   commentInput = signal('');
   commentsOffset = signal(0);
@@ -186,7 +187,6 @@ export class ProfileComponent implements OnDestroy {
         if (current) {
           username = current.username;
         } else {
-          // Si no hay usuario logueado y es 'me', redirigir a login o similar
           return;
         }
       }
@@ -221,10 +221,31 @@ export class ProfileComponent implements OnDestroy {
           this.comments.set(res.initialComments || []);
           this.commentsOffset.set(res.initialComments?.length || 0);
           this.hasMoreComments.set((res.initialComments?.length || 0) === 5);
+          
+          this.startStatusPolling(username);
         }
       },
       error: (err) => console.error('Error loading profile:', err)
     });
+  }
+
+  startStatusPolling(username: string) {
+    if (this.statusInterval) clearInterval(this.statusInterval);
+    this.statusInterval = setInterval(() => {
+      this.authService.getUserStatus(username).subscribe({
+        next: (status: any) => {
+          const current = this.viewedUser();
+          if (status && status.username === username) {
+            this.viewedUser.set({
+              ...current,
+              estado: status.estado,
+              current_activity: status.current_activity,
+              last_activity: status.last_activity
+            });
+          }
+        }
+      });
+    }, 5000);
   }
 
   checkFriendshipStatus(targetUser: any) {
@@ -288,11 +309,8 @@ export class ProfileComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    // Limpiar el timer para evitar memory leaks
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
-    }
-    // Cuando salimos del perfil, restauramos el fondo por defecto de la aplicación
+    if (this.refreshInterval) clearInterval(this.refreshInterval);
+    if (this.statusInterval) clearInterval(this.statusInterval);
     this.renderer.setStyle(document.body, 'background-image', "url('/images/background.webp')");
   }
 
@@ -458,16 +476,19 @@ export class ProfileComponent implements OnDestroy {
 
   showBadgeDetail(badge: any) {
     Swal.fire({
-      title: badge.name,
-      text: badge.description,
-      imageUrl: badge.icon,
-      imageWidth: 150,
-      imageHeight: 150,
-      imageAlt: badge.name,
+      title: `<span style="color: #00f2ff; letter-spacing: 1px;">${badge.name}</span>`,
+      html: `
+        <div style="text-align: center; padding: 10px; display: flex; flex-direction: column; align-items: center;">
+          <div style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; background-image: url('${badge.icon}'); background-size: 160%; background-position: center; background-repeat: no-repeat; margin-bottom: 20px; filter: drop-shadow(0 0 25px rgba(0,242,255,0.4)); clip-path: circle(35%);"></div>
+          <p style="color: #cbd5e0; font-size: 1.1rem; line-height: 1.6; font-weight: 500;">${badge.description}</p>
+        </div>
+      `,
       background: '#0d1b2a',
       color: '#ffffff',
+      showConfirmButton: true,
+      confirmButtonText: 'Genial',
       confirmButtonColor: '#00f2ff',
-      confirmButtonText: 'Genial'
+      showCloseButton: true
     });
   }
 
@@ -1012,11 +1033,13 @@ export class ProfileComponent implements OnDestroy {
         contentHtml = `
           <div class="awards-gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; max-height: 400px; overflow-y: auto; padding: 10px;">
             ${ownedAwards.map(award => `
-              <div class="award-gallery-item owned" style="text-align: center; padding: 15px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,242,255,0.4); position: relative;">
-                <img src="${award.icon_url}" 
-                     onclick="window.showDetail(${award.id})"
-                     style="width: 70px; height: 70px; object-fit: contain; margin-bottom: 10px; cursor: pointer; filter: drop-shadow(0 0 10px rgba(0,242,255,0.3));" 
-                     title="Ver detalles">
+              <div class="award-gallery-item owned" style="text-align: center; padding: 15px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,242,255,0.4); position: relative; display: flex; flex-direction: column; align-items: center;">
+                <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; margin-bottom: 10px; cursor: pointer; filter: drop-shadow(0 0 10px rgba(0,242,255,0.3)); clip-path: circle(35%); display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.2);">
+                    <img src="${award.icon_url}" 
+                         onclick="window.showDetail(${award.id})"
+                         style="width: 150%; height: 150%; object-fit: contain;" 
+                         title="Ver detalles">
+                </div>
                 <div style="font-size: 0.8rem; font-weight: 700; color: #fff; margin-bottom: 5px;">${award.name}</div>
                 <button onclick="window.togglePin(${award.id})" style="width: 100%; padding: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; background: ${award.is_pinned ? '#f56565' : '#48bb78'}; color: white; border: none; border-radius: 6px;">
                   ${award.is_pinned ? 'Desanclar' : 'Anclar'}
@@ -1102,13 +1125,17 @@ export class ProfileComponent implements OnDestroy {
   }
 
   showAwardDetail(award: any) {
+    const isWitch = award.icon_url.includes('witch');
+    const zoom = isWitch ? '100%' : '160%';
+    const crop = isWitch ? '50%' : '35%';
+
     Swal.fire({
-      title: award.name,
+      title: `<span style="color: #00f2ff; letter-spacing: 1px;">${award.name}</span>`,
       html: `
-        <div style="text-align: center; padding: 10px;">
-          <img src="${award.icon_url}" style="width: 150px; height: 150px; object-fit: contain; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(0,242,255,0.4));">
+        <div style="text-align: center; padding: 10px; display: flex; flex-direction: column; align-items: center;">
+          <div style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; background-image: url('${award.icon_url}'); background-size: ${zoom}; background-position: center; background-repeat: no-repeat; margin-bottom: 20px; filter: drop-shadow(0 0 25px rgba(0,242,255,0.4)); clip-path: circle(${crop});"></div>
           <p style="color: #cbd5e0; font-size: 1rem; margin-bottom: 15px; line-height: 1.5;">${award.description}</p>
-          <div style="display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 800; background: rgba(0,242,255,0.1); color: #00f2ff; border: 1px solid rgba(0,242,255,0.3); text-transform: uppercase; letter-spacing: 1px;">
+          <div style="display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 800; background: rgba(0,242,255,0.1); color: #00f2ff; border: 1px solid rgba(0,242,255,0.3); text-transform: uppercase;">
             ${award.rarity}
           </div>
         </div>
