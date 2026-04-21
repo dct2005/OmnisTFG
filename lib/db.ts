@@ -1,9 +1,16 @@
 // lib/db.ts
-import { neon } from '@neondatabase/serverless';
+import postgres from 'postgres';
+
+let sql: any;
 
 export function getSql() {
-    if (!process.env.DATABASE_URL) {
-        throw new Error('Error: Falta la variable DATABASE_URL');
+    if (!sql) {
+        if (!process.env.DATABASE_URL) {
+            throw new Error('Error: Falta la variable DATABASE_URL');
+        }
+        sql = postgres(process.env.DATABASE_URL, {
+            ssl: 'require'
+        });
     }
-    return neon(process.env.DATABASE_URL);
+    return sql;
 }

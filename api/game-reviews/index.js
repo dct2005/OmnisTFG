@@ -1,4 +1,4 @@
-const { neon } = require('@neondatabase/serverless');
+const postgres = require('postgres');
 
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -8,7 +8,7 @@ module.exports = async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        const sql = neon(process.env.DATABASE_URL);
+        const sql = postgres(process.env.DATABASE_URL, { ssl: 'require' });
 
         if (req.method === 'GET') {
             const { gameId, userId } = req.query;
