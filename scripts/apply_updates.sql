@@ -145,3 +145,8 @@ INSERT INTO user_pets (user_id, pet_id)
 SELECT u.id, p.id FROM users u, pets p
 WHERE u.email = 'test@alpargata.com'
 ON CONFLICT DO NOTHING;
+
+-- 11. Create Admin User
+INSERT INTO users (username, email, password, peppix, estado, role)
+VALUES ('admin', 'admin@omnis.com', '$2b$10$HUptpzlCdVRtThOojPuT5.6wY71VK/4AsbQZu/NEmWA53F9jPVig2', 0, 'en-linea', 'administrador')
+ON CONFLICT (email) DO NOTHING;

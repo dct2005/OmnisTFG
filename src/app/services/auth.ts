@@ -27,26 +27,33 @@ export class AuthService {
 
   private initializeFromToken() {
     const token = localStorage.getItem('token');
+    console.log('[Auth] initializeFromToken - token found:', !!token);
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
+        console.log('[Auth] initializeFromToken - payload:', payload);
         // Seteamos lo mínimo necesario para que fetchCurrentUser pueda funcionar
         this.currentUser.set({ email: payload.email, id: payload.id, role: payload.role });
         this.fetchCurrentUser(); // Sincronizamos con el servidor
       } catch (e) {
+        console.error('[Auth] Error parsing token:', e);
         localStorage.removeItem('token');
       }
     }
   }
 
   register(userData: any): Observable<any> {
+    console.log('[Auth] register - starting for:', userData.username);
     return this.http.post(`${this.apiUrl}/user`, { action: 'register', ...userData }).pipe(
       tap((res: any) => {
+        console.log('[Auth] register - response received:', !!res.token);
         if (res.token) {
           localStorage.setItem('token', res.token);
+          console.log('[Auth] register - token saved to localStorage');
         }
         if (res.user) {
           this.currentUser.set(res.user);
+          console.log('[Auth] register - currentUser signal updated:', res.user.id);
         }
       })
     );
@@ -595,16 +602,6 @@ export class AuthService {
       userId,
       amount
     }, this.getAuthHeaders());
-  }
-  updateActivity(activity: string) {
-    const user = this.currentUser();
-    if (user?.email) {
-      this.http.post(`${this.apiUrl}/user`, {
-        action: 'update-activity',
-        email: user.email,
-        activity: activity
-      }).subscribe();
-    }
   }
 
   markNotificationsAsRead(): Observable<any> {

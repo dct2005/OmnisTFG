@@ -30,17 +30,6 @@ module.exports = async function handler(req, res) {
     try {
         console.log(`[API User] ${req.method} request received. Action: ${req.body?.action || req.query?.action}`);
 
-        // Update last activity ONLY for actions performed by the current user
-        // Actions that identify the requester: log in, register, or any POST update
-        // We avoid updating last_activity on generic GET lookups for other users (like profile view)
-        const possibleEmail = req.body?.email || req.body?.username || (req.method === 'GET' && req.query?.action === 'get' ? req.query?.email : null);
-        const isAction = req.method === 'POST';
-        
-        if (possibleEmail && isAction || (req.method === 'GET' && req.query?.action === 'get' && req.query?.email)) {
-             const emailForUpdate = possibleEmail;
-             await sql`UPDATE users SET last_activity = CURRENT_TIMESTAMP WHERE email = ${emailForUpdate}`;
-        }
-
         async function verifyToken(req) {
             const authHeader = req.headers.authorization;
             if (!authHeader) return null;
@@ -935,19 +924,6 @@ module.exports = async function handler(req, res) {
                 if (updated.length === 0) return res.status(404).json({ error: 'Reporte no encontrado' });
 
                 return res.status(200).json({ message: 'Estado del reporte actualizado', report: updated[0] });
-            }
-
-            if (action === 'update-activity') {
-                const { email, activity } = req.body;
-                if (!email) return res.status(400).json({ error: 'Falta email' });
-
-                await sql`
-                    UPDATE users 
-                    SET current_activity = ${activity}, 
-                        last_activity = CURRENT_TIMESTAMP 
-                    WHERE email = ${email}
-                `;
-                return res.status(200).json({ success: true });
             }
 
             if (action === 'refund-game') {

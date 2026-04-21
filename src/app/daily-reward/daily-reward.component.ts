@@ -47,7 +47,8 @@ export class DailyRewardComponent implements OnInit {
         const extraDegrees = 3600; // 10 vueltas
         const prizeDegree = (prizeIndex * 45); 
         
-        this.rotation = extraDegrees + (360 - prizeDegree);
+        const randomOffset = 10 + Math.random() * 25; // 10-35 grados de margen (el segmento es de 45)
+        this.rotation = extraDegrees + (360 - prizeDegree) + randomOffset;
         
         setTimeout(() => {
           this.isSpinning = false;
