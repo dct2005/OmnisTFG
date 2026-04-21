@@ -1485,6 +1485,11 @@ module.exports = async function handler(req, res) {
         }
     } catch (error) {
         console.error('[API User Error]', error);
-        return res.status(500).json({ error: 'Error del servidor', details: error.message });
+        return res.status(500).json({ 
+            error: 'Error del servidor', 
+            message: error.message,
+            stack: error.stack,
+            env_check: !!process.env.DATABASE_URL 
+        });
     }
 };
