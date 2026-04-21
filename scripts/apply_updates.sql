@@ -65,32 +65,41 @@ CREATE TABLE IF NOT EXISTS games (
     rating_count INTEGER
 );
 
--- 7. Fix User Pets Table
+-- 7. Fix Pet System (Normalized)
 DROP TABLE IF EXISTS user_pets;
+DROP TABLE IF EXISTS pets;
+
+CREATE TABLE pets (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    award_id INTEGER REFERENCES awards(id),
+    icon_url TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE user_pets (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    pet_name TEXT,
-    rarity TEXT,
-    image_url TEXT,
+    pet_id INTEGER REFERENCES pets(id) ON DELETE CASCADE,
     is_active BOOLEAN DEFAULT FALSE,
-    unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, pet_id)
 );
 
--- 8. Unlock Pets for Test User
--- Modify 'javieer@gmail.com' if your test user has a different email
-INSERT INTO user_pets (user_id, pet_name, rarity, image_url)
-SELECT id, 'Fénix de Fuego', 'rare', '/assets/pets/fénix-de-fuego.png' FROM users WHERE email = 'test@alpargata.com'
-ON CONFLICT DO NOTHING;
+-- 8. Populate Real Pets
+INSERT INTO pets (name, icon_url) VALUES 
+('Dragón', '/images/pet_dragon.png'),
+('Fox', '/images/pet_fox_sprites.png'),
+('Pingüino', '/images/pet_penguin_sprites.png'),
+('Bot', '/images/pet_bot.png'),
+('Fantasma', '/images/pet_ghost_sprites.png'),
+('Bruja', '/images/pet_witch_sprites.png'),
+('Mago', '/images/pet_wizard_sprites.png'),
+('Hada', '/images/pet_fairy_sprites.png');
 
-INSERT INTO user_pets (user_id, pet_name, rarity, image_url)
-SELECT id, 'Dragón de Escarcha', 'rare', '/assets/pets/dragón-de-escarcha.png' FROM users WHERE email = 'test@alpargata.com'
-ON CONFLICT DO NOTHING;
-
-INSERT INTO user_pets (user_id, pet_name, rarity, image_url)
-SELECT id, 'Tigre de Trueno', 'rare', '/assets/pets/tigre-de-trueno.png' FROM users WHERE email = 'test@alpargata.com'
-ON CONFLICT DO NOTHING;
-
-INSERT INTO user_pets (user_id, pet_name, rarity, image_url)
-SELECT id, 'Gato Galáctico', 'rare', '/assets/pets/gato-galáctico.png' FROM users WHERE email = 'test@alpargata.com'
+-- 9. Unlock Pets for Test User
+-- Modify 'test@alpargata.com' if your test user has a different email
+INSERT INTO user_pets (user_id, pet_id)
+SELECT u.id, p.id FROM users u, pets p
+WHERE u.email = 'test@alpargata.com'
 ON CONFLICT DO NOTHING;

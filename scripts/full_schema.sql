@@ -174,18 +174,17 @@ CREATE TABLE IF NOT EXISTS pets (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     award_id INTEGER REFERENCES awards(id),
-    image_url TEXT,
+    icon_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS user_pets (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    pet_name TEXT,
-    rarity TEXT,
-    image_url TEXT,
+    pet_id INTEGER REFERENCES pets(id) ON DELETE CASCADE,
     is_active BOOLEAN DEFAULT FALSE,
-    unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, pet_id)
 );
 
 CREATE TABLE IF NOT EXISTS daily_quests (
