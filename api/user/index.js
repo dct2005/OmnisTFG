@@ -1,8 +1,6 @@
-const postgres = require('postgres');
+const { getSql } = require('../../lib/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
-const sql = postgres(process.env.DATABASE_URL, { ssl: 'require' });
 
 const SECRET_KEY = 'mi_secreto_temporal';
 
@@ -15,6 +13,14 @@ module.exports.config = {
 };
 
 module.exports = async function handler(req, res) {
+    let sql;
+    try {
+        sql = getSql();
+    } catch (err) {
+        console.error('DATABASE_URL is missing or connection failed');
+        return res.status(500).json({ error: 'Configuración de base de datos incorrecta' });
+    }
+
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
