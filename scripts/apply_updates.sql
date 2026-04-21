@@ -65,7 +65,32 @@ CREATE TABLE IF NOT EXISTS games (
     rating_count INTEGER
 );
 
--- 6. Corrections
--- typing_status syntax fix (only if needed)
--- DROP TABLE IF EXISTS typing_status;
--- CREATE TABLE typing_status (user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE, conversation_with INTEGER REFERENCES users(id) ON DELETE CASCADE, last_typed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP);
+-- 7. Fix User Pets Table
+DROP TABLE IF EXISTS user_pets;
+CREATE TABLE user_pets (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    pet_name TEXT,
+    rarity TEXT,
+    image_url TEXT,
+    is_active BOOLEAN DEFAULT FALSE,
+    unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 8. Unlock Pets for Test User
+-- Modify 'javieer@gmail.com' if your test user has a different email
+INSERT INTO user_pets (user_id, pet_name, rarity, image_url)
+SELECT id, 'Fénix de Fuego', 'rare', '/assets/pets/fénix-de-fuego.png' FROM users WHERE email = 'test@alpargata.com'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO user_pets (user_id, pet_name, rarity, image_url)
+SELECT id, 'Dragón de Escarcha', 'rare', '/assets/pets/dragón-de-escarcha.png' FROM users WHERE email = 'test@alpargata.com'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO user_pets (user_id, pet_name, rarity, image_url)
+SELECT id, 'Tigre de Trueno', 'rare', '/assets/pets/tigre-de-trueno.png' FROM users WHERE email = 'test@alpargata.com'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO user_pets (user_id, pet_name, rarity, image_url)
+SELECT id, 'Gato Galáctico', 'rare', '/assets/pets/gato-galáctico.png' FROM users WHERE email = 'test@alpargata.com'
+ON CONFLICT DO NOTHING;

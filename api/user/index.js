@@ -91,10 +91,9 @@ module.exports = async function handler(req, res) {
 
             // 3. Mascota Activa
             const activePetQuery = await sql`
-                SELECT p.* 
-                FROM pets p
-                JOIN user_pets up ON p.id = up.pet_id
-                WHERE up.user_id = ${user.id} AND up.is_active = TRUE
+                SELECT * 
+                FROM user_pets
+                WHERE user_id = ${user.id} AND is_active = TRUE
                 LIMIT 1
             `;
             const activePet = activePetQuery[0] || null;
