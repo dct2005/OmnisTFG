@@ -40,9 +40,6 @@ export class LoginComponent {
             next: (response: any) => {
                 console.log('Login exitoso:', response);
 
-                // GUARDAR EL TOKEN: Esto es vital para saber que estás logueado
-                localStorage.setItem('token', response.token);
-
                 Swal.fire({
                     title: '¡Bienvenido de nuevo!',
                     icon: 'success',
@@ -52,12 +49,8 @@ export class LoginComponent {
                     timer: 1500,
                     showConfirmButton: false
                 }).then(() => {
-                    const user = response.user;
-                    if (user && user.role === 'administrador') {
-                        this.router.navigate(['/admin']);
-                    } else {
-                        this.router.navigate(['/catalogo']);
-                    }
+                    // Redirigimos al inicio; la Navbar ya mostrará el avatar
+                    this.router.navigate(['/']);
                 });
             },
             error: (error) => {

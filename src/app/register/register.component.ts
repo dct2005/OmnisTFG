@@ -42,17 +42,6 @@ export class RegisterComponent {
                     confirmButtonColor: '#7c3aed'
                 });
 
-                // --- ESTA ES LA CLAVE PARA QUE LA NAVBAR CAMBIE ---
-                // Si tu API devuelve el usuario creado, lo guardamos en el servicio.
-                // Si no lo devuelve, creamos un objeto temporal con los datos del form.
-                const userLogged = res.user || {
-                    username: this.user.name,
-                    email: this.user.username
-                };
-
-                this.authService.currentUser.set(userLogged);
-                // --------------------------------------------------
-
                 // Redirigimos al inicio; la Navbar ya mostrará el avatar
                 this.router.navigate(['/']);
             },

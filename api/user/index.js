@@ -1012,10 +1012,16 @@ module.exports = async function handler(req, res) {
                 const hashedPassword = await bcrypt.hash(password, 10);
                 const inserted = await sql`
                     INSERT INTO users (username, email, password, peppix, estado, role) 
-                    VALUES (${name}, ${username}, ${hashedPassword}, 0, 'desconectado', 'cliente')
+                    VALUES (${name}, ${username}, ${hashedPassword}, 0, 'en-linea', 'cliente')
                     RETURNING id, username, email, peppix, estado, role, created_at
                 `;
-                return res.status(201).json({ message: 'Registrado correctamente', user: inserted[0] });
+                const user = inserted[0];
+                const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+                return res.status(201).json({ 
+                    message: 'Registrado correctamente', 
+                    token,
+                    user 
+                });
             }
 
             if (action === 'login') {
