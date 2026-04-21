@@ -18,6 +18,12 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS privacy_games TEXT DEFAULT 'public';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS privacy_inventory TEXT DEFAULT 'public';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS privacy_comments TEXT DEFAULT 'public';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS status_message TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS selected_badge_id INTEGER;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS display_comments_type TEXT DEFAULT 'community';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_theme_color TEXT DEFAULT '#00f2ff';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_bg_color TEXT DEFAULT '#00f2ff';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_name_color TEXT DEFAULT '#ffffff';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_music_url TEXT DEFAULT NULL;
 
 -- 2. Support Tickets Columns
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS game_api_id TEXT;

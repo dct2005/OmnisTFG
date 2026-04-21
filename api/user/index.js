@@ -1284,12 +1284,17 @@ module.exports = async function handler(req, res) {
 
                 if (!email) return res.status(400).json({ error: 'Falta email' });
 
+                // Sanitize integer fields
+                const favGroupId = favorite_group_id === '' ? null : favorite_group_id;
+                const favGameId = favorite_game_id === '' ? null : favorite_game_id;
+                const badgeId = selected_badge_id === '' ? null : selected_badge_id;
+
                 const updated = await sql`
                     UPDATE users 
                     SET 
                         username = ${username},
-                        favorite_group_id = ${favorite_group_id}, 
-                        favorite_game_id = ${favorite_game_id}, 
+                        favorite_group_id = ${favGroupId}, 
+                        favorite_game_id = ${favGameId}, 
                         country = ${country}, 
                         state = ${state}, 
                         city = ${city}, 
@@ -1298,7 +1303,7 @@ module.exports = async function handler(req, res) {
                         privacy_inventory = ${privacy_inventory || 'public'}, 
                         privacy_comments = ${privacy_comments || 'public'},
                         status_message = ${status_message},
-                        selected_badge_id = ${selected_badge_id},
+                        selected_badge_id = ${badgeId},
                         estado = ${estado || 'en-linea'},
                         display_comments_type = ${display_comments_type || 'community'},
                         profile_theme_color = ${profile_theme_color || '#00f2ff'},
