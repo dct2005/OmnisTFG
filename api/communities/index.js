@@ -1,4 +1,5 @@
 const postgres = require('postgres');
+const sql = postgres(process.env.DATABASE_URL, { ssl: 'require' });
 
 module.exports = async function handler(req, res) {
     // Permisos CORS
@@ -9,7 +10,6 @@ module.exports = async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     try {
-        const sql = postgres(process.env.DATABASE_URL, { ssl: 'require' });
 
 
         if (req.method === 'GET') {

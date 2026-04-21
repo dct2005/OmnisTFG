@@ -2,6 +2,8 @@ const postgres = require('postgres');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const sql = postgres(process.env.DATABASE_URL, { ssl: 'require' });
+
 const SECRET_KEY = 'mi_secreto_temporal';
 
 module.exports.config = {
@@ -21,7 +23,6 @@ module.exports = async function handler(req, res) {
 
     try {
         console.log(`[API User] ${req.method} request received. Action: ${req.body?.action || req.query?.action}`);
-        const sql = postgres(process.env.DATABASE_URL, { ssl: 'require' });
 
         // Update last activity ONLY for actions performed by the current user
         // Actions that identify the requester: log in, register, or any POST update

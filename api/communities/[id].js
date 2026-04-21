@@ -1,4 +1,5 @@
 const postgres = require('postgres');
+const sql = postgres(process.env.DATABASE_URL, { ssl: 'require' });
 
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -6,7 +7,6 @@ module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    const sql = postgres(process.env.DATABASE_URL, { ssl: 'require' });
     const communityId = req.query.id;
     const { action } = req.query;
 
