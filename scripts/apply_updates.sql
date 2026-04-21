@@ -65,9 +65,30 @@ CREATE TABLE IF NOT EXISTS games (
     rating_count INTEGER
 );
 
--- 7. Fix Pet System (Normalized)
+-- 7. Fix Pet and Award System (Normalized)
 DROP TABLE IF EXISTS user_pets;
+DROP TABLE IF EXISTS user_awards;
 DROP TABLE IF EXISTS pets;
+DROP TABLE IF EXISTS awards;
+
+CREATE TABLE awards (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    icon_url VARCHAR(255),
+    type VARCHAR(50) NOT NULL,
+    requirement TEXT NOT NULL,
+    rarity VARCHAR(50) DEFAULT 'common'
+);
+
+CREATE TABLE user_awards (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    award_id INTEGER REFERENCES awards(id) ON DELETE CASCADE,
+    obtained_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    is_pinned BOOLEAN DEFAULT FALSE,
+    UNIQUE(user_id, award_id)
+);
 
 CREATE TABLE pets (
     id SERIAL PRIMARY KEY,
@@ -86,19 +107,40 @@ CREATE TABLE user_pets (
     UNIQUE(user_id, pet_id)
 );
 
--- 8. Populate Real Pets
-INSERT INTO pets (name, icon_url) VALUES 
-('Dragón', '/images/pet_dragon.png'),
-('Fox', '/images/pet_fox_sprites.png'),
-('Pingüino', '/images/pet_penguin_sprites.png'),
-('Bot', '/images/pet_bot.png'),
-('Fantasma', '/images/pet_ghost_sprites.png'),
-('Bruja', '/images/pet_witch_sprites.png'),
-('Mago', '/images/pet_wizard_sprites.png'),
-('Hada', '/images/pet_fairy_sprites.png');
+-- 8. Seed Original Awards (Insignias & Géneros)
+INSERT INTO awards (name, description, icon_url, type, requirement, rarity) VALUES 
+('Novato de Élite', 'Conseguida tras comprar 1 juego.', '/images/ins_nonecesito.png', 'games', '1', 'common'),
+('Borracho de Época', 'Conseguida tras comprar 3 juegos.', '/images/ins_borracho.png', 'games', '3', 'rare'),
+('Cuñao Honorario', 'Conseguida tras comprar 5 juegos.', '/images/ins_cunado.png', 'games', '5', 'rare'),
+('Cállese y Tome mi Dinero', 'Conseguida tras comprar 7 juegos.', '/images/ins_callese.png', 'games', '7', 'epic'),
+('Frozen Mind Legend', 'Conseguida tras comprar 10 juegos.', '/images/ins_frozenmind.png', 'games', '10', 'legendary'),
+('Pilar de la Comunidad', 'Conseguida al unirse a 1 comunidad.', '/images/pilar_comunidad.png', 'communities', '1', 'common'),
+('Líder de Masas', 'Conseguida al unirse a 5 comunidades.', '/images/lider_masas.png', 'communities', '5', 'epic'),
+('Guerrero de Acción', 'Te encantan los desafíos rápidos.', '/images/trophy_action.png', 'genre', 'Action', 'rare'),
+('Maestro del Rol', 'Vives mil vidas en una.', '/images/trophy_rpg.png', 'genre', 'RPG', 'epic'),
+('Estratega Supremo', 'Tu mente es tu mejor arma.', '/images/trophy_strategy.png', 'genre', 'Strategy', 'epic'),
+('Rey de las Recreativas', 'Un clásico nunca muere.', '/images/trophy_arcade.png', 'genre', 'Arcade', 'common'),
+('Superviviente Nato', 'A la muerte le dices: hoy no.', '/images/trophy_survival.png', 'genre', 'Survival', 'rare'),
+('Piloto de Élite', 'La velocidad corre por tus venas.', '/images/trophy_racing.png', 'genre', 'Racing', 'common'),
+('Caminante del Espacio', 'El futuro ya está aquí.', '/images/trophy_scifi.png', 'genre', 'Sci-Fi', 'rare'),
+('Sombra en la Noche', 'El miedo no te detiene.', '/images/trophy_horror.png', 'genre', 'Horror', 'epic');
 
--- 9. Unlock Pets for Test User
--- Modify 'test@alpargata.com' if your test user has a different email
+-- 9. Seed Original Pets
+INSERT INTO pets (name, icon_url) VALUES 
+('Dragón Azul', '/images/pet_dragon_sprites.png'),
+('Fantasmitu', '/images/pet_ghost_sprites.png'),
+('Mago Arcano', '/images/pet_wizard_sprites.png'),
+('Brujita', '/images/pet_witch_sprites.png'),
+('Zorrito', '/images/pet_fox_sprites.png'),
+('Pingüino', '/images/pet_penguin_sprites.png');
+
+-- 10. Unlock Everything for Test User (test@alpargata.com)
+INSERT INTO user_awards (user_id, award_id, is_pinned)
+SELECT u.id, a.id, CASE WHEN a.id <= 5 THEN TRUE ELSE FALSE END 
+FROM users u, awards a
+WHERE u.email = 'test@alpargata.com'
+ON CONFLICT DO NOTHING;
+
 INSERT INTO user_pets (user_id, pet_id)
 SELECT u.id, p.id FROM users u, pets p
 WHERE u.email = 'test@alpargata.com'

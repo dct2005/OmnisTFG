@@ -63,13 +63,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 
-  get notifications() {
-    return this.authService.currentUser()?.unreadNotifications || [];
-  }
-
-  get unreadCount() {
-    return this.notifications.length;
-  }
+  notifications = computed(() => this.authService.currentUser()?.unreadNotifications || []);
+  unreadCount = computed(() => this.notifications().length);
 
   handleNotificationClick(note: any) {
     this.isNotificationsOpen.set(false);

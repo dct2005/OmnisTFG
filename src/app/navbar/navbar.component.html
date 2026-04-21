@@ -34,8 +34,8 @@
         <div class="notifications-container" [class.active]="isNotificationsOpen()">
             <div class="notifications-icon" (click)="toggleNotifications()" title="Notificaciones">
                 <span class="material-icons-round">notifications</span>
-                @if (unreadCount > 0) {
-                <span class="notification-badge">{{ unreadCount }}</span>
+                @if (unreadCount() > 0) {
+                <span class="notification-badge">{{ unreadCount() }}</span>
                 }
             </div>
 
@@ -45,13 +45,13 @@
                     <h3>Notificaciones</h3>
                 </div>
                 <div class="notifications-list">
-                    @if (notifications.length === 0) {
+                    @if (notifications().length === 0) {
                     <div class="no-notifications">
                         <span class="material-icons-round">notifications_none</span>
                         <p>No tienes notificaciones</p>
                     </div>
                     } @else {
-                    @for (note of notifications; track note.id) {
+                    @for (note of notifications(); track note.id) {
                     <div class="notification-item" [class.unread]="!note.is_read"
                         (click)="handleNotificationClick(note)">
                         <div class="note-icon">
