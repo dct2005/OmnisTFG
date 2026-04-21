@@ -339,7 +339,7 @@ module.exports = async function handler(req, res) {
 
             if (action === 'get-any-game') {
                 const games = await sql`SELECT game_api_id FROM user_games ORDER BY purchase_date DESC LIMIT 1`;
-                if (games.length === 0) return res.status(404).json({ error: 'No hay juegos en la BD' });
+                if (games.length === 0) return res.status(200).json({ games: [] });
                 return res.status(200).json({ games: [games[0].game_api_id] });
             }
 

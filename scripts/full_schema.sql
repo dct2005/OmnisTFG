@@ -1,4 +1,5 @@
 -- OmnisTFG - Full Schema for Supabase Migration
+-- Consolidated and audited against all API endpoints
 
 -- 1. Users & Auth
 CREATE TABLE IF NOT EXISTS users (
@@ -20,7 +21,24 @@ CREATE TABLE IF NOT EXISTS users (
     profile_theme_color TEXT DEFAULT '#00f2ff',
     profile_bg_color TEXT DEFAULT '#00f2ff',
     profile_name_color TEXT DEFAULT '#ffffff',
-    profile_music_url TEXT DEFAULT NULL
+    profile_music_url TEXT DEFAULT NULL,
+    -- Audited missing columns
+    first_name TEXT,
+    last_name TEXT,
+    address TEXT,
+    phone TEXT,
+    location TEXT,
+    profile_background TEXT,
+    favorite_group_id INTEGER,
+    favorite_game_id INTEGER,
+    country TEXT,
+    state TEXT,
+    city TEXT,
+    privacy_profile TEXT DEFAULT 'public',
+    privacy_games TEXT DEFAULT 'public',
+    privacy_inventory TEXT DEFAULT 'public',
+    privacy_comments TEXT DEFAULT 'public',
+    status_message TEXT
 );
 
 -- 2. Social & Friendships
@@ -30,6 +48,7 @@ CREATE TABLE IF NOT EXISTS friendships (
     receiver_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'accepted', 'rejected'
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(sender_id, receiver_id)
 );
 
@@ -88,6 +107,7 @@ CREATE TABLE IF NOT EXISTS community_messages (
     community_id INTEGER REFERENCES communities(id) ON DELETE CASCADE,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
+    image_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -205,9 +225,11 @@ CREATE TABLE IF NOT EXISTS support_tickets (
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     category TEXT NOT NULL,
     product_name TEXT,
+    game_api_id TEXT,
     subject TEXT,
     details TEXT NOT NULL,
     status TEXT DEFAULT 'open',
+    admin_response TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -218,4 +240,36 @@ CREATE TABLE IF NOT EXISTS transactions (
     real_money_euro DECIMAL(10,2) DEFAULT 0,
     payment_method VARCHAR(100),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 8. Activity & Logging
+CREATE TABLE IF NOT EXISTS activities (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    type VARCHAR(100) NOT NULL,
+    target_id TEXT, -- Changed to TEXT to support both game IDs and community IDs
+    target_name TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 9. Reviews
+CREATE TABLE IF NOT EXISTS game_reviews (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    game_api_id TEXT NOT NULL,
+    game_name TEXT,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 10. Games Cache
+CREATE TABLE IF NOT EXISTS games (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    genres TEXT[],
+    themes TEXT[],
+    summary TEXT,
+    cover_url TEXT,
+    rating DECIMAL,
+    rating_count INTEGER
 );
