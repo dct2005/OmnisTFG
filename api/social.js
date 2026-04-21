@@ -20,38 +20,38 @@ module.exports = async function handler(req, res) {
             if (req.method !== 'GET') return res.status(405).json({ error: 'Método no permitido' });
             
             const topBuyers = await sql`
-                SELECT u.id, u.username, u.profile_image, u.estado, u.current_activity, COUNT(ug.game_api_id) as count
+                SELECT u.id, u.username, u.profile_image, u.estado, COUNT(ug.game_api_id) as count
                 FROM users u
                 JOIN user_games ug ON u.id = ug.user_id
-                GROUP BY u.id, u.username, u.profile_image, u.estado, u.current_activity
+                GROUP BY u.id, u.username, u.profile_image, u.estado
                 ORDER BY count DESC
                 LIMIT 50
             `;
 
             const topCommunities = await sql`
-                SELECT u.id, u.username, u.profile_image, u.estado, u.current_activity, COUNT(cm.community_id) as count
+                SELECT u.id, u.username, u.profile_image, u.estado, COUNT(cm.community_id) as count
                 FROM users u
                 JOIN community_members cm ON u.id = cm.user_id
-                GROUP BY u.id, u.username, u.profile_image, u.estado, u.current_activity
+                GROUP BY u.id, u.username, u.profile_image, u.estado
                 ORDER BY count DESC
                 LIMIT 50
             `;
 
             const topFriends = await sql`
-                SELECT u.id, u.username, u.profile_image, u.estado, u.current_activity, COUNT(f.id) as count
+                SELECT u.id, u.username, u.profile_image, u.estado, COUNT(f.id) as count
                 FROM users u
                 JOIN friendships f ON (u.id = f.sender_id OR u.id = f.receiver_id)
                 WHERE f.status = 'accepted'
-                GROUP BY u.id, u.username, u.profile_image, u.estado, u.current_activity
+                GROUP BY u.id, u.username, u.profile_image, u.estado
                 ORDER BY count DESC
                 LIMIT 50
             `;
 
             const topValue = await sql`
-                SELECT u.id, u.username, u.profile_image, u.estado, u.current_activity, SUM(ug.price_paid) as count
+                SELECT u.id, u.username, u.profile_image, u.estado, SUM(ug.price_paid) as count
                 FROM users u
                 JOIN user_games ug ON u.id = ug.user_id
-                GROUP BY u.id, u.username, u.profile_image, u.estado, u.current_activity
+                GROUP BY u.id, u.username, u.profile_image, u.estado
                 ORDER BY count DESC
                 LIMIT 50
             `;

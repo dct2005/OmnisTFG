@@ -241,7 +241,6 @@ export class ProfileComponent implements OnDestroy {
             this.viewedUser.set({
               ...current,
               estado: status.estado,
-              current_activity: status.current_activity,
               last_activity: status.last_activity
             });
           }

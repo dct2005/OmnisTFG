@@ -77,31 +77,11 @@
         <span class="status-quote-icon">”</span>
       </div>
 
-      <div class="activity-hud-card" *ngIf="viewedUser()?.current_activity">
+      <div class="activity-hud-card music-only-hud" *ngIf="viewedUser()?.profile_music_url">
         <div class="hud-glitch-overlay"></div>
         <div class="hud-left-accent"></div>
         <div class="hud-card-body-wrapper" style="display: flex; flex-direction: column; flex-grow: 1; width: 100%;">
-          <div class="hud-main-content">
-            <div class="hud-top-bar">
-              <div class="hud-live-indicator">
-                <span class="pulse-dot"></span>
-                <span class="live-text">EN VIVO</span>
-              </div>
-              <div class="hud-tag">SISTEMA OMNIS v2.5</div>
-            </div>
-            <div class="hud-middle-section">
-              <div class="hud-icon-container">
-                <span class="material-icons-round hud-icon">sensors</span>
-              </div>
-              <div class="hud-activity-text">
-                <span class="hud-label">RASTREO DE ACTIVIDAD</span>
-                <span class="hud-value">{{ viewedUser().current_activity }}</span>
-              </div>
-            </div>
-          </div>
-
           <app-music-hud 
-            *ngIf="viewedUser()?.profile_music_url"
             [musicUrl]="viewedUser()?.profile_music_url || ''"
             [trackName]="(viewedUser()?.username || 'User') + ' Soundtrack'">
           </app-music-hud>

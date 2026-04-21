@@ -2,27 +2,35 @@
     <div class="reward-modal" (click)="$event.stopPropagation()">
         <button class="close-btn" (click)="close()">&times;</button>
         
-        <h2 class="title">RECOMPENSA DIARIA</h2>
-        <p class="subtitle" *ngIf="!hasSpun">¡Gira la ruleta y gana Peppix gratis!</p>
-        <p class="subtitle winner" *ngIf="hasSpun">¡ENHORABUENA! Has ganado: {{ prize?.label }}</p>
+        <div class="reward-content">
+            <h2 class="title">RECOMPENSA DIARIA</h2>
+            <p class="subtitle" *ngIf="!hasSpun">¡Gira la ruleta y gana Peppix gratis!</p>
+            <p class="subtitle winner" *ngIf="hasSpun">¡ENHORABUENA! Has ganado: {{ prize?.label }}</p>
 
-        <div class="wheel-container">
-            <div class="wheel-pointer"></div>
-            <div class="wheel-wrapper" [style.transform]="'rotate(' + rotation + 'deg)'" [class.spinning]="isSpinning">
-                <div class="wheel-bg"></div>
-                <div class="wheel-labels">
-                    <div class="wheel-label" *ngFor="let p of prizes; let i = index" 
-                         [style.transform]="'rotate(' + (i * 45 + 22.5) + 'deg) translateY(-110px)'">
-                        {{ p.label }}
+            <div class="wheel-container">
+                <div class="wheel-pointer"></div>
+                <div class="wheel-wrapper" [style.transform]="'rotate(' + rotation + 'deg)'" [class.spinning]="isSpinning">
+                    <div class="wheel-bg"></div>
+                    
+                    <!-- Divisores visuales -->
+                    <div class="wheel-divider" *ngFor="let p of prizes; let i = index"
+                         [style.transform]="'rotate(' + (i * 45) + 'deg)'">
+                    </div>
+
+                    <div class="wheel-labels">
+                        <div class="wheel-label" *ngFor="let p of prizes; let i = index" 
+                             [style.transform]="'rotate(' + (i * 45 + 22.5 - 90) + 'deg)'">
+                            {{ p.label }}
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <button class="spin-btn" [disabled]="isSpinning || hasSpun" (click)="spin()">
+                {{ isSpinning ? 'Girando...' : (hasSpun ? '¡RECLAMAR!' : '¡GIRAR!') }}
+            </button>
+
+            <p class="footer-note" *ngIf="!hasSpun">Disponible una vez cada 24 horas</p>
         </div>
-
-        <button class="spin-btn" [disabled]="isSpinning || hasSpun" (click)="spin()">
-            {{ isSpinning ? 'Girando...' : (hasSpun ? '¡Reclamado!' : '¡GIRAR!') }}
-        </button>
-
-        <p class="footer-note" *ngIf="!hasSpun">Disponible una vez cada 24 horas</p>
     </div>
 </div>

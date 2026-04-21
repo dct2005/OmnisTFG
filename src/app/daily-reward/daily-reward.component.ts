@@ -41,14 +41,16 @@ export class DailyRewardComponent implements OnInit {
       next: (res: any) => {
         this.prize = res.prize;
         
-        // Calculamos la rotación final. 
-        // 360 / 8 premios = 45 grados por premio.
+        // Recalibración: 
+        // 1. Cada segmento tiene 45 grados.
+        // 2. El punto medio del segmento 'i' es i * 45 + 22.5.
+        // 3. Para que ese punto medio quede a las 12 (0 grados), rotamos 360 - (i * 45 + 22.5).
         const prizeIndex = this.getPrizeIndex(this.prize);
-        const extraDegrees = 3600; // 10 vueltas
-        const prizeDegree = (prizeIndex * 45); 
+        const extraDegrees = 3600; // 10 vueltas completas
+        const midpoint = (prizeIndex * 45) + 22.5;
+        const jitter = (Math.random() * 30) - 15; // +/- 15 grados de margen desde el centro
         
-        const randomOffset = 10 + Math.random() * 25; // 10-35 grados de margen (el segmento es de 45)
-        this.rotation = extraDegrees + (360 - prizeDegree) + randomOffset;
+        this.rotation = extraDegrees + (360 - midpoint) + jitter;
         
         setTimeout(() => {
           this.isSpinning = false;
@@ -64,12 +66,16 @@ export class DailyRewardComponent implements OnInit {
   }
 
   getPrizeIndex(prize: any): number {
-    if (prize.label.includes('1500') || prize.label.includes('Súper')) return 6;
-    if (prize.value === 1000) return 5;
-    if (prize.value === 500) return 4;
-    if (prize.value === 250) return 3;
-    if (prize.type === 'nada') return 2;
-    if (prize.value === 100) return 1;
+    if (!prize) return 0;
+    const label = (prize.label || '').toLowerCase();
+    const value = prize.value;
+
+    if (label.includes('1500') || label.includes('súper')) return 6;
+    if (value === 1000) return 5;
+    if (value === 500) return 4;
+    if (value === 250) return 3;
+    if (prize.type === 'nada' || label.includes('nada')) return 2;
+    if (value === 100) return 1;
     return 0; // 50 Peppix
   }
 
