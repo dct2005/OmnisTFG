@@ -61,7 +61,7 @@ export class InformacionCommunities implements OnInit {
       this.loadMessages(id);
 
 
-      const userId = this.getUserIdFromToken();
+      const userId = this.authService.currentUser()?.id;
       if (userId) {
         this.communityService.checkMembership(id, userId).subscribe({
           next: (res: any) => {
@@ -82,19 +82,6 @@ export class InformacionCommunities implements OnInit {
       next: (members) => this.members = members,
       error: (err) => console.error('Error cargando miembros:', err)
     });
-  }
-
-  getUserIdFromToken(): number | null {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.id || payload.userId || null;
-    } catch (e) {
-      console.error('Error al leer el token:', e);
-      return null;
-    }
   }
 
   getCommunityDetails(id: string) {
@@ -140,7 +127,7 @@ export class InformacionCommunities implements OnInit {
   }
 
   sendMedia() {
-    const userId = this.getUserIdFromToken();
+    const userId = this.authService.currentUser()?.id;
     if (!userId) return;
     if (!this.mediaPreview) return;
 
@@ -171,7 +158,7 @@ export class InformacionCommunities implements OnInit {
 
 
   toggleJoin() {
-    const userId = this.getUserIdFromToken();
+    const userId = this.authService.currentUser()?.id;
     if (!userId) {
       Swal.fire({
         title: 'Aviso',
@@ -241,7 +228,7 @@ export class InformacionCommunities implements OnInit {
   }
 
   kickMember(memberId: number) {
-    const adminId = this.getUserIdFromToken();
+    const adminId = this.authService.currentUser()?.id;
     if (!adminId) return;
 
     Swal.fire({
@@ -279,7 +266,7 @@ export class InformacionCommunities implements OnInit {
   }
 
   sendMessage() {
-    const userId = this.getUserIdFromToken();
+    const userId = this.authService.currentUser()?.id;
 
     if (!userId) {
       Swal.fire({

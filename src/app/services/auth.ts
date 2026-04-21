@@ -16,7 +16,7 @@ export class AuthService {
     this.initializeFromToken();
   }
 
-  private getAuthHeaders() {
+  public getAuthHeaders() {
     const token = localStorage.getItem('token');
     return {
       headers: {

@@ -1,12 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth';
 
 @Injectable({
     providedIn: 'root'
 })
 export class CommunityService {
     private http = inject(HttpClient);
+    private authService = inject(AuthService);
 
 
     private apiUrl = '/api/communities';
@@ -26,7 +28,7 @@ export class CommunityService {
         return this.http.get<any>(`${this.apiUrl}/${id}`);
     }
     joinCommunity(communityId: string, userId: number): Observable<any> {
-        return this.http.post<any>(`/api/communities/${communityId}?action=join`, { userId });
+        return this.http.post<any>(`/api/communities/${communityId}?action=join`, { userId }, this.authService.getAuthHeaders());
     }
 
     getMessages(communityId: string): Observable<any[]> {
@@ -34,7 +36,7 @@ export class CommunityService {
     }
 
     sendMessage(communityId: string, userId: number, content: string, imageUrl?: string): Observable<any> {
-        return this.http.post<any>(`/api/communities/${communityId}?action=messages`, { userId, content, image_url: imageUrl });
+        return this.http.post<any>(`/api/communities/${communityId}?action=messages`, { userId, content, image_url: imageUrl }, this.authService.getAuthHeaders());
     }
     createCommunity(data: any): Observable<any> {
         return this.http.post<any>('/api/communities', data);
