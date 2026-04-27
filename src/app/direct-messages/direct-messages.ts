@@ -84,14 +84,21 @@ export class DirectMessagesComponent implements OnInit {
   }
 
   startGlobalPolling() {
+    // 1. Polling más lento (cada 12s) para conversaciones, grupos y lista de mensajes (salvavidas de base de datos)
     this.pollingInterval = setInterval(() => {
       this.loadConversations();
       this.loadGroups();
       if (this.activeChat()) {
         this.loadMessages(false); // Silent load
-        if (!this.isGroup()) this.checkTypingStatus();
       }
-    }, 3000);
+    }, 12000);
+
+    // 2. Polling rápido (cada 5s) solo para el estado de "escribiendo" (que es ultra-ligero)
+    this.typingInterval = setInterval(() => {
+      if (this.activeChat() && !this.isGroup()) {
+        this.checkTypingStatus();
+      }
+    }, 5000);
   }
 
   checkTypingStatus() {

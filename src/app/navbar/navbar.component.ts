@@ -17,13 +17,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private router = inject(Router);
 
   ngOnInit() {
-    // Hace un "polling" (consulta periódica) cada 5 segundos a la base de datos
-    // Esto conectará los cambios manuales hechos en BBDD con la interfaz
+    // Hace un "polling" (consulta periódica) cada 60 segundos a la base de datos
+    // Limitado para evitar agotar ancho de banda de Supabase
     this.statusInterval = setInterval(() => {
       if (this.isLoggedIn()) {
         this.authService.fetchCurrentUser();
       }
-    }, 5000);
+    }, 60000);
   }
 
   ngOnDestroy() {

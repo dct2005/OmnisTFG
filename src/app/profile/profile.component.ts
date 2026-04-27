@@ -246,7 +246,7 @@ export class ProfileComponent implements OnDestroy {
           }
         }
       });
-    }, 5000);
+    }, 30000); // Reducido de 5s a 30s para salvar cuota de transferencia
   }
 
   checkFriendshipStatus(targetUser: any) {
