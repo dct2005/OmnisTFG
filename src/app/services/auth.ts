@@ -152,14 +152,11 @@ export class AuthService {
   fetchCurrentUser() {
     const user = this.currentUser();
     const userEmail = user?.email;
-    const userId = user?.id;
 
     if (userEmail) {
       this.http.get(`${this.apiUrl}/user?email=${userEmail}&action=get`, this.getAuthHeaders())
         .subscribe({
           next: (res: any) => {
-            // VERIFICACIÓN CRÍTICA: Solo actualizar si el usuario actual sigue siendo el mismo
-            // para evitar que peticiones "viejas" en vuelo sobreescriban una nueva sesión o un logout
             const currentUser = this.currentUser();
             if (res.user && currentUser && currentUser.id === res.user.id) {
               this.currentUser.set({
@@ -171,6 +168,12 @@ export class AuthService {
           error: (err) => console.error('Error sincronizando datos:', err)
         });
     }
+  }
+
+  getLightweightUpdate(): Observable<any> {
+    const user = this.currentUser();
+    if (!user?.id) throw new Error('Usuario no autenticado');
+    return this.http.get(`${this.apiUrl}/user?action=get-lightweight-update&userId=${user.id}`);
   }
 
   getUserByUsername(username: string): Observable<any> {

@@ -19,6 +19,9 @@ module.exports = async function handler(req, res) {
         if (action === 'rankings') {
             if (req.method !== 'GET') return res.status(405).json({ error: 'Método no permitido' });
             
+            // Rankings can be cached for a few minutes to reduce DB load
+            res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+
             const topBuyers = await sql`
                 SELECT u.id, u.username, u.profile_image, u.estado, COUNT(ug.game_api_id) as count
                 FROM users u
@@ -70,6 +73,7 @@ module.exports = async function handler(req, res) {
             const { userId } = req.query;
             if (!userId) return res.status(400).json({ error: 'Falta ID de usuario' });
 
+            // Optimized activity query using the new indexes
             const activities = await sql`
                 SELECT a.id, a.user_id, a.type, a.target_id, a.target_name, a.created_at, u.username, u.profile_image
                 FROM activities a
@@ -78,6 +82,8 @@ module.exports = async function handler(req, res) {
                     SELECT receiver_id FROM friendships WHERE sender_id = ${userId} AND status = 'accepted'
                     UNION
                     SELECT sender_id FROM friendships WHERE receiver_id = ${userId} AND status = 'accepted'
+                    UNION
+                    SELECT ${userId}::integer -- Include own activities
                 )
                 ORDER BY a.created_at DESC
                 LIMIT 20

@@ -23,14 +23,14 @@ module.exports = async function handler(req, res) {
             if (req.method === 'GET') {
                 const { userId } = req.query;
                 if (!userId) return res.status(200).json({ isMember: false });
-                const rows = await sql`SELECT * FROM community_members WHERE user_id = ${userId} AND community_id = ${communityId}`;
+                const rows = await sql`SELECT role FROM community_members WHERE user_id = ${userId} AND community_id = ${communityId} LIMIT 1`;
                 const isMember = rows.length > 0;
                 return res.status(200).json({ isMember, role: isMember ? rows[0].role : null });
             }
             if (req.method === 'POST') {
                 const { userId } = req.body;
                 if (!userId) return res.status(400).json({ message: 'Falta el ID del usuario.' });
-                const rows = await sql`SELECT * FROM community_members WHERE user_id = ${userId} AND community_id = ${communityId}`;
+                const rows = await sql`SELECT 1 FROM community_members WHERE user_id = ${userId} AND community_id = ${communityId} LIMIT 1`;
                 if (rows.length > 0) {
                     await sql`DELETE FROM community_members WHERE user_id = ${userId} AND community_id = ${communityId}`;
                     await sql`UPDATE communities SET member_count = member_count - 1 WHERE id = ${communityId}`;
@@ -66,6 +66,7 @@ module.exports = async function handler(req, res) {
         // --- MEMBERS ---
         if (action === 'members') {
             if (req.method === 'GET') {
+                res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
                 const members = await sql`
                     SELECT u.id, u.username, u.profile_image, cm.role, cm.joined_at
                     FROM users u
@@ -89,12 +90,15 @@ module.exports = async function handler(req, res) {
         // --- MESSAGES ---
         if (action === 'messages') {
             if (req.method === 'GET') {
+                // Short cache for messages to reduce polling impact
+                res.setHeader('Cache-Control', 'public, s-maxage=5, stale-while-revalidate=10');
                 const messages = await sql`
                     SELECT m.id, m.content, m.image_url, m.created_at as time, u.username as author, u.profile_image
                     FROM community_messages m
                     JOIN users u ON m.user_id = u.id
                     WHERE m.community_id = ${communityId}
                     ORDER BY m.created_at DESC
+                    LIMIT 100 -- Added safety limit
                 `;
                 return res.status(200).json(messages);
             }

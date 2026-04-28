@@ -17,13 +17,29 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private router = inject(Router);
 
   ngOnInit() {
-    // Hace un "polling" (consulta periódica) cada 60 segundos a la base de datos
-    // Limitado para evitar agotar ancho de banda de Supabase
+    // Hace un "polling" (consulta periódica) cada 80 segundos a la base de datos (ligeramente aumentado para salvar cuota)
     this.statusInterval = setInterval(() => {
       if (this.isLoggedIn()) {
-        this.authService.fetchCurrentUser();
+        this.authService.getLightweightUpdate().subscribe({
+          next: (update) => {
+            const user = this.authService.currentUser();
+            if (user && update) {
+              // Actualizamos solo lo necesario en el signal global
+              this.authService.currentUser.set({
+                ...user,
+                estado: update.estado,
+                last_activity: update.last_activity,
+                xp: update.xp,
+                peppix: update.peppix,
+                unreadCount: update.unreadNotificationsCount, // Guardamos el conteo para la UI
+                // Mockeamos la estructura de notificaciones si es necesario o manejamos el conteo directo
+                unreadMessagesCount: update.unreadMessagesCount
+              });
+            }
+          }
+        });
       }
-    }, 60000);
+    }, 80000);
   }
 
   ngOnDestroy() {
@@ -64,7 +80,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   notifications = computed(() => this.authService.currentUser()?.unreadNotifications || []);
-  unreadCount = computed(() => this.notifications().length);
+  unreadCount = computed(() => {
+    const user = this.authService.currentUser();
+    return user?.unreadCount ?? user?.unreadNotifications?.length ?? 0;
+  });
 
   handleNotificationClick(note: any) {
     this.isNotificationsOpen.set(false);

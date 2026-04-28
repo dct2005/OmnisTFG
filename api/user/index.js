@@ -42,7 +42,7 @@ module.exports = async function handler(req, res) {
         }
 
         async function getUserWithBadges(user) {
-            const gamesCountQuery = await sql`SELECT COUNT(*) as count FROM user_games WHERE user_id = ${user.id}`;
+            const gamesCountQuery = await sql`SELECT COUNT(id) as count FROM user_games WHERE user_id = ${user.id}`;
             const gamesCount = parseInt(gamesCountQuery[0].count, 10);
 
             // 1.2 Loyalty Badges (Time based)
@@ -62,7 +62,7 @@ module.exports = async function handler(req, res) {
 
             // 2. Premios del Perfil (3D Trophies from DB)
             const userAwards = await sql`
-                SELECT a.*, a.icon_url as icon, ua.obtained_at, ua.is_pinned
+                SELECT a.id, a.name, a.type, a.requirement, a.icon_url as icon, ua.obtained_at, ua.is_pinned
                 FROM awards a
                 JOIN user_awards ua ON a.id = ua.award_id
                 WHERE ua.user_id = ${user.id}
@@ -80,7 +80,7 @@ module.exports = async function handler(req, res) {
 
             // 3. Mascota Activa
             const activePetQuery = await sql`
-                SELECT p.*, p.icon_url 
+                SELECT p.id, p.name, p.icon_url 
                 FROM pets p
                 JOIN user_pets up ON p.id = up.pet_id
                 WHERE up.user_id = ${user.id} AND up.is_active = TRUE
@@ -146,10 +146,10 @@ module.exports = async function handler(req, res) {
 
             let currentValue = 0;
             if (type === 'games') {
-                const countQuery = await sql`SELECT COUNT(*) as count FROM user_games WHERE user_id = ${userId}`;
+                const countQuery = await sql`SELECT COUNT(id) as count FROM user_games WHERE user_id = ${userId}`;
                 currentValue = parseInt(countQuery[0].count, 10);
             } else if (type === 'communities') {
-                const countQuery = await sql`SELECT COUNT(*) as count FROM community_members WHERE user_id = ${userId}`;
+                const countQuery = await sql`SELECT COUNT(id) as count FROM community_members WHERE user_id = ${userId}`;
                 currentValue = parseInt(countQuery[0].count, 10);
             }
 
@@ -182,10 +182,39 @@ module.exports = async function handler(req, res) {
         if (req.method === 'GET') {
             const { email, username, action } = req.query;
 
+            if (action === 'get-lightweight-update') {
+                const { userId } = req.query;
+                if (!userId) return res.status(400).json({ error: 'Falta userId' });
+
+                // No cache for lightweight status to ensure realtime-like updates
+                res.setHeader('Cache-Control', 'no-store');
+
+                const status = await sql`SELECT estado, last_activity, xp, peppix FROM users WHERE id = ${userId} LIMIT 1`;
+                const unreadNotes = await sql`SELECT COUNT(id) as count FROM notifications WHERE user_id = ${userId} AND is_read = FALSE`;
+                const unreadMsgs = await sql`SELECT COUNT(id) as count FROM direct_messages WHERE receiver_id = ${userId} AND is_read = FALSE`;
+
+                return res.status(200).json({
+                    estado: status[0]?.estado,
+                    last_activity: status[0]?.last_activity,
+                    xp: status[0]?.xp,
+                    peppix: status[0]?.peppix,
+                    unreadNotificationsCount: parseInt(unreadNotes[0].count, 10),
+                    unreadMessagesCount: parseInt(unreadMsgs[0].count, 10)
+                });
+            }
+
             if (action === 'get-by-id') {
                 const { id } = req.query;
                 if (!id) return res.status(400).json({ error: 'Falta id' });
-                const users = await sql`SELECT * FROM users WHERE id = ${id}`;
+                // Evitamos SELECT * para ahorrar ancho de banda, especialmente por campos de imagen/música si fueran pesados
+                const users = await sql`
+                    SELECT id, username, email, name, role, created_at, xp, peppix, country, state, city, 
+                           privacy_profile, privacy_games, privacy_inventory, privacy_comments, 
+                           status_message, estado, last_activity, current_activity, profile_image, 
+                           profile_background, selected_badge_id, display_comments_type, 
+                           profile_theme_color, profile_bg_color, profile_name_color, profile_music_url
+                    FROM users WHERE id = ${id}
+                `;
                 if (users.length === 0) return res.status(404).json({ error: 'No encontrado' });
                 const richUser = await getUserWithBadges(users[0]);
                 return res.status(200).json(richUser);
@@ -458,7 +487,8 @@ module.exports = async function handler(req, res) {
                 if (!userId) return res.status(400).json({ error: 'Falta userId' });
 
                 const notifications = await sql`
-                    SELECT * FROM notifications 
+                    SELECT id, type, title, message, link, created_at, is_read 
+                    FROM notifications 
                     WHERE user_id = ${userId} 
                     ORDER BY created_at DESC 
                     LIMIT 20
@@ -691,13 +721,27 @@ module.exports = async function handler(req, res) {
 
             let user;
             if (email) {
-                const users = await sql`SELECT * FROM users WHERE email = ${email}`;
+                const users = await sql`
+                    SELECT id, username, email, name, role, created_at, xp, peppix, country, state, city, 
+                           privacy_profile, privacy_games, privacy_inventory, privacy_comments, 
+                           status_message, estado, last_activity, current_activity, profile_image, 
+                           profile_background, selected_badge_id, display_comments_type, 
+                           profile_theme_color, profile_bg_color, profile_name_color, profile_music_url
+                    FROM users WHERE email = ${email}
+                `;
                 if (users.length === 0 && !['get-any-game', 'get-profile-comments', 'get-pets', 'get-tickets', 'check-daily-reward', 'get-transactions', 'get-friends', 'get-user-comments'].includes(action)) {
                     return res.status(404).json({ error: 'User no encontrado' });
                 }
                 user = users[0];
             } else if (username) {
-                const users = await sql`SELECT * FROM users WHERE username = ${username}`;
+                const users = await sql`
+                    SELECT id, username, email, name, role, created_at, xp, peppix, country, state, city, 
+                           privacy_profile, privacy_games, privacy_inventory, privacy_comments, 
+                           status_message, estado, last_activity, current_activity, profile_image, 
+                           profile_background, selected_badge_id, display_comments_type, 
+                           profile_theme_color, profile_bg_color, profile_name_color, profile_music_url
+                    FROM users WHERE username = ${username}
+                `;
                 if (users.length === 0) return res.status(404).json({ error: 'User no encontrado' });
                 user = users[0];
             }

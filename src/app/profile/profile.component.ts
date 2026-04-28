@@ -234,19 +234,36 @@ export class ProfileComponent implements OnDestroy {
   startStatusPolling(username: string) {
     if (this.statusInterval) clearInterval(this.statusInterval);
     this.statusInterval = setInterval(() => {
-      this.authService.getUserStatus(username).subscribe({
-        next: (status: any) => {
-          const current = this.viewedUser();
-          if (status && status.username === username) {
-            this.viewedUser.set({
-              ...current,
-              estado: status.estado,
-              last_activity: status.last_activity
-            });
+      // Usar getLightweightUpdate si es el propio perfil, o mantener getUserStatus si es otro pero con intervalo mayor
+      const isOwn = this.isOwnProfile();
+      if (isOwn) {
+        this.authService.getLightweightUpdate().subscribe({
+          next: (update) => {
+            const current = this.viewedUser();
+            if (update && current) {
+              this.viewedUser.set({
+                ...current,
+                estado: update.estado,
+                last_activity: update.last_activity
+              });
+            }
           }
-        }
-      });
-    }, 30000); // Reducido de 5s a 30s para salvar cuota de transferencia
+        });
+      } else {
+        this.authService.getUserStatus(username).subscribe({
+          next: (status: any) => {
+            const current = this.viewedUser();
+            if (status && status.username === username) {
+              this.viewedUser.set({
+                ...current,
+                estado: status.estado,
+                last_activity: status.last_activity
+              });
+            }
+          }
+        });
+      }
+    }, 60000); // Aumentado a 60s
   }
 
   checkFriendshipStatus(targetUser: any) {

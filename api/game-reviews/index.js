@@ -20,7 +20,7 @@ module.exports = async function handler(req, res) {
             if (gameId) {
                 // Fetch reviews for a specific game
                 const reviews = await sql`
-                    SELECT gr.*, u.username, u.profile_image 
+                    SELECT gr.id, gr.user_id, gr.game_api_id, gr.game_name, gr.content, gr.created_at, u.username, u.profile_image 
                     FROM game_reviews gr
                     JOIN users u ON gr.user_id = u.id
                     WHERE gr.game_api_id = ${gameId}
@@ -32,7 +32,8 @@ module.exports = async function handler(req, res) {
             if (userId) {
                 // Fetch reviews for a specific user
                 const reviews = await sql`
-                    SELECT * FROM game_reviews 
+                    SELECT id, user_id, game_api_id, game_name, content, created_at 
+                    FROM game_reviews 
                     WHERE user_id = ${userId}
                     ORDER BY created_at DESC
                 `;

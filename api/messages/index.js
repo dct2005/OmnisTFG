@@ -133,12 +133,13 @@ module.exports = async function handler(req, res) {
                 if (!user1 || !user2) return res.status(400).json({ error: 'Faltan IDs de usuario' });
 
                 const messages = await sql`
-                    SELECT m.*, u.username as sender_name
+                    SELECT m.id, m.sender_id, m.receiver_id, m.content, m.image_url, m.created_at, m.is_read, u.username as sender_name
                     FROM direct_messages m
                     JOIN users u ON m.sender_id = u.id
                     WHERE (sender_id = ${user1} AND receiver_id = ${user2})
                        OR (sender_id = ${user2} AND receiver_id = ${user1})
                     ORDER BY created_at ASC
+                    LIMIT 100
                 `;
                 return res.status(200).json(messages);
             }

@@ -27,7 +27,8 @@ module.exports = async function handler(req, res) {
                     return res.status(200).json([]);
                 }
                 const myComms = await sql`
-                    SELECT c.* FROM communities c
+                    SELECT c.id, c.name, c.description, c.image_url, c.categoria, c.member_count, c.online_count, c.is_official
+                    FROM communities c
                     JOIN community_members cm ON c.id = cm.community_id
                     WHERE cm.user_id = ${userId}
                     ORDER BY c.id DESC
@@ -36,7 +37,11 @@ module.exports = async function handler(req, res) {
             }
 
             // Si no, devolvemos TODAS las comunidades normales
-            const allComms = await sql`SELECT * FROM communities ORDER BY id DESC`;
+            const allComms = await sql`
+                SELECT id, name, description, image_url, categoria, member_count, online_count, is_official 
+                FROM communities 
+                ORDER BY id DESC
+            `;
             return res.status(200).json(allComms);
         }
 
