@@ -55,6 +55,18 @@ export class DailyRewardComponent implements OnInit {
         setTimeout(() => {
           this.isSpinning = false;
           this.hasSpun = true;
+
+          // Update user balance locally after the spin finishes for suspense
+          if (this.prize && this.prize.type === 'peppix') {
+            const user = this.authService.currentUser();
+            if (user) {
+              const currentPeppix = typeof user.peppix === 'string' ? parseInt(user.peppix.replace(/\./g, ''), 10) : (user.peppix || 0);
+              this.authService.currentUser.set({
+                ...user,
+                peppix: currentPeppix + this.prize.value
+              });
+            }
+          }
         }, 4000); 
       },
       error: (err: any) => {

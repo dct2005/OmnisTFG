@@ -332,11 +332,7 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/user`, {
       action: 'claim-daily-reward',
       email: user?.email
-    }).pipe(
-      tap((res: any) => {
-        this.fetchCurrentUser();
-      })
-    );
+    });
   }
 
   updatePassword(oldPassword: string, newPassword: string): Observable<any> {

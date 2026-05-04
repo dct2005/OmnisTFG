@@ -1,12 +1,5 @@
 import { Routes, Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
-import { CommunitiesComponent } from './communities/communities';
-import { InformacionCommunities } from './informacion-communities/informacion-communities';
-import { CreateCommunity } from './create-community/create-community';
-import { Pagos } from './pagos/pagos';
-import { Compras } from './compras/compras';
 import { AuthService } from './services/auth';
 
 const guestGuard = () => {
@@ -42,8 +35,8 @@ export const routes: Routes = [
     },
     { path: 'catalogo', title: 'Catálogo', loadComponent: () => import('./catalog/catalog.component').then(m => m.CatalogComponent) },
     { path: 'game/:id', title: 'Detalles del Juego', loadComponent: () => import('./game-details/game-details.component').then(m => m.GameDetailsComponent) },
-    { path: 'login', title: 'Iniciar Sesión', component: LoginComponent, canActivate: [guestGuard] },
-    { path: 'register', title: 'Registro', component: RegisterComponent, canActivate: [guestGuard] },
+    { path: 'login', title: 'Iniciar Sesión', loadComponent: () => import('./login/login.component').then(m => m.LoginComponent), canActivate: [guestGuard] },
+    { path: 'register', title: 'Registro', loadComponent: () => import('./register/register.component').then(m => m.RegisterComponent), canActivate: [guestGuard] },
     {
         path: '',
         canActivate: [() => {
@@ -58,15 +51,15 @@ export const routes: Routes = [
             }
             return router.parseUrl('/home');
         }],
-        component: LoginComponent // Placeholder necesario para que actue el guard
+        loadComponent: () => import('./login/login.component').then(m => m.LoginComponent) // Placeholder necesario para que actue el guard
     },
-    { path: 'communities', title: 'Comunidades', component: CommunitiesComponent },
-    { path: 'informacion-communities/:id', title: 'Información de la Comunidad', component: InformacionCommunities },
-    { path: 'crear-comunidad', title: 'Crear Comunidad', component: CreateCommunity, canActivate: [authGuard] },
+    { path: 'communities', title: 'Comunidades', loadComponent: () => import('./communities/communities').then(m => m.CommunitiesComponent) },
+    { path: 'informacion-communities/:id', title: 'Información de la Comunidad', loadComponent: () => import('./informacion-communities/informacion-communities').then(m => m.InformacionCommunities) },
+    { path: 'crear-comunidad', title: 'Crear Comunidad', loadComponent: () => import('./create-community/create-community').then(m => m.CreateCommunity), canActivate: [authGuard] },
     { path: 'soporte', title: 'Soporte', loadComponent: () => import('./support/support.component').then(m => m.SupportComponent) },
     { path: 'admin', title: 'Administración', loadComponent: () => import('./admin/admin-dashboard.component').then(m => m.AdminDashboardComponent), canActivate: [adminGuard] },
-    { path: 'pagos', title: 'Pagos', component: Pagos },
-    { path: 'compras', title: 'Compras', component: Compras },
+    { path: 'pagos', title: 'Pagos', loadComponent: () => import('./pagos/pagos').then(m => m.Pagos) },
+    { path: 'compras', title: 'Compras', loadComponent: () => import('./compras/compras').then(m => m.Compras) },
     { path: 'account', title: 'Detalles de la Cuenta', loadComponent: () => import('./account-details/account-details.component').then(m => m.AccountDetailsComponent) },
     { path: 'perfil/:username', title: 'Perfil', loadComponent: () => import('./profile/profile.component').then(m => m.ProfileComponent) },
     { path: 'mensajes', title: 'Mensajes', loadComponent: () => import('./direct-messages/direct-messages').then(m => m.DirectMessagesComponent), canActivate: [authGuard] },
