@@ -4,14 +4,12 @@ import { routes } from './app.routes';
 
 // 1. IMPORTANTE: Importar esto
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { loadingInterceptor } from './interceptors/loading.interceptor';
-
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withPreloading(PreloadAllModules)),
 
     // 2. IMPORTANTE: Añadir esto. Sin esto, AuthService no funciona.
-    provideHttpClient(withFetch(), withInterceptors([loadingInterceptor]))
+    provideHttpClient(withFetch())
   ]
 };

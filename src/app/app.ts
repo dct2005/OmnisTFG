@@ -1,7 +1,6 @@
 import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
-import { GlobalLoadingComponent } from './shared/global-loading/global-loading.component';
 import { filter } from 'rxjs/operators';
 import { NotificationService } from './services/notification.service';
 import { AuthService } from './services/auth';
@@ -9,7 +8,7 @@ import { AuthService } from './services/auth';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, GlobalLoadingComponent],
+  imports: [RouterOutlet, NavbarComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
