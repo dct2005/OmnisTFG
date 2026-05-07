@@ -1,20 +1,24 @@
 <nav class="navbar">
     <div class="logo-container">
-        <a [routerLink]="authService.currentUser()?.role === 'administrador' ? '/admin' : '/'">
+        <a [routerLink]="authService.currentUser()?.role === 'administrador' ? '/admin' : '/'" (click)="closeMobileMenu()">
             <img src="images/logo.webp" alt="Omnis Logo" class="logo">
         </a>
     </div>
 
-    <div class="nav-links">
+    <button class="mobile-menu-btn" (click)="toggleMobileMenu()">
+        <span class="material-icons-round">{{ isMobileMenuOpen() ? 'close' : 'menu' }}</span>
+    </button>
+
+    <div class="nav-links" [class.mobile-open]="isMobileMenuOpen()">
         @if (authService.currentUser()?.role !== 'administrador') {
         <a routerLink="/home" class="nav-link" [routerLinkActiveOptions]="{exact: true}"
-            routerLinkActive="active">Inicio</a>
-        <a routerLink="/catalogo" class="nav-link" routerLinkActive="active">Catálogo</a>
-        <a routerLink="/communities" class="nav-link" routerLinkActive="active">Comunidad</a>
-        <a routerLink="/social" class="nav-link" routerLinkActive="active">Social</a>
-        <a routerLink="/soporte" class="nav-link" routerLinkActive="active">Soporte</a>
+            routerLinkActive="active" (click)="closeMobileMenu()">Inicio</a>
+        <a routerLink="/catalogo" class="nav-link" routerLinkActive="active" (click)="closeMobileMenu()">Catálogo</a>
+        <a routerLink="/communities" class="nav-link" routerLinkActive="active" (click)="closeMobileMenu()">Comunidad</a>
+        <a routerLink="/social" class="nav-link" routerLinkActive="active" (click)="closeMobileMenu()">Social</a>
+        <a routerLink="/soporte" class="nav-link" routerLinkActive="active" (click)="closeMobileMenu()">Soporte</a>
         } @else {
-        <a routerLink="/admin" class="nav-link admin-link" routerLinkActive="active">Administración</a>
+        <a routerLink="/admin" class="nav-link admin-link" routerLinkActive="active" (click)="closeMobileMenu()">Administración</a>
         }
     </div>
 

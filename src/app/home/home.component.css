@@ -217,3 +217,27 @@
         /* Hide buttons on mobile, use touch scroll */
     }
 }
+
+@media (max-width: 576px) {
+    .hero-title {
+        font-size: 1.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.9rem;
+        padding: 0 1rem;
+    }
+
+    .btn-cta {
+        padding: 0.6rem 2rem;
+        font-size: 1rem;
+    }
+
+    .games-section {
+        padding: 0 1rem;
+    }
+
+    .game-card {
+        width: 150px;
+    }
+}

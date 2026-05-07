@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common'; // IMPORTANTE para el ngClass
 export class NavbarComponent implements OnInit, OnDestroy {
   isDropdownOpen = signal(false);
   isNotificationsOpen = signal(false);
+  isMobileMenuOpen = signal(false);
   private statusInterval: any;
   private router = inject(Router);
 
@@ -65,6 +66,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   toggleDropdown() {
     this.isDropdownOpen.update(v => !v);
     this.isNotificationsOpen.set(false);
+  }
+
+  toggleMobileMenu() {
+    this.isMobileMenuOpen.update(v => !v);
+  }
+
+  closeMobileMenu() {
+    this.isMobileMenuOpen.set(false);
   }
 
   toggleNotifications() {
