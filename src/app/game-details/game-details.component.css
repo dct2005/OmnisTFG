@@ -547,3 +547,76 @@
   padding: 2rem;
   font-style: italic;
 }
+
+/* Responsive adjustments for game details */
+@media (max-width: 1024px) {
+  .game-details-wrapper {
+    flex-direction: column;
+  }
+
+  .similar-games-sidebar {
+    width: 100%;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .game-title {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+
+  .game-info-block {
+    flex-direction: column;
+  }
+
+  .game-cover {
+    flex: none;
+    width: 100%;
+    padding: 1.5rem;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .game-cover img {
+    max-height: 300px;
+  }
+
+  .game-summary {
+    padding: 1.5rem;
+  }
+
+  .summary-text {
+    min-width: unset;
+  }
+
+  .purchase-card {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .purchase-action {
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .btn-obtain {
+    width: 100%;
+  }
+
+  .additional-content-section, .reviews-section {
+    padding: 1.5rem;
+  }
+
+  .dlc-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+}

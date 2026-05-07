@@ -145,3 +145,40 @@
     box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
     transform: translateY(-2px);
 }
+
+@media (max-width: 768px) {
+    .compras-card {
+        padding: 30px 20px;
+    }
+
+    .compras-title {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+
+    .table-header, .table-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        text-align: center;
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .table-header {
+        display: none; /* Esconder cabecera en móvil, es más intuitivo apilado */
+    }
+
+    .col-price, .col-peppix, .col-action {
+        text-align: center;
+        justify-content: center;
+        padding-left: 0;
+    }
+
+    .table-divider {
+        display: none;
+    }
+
+    .character {
+        display: none; /* Esconder personajes si tapan contenido en móvil */
+    }
+}

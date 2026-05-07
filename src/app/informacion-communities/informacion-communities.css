@@ -647,6 +647,46 @@ button {
 }
 
 /* Responsive Design */
+@media (max-width: 768px) {
+    .banner {
+        height: auto;
+        min-height: 350px;
+    }
+
+    .banner-content {
+        position: relative;
+        padding: 1.5rem;
+        align-items: center;
+        text-align: center;
+    }
+
+    .banner-profile {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .avatar-container {
+        width: 6rem;
+        height: 6rem;
+    }
+
+    .community-info h1 {
+        font-size: 1.8rem;
+    }
+
+    .banner-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .edit-input-title {
+        width: 100%;
+        font-size: 1.5rem;
+        text-align: center;
+    }
+}
+
 @media (min-width: 1024px) {
     .nav-links {
         display: flex;
