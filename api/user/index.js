@@ -208,7 +208,7 @@ module.exports = async function handler(req, res) {
                 if (!id) return res.status(400).json({ error: 'Falta id' });
                 // Evitamos SELECT * para ahorrar ancho de banda, especialmente por campos de imagen/música si fueran pesados
                 const users = await sql`
-                    SELECT id, username, email, name, role, created_at, xp, peppix, country, state, city, 
+                    SELECT id, username, email, role, created_at, xp, peppix, country, state, city, 
                            privacy_profile, privacy_games, privacy_inventory, privacy_comments, 
                            status_message, estado, last_activity, current_activity, profile_image, 
                            profile_background, selected_badge_id, display_comments_type, 
@@ -722,7 +722,7 @@ module.exports = async function handler(req, res) {
             let user;
             if (email) {
                 const users = await sql`
-                    SELECT id, username, email, name, role, created_at, xp, peppix, country, state, city, 
+                    SELECT id, username, email, role, created_at, xp, peppix, country, state, city, 
                            privacy_profile, privacy_games, privacy_inventory, privacy_comments, 
                            status_message, estado, last_activity, current_activity, profile_image, 
                            profile_background, selected_badge_id, display_comments_type, 
@@ -735,7 +735,7 @@ module.exports = async function handler(req, res) {
                 user = users[0];
             } else if (username) {
                 const users = await sql`
-                    SELECT id, username, email, name, role, created_at, xp, peppix, country, state, city, 
+                    SELECT id, username, email, role, created_at, xp, peppix, country, state, city, 
                            privacy_profile, privacy_games, privacy_inventory, privacy_comments, 
                            status_message, estado, last_activity, current_activity, profile_image, 
                            profile_background, selected_badge_id, display_comments_type, 
