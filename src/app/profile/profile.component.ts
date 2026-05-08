@@ -112,6 +112,24 @@ export class ProfileComponent implements OnDestroy {
   commentsOffset = signal(0);
   hasMoreComments = signal(true);
 
+  // Pagination
+  currentPage = 1;
+  pageSize = 5;
+
+  paginatedComments() {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    return this.comments().slice(start, end);
+  }
+
+  totalPages() {
+    return Math.max(1, Math.ceil(this.comments().length / this.pageSize));
+  }
+
+  changePage(delta: number) {
+    this.currentPage += delta;
+  }
+
   isOwnProfile = computed(() => {
     const current = this.authService.currentUser();
     const viewed = this.viewedUser();
@@ -507,6 +525,46 @@ export class ProfileComponent implements OnDestroy {
       confirmButtonText: 'Genial',
       confirmButtonColor: '#00f2ff',
       showCloseButton: true
+    });
+  }
+
+  showAllBadges() {
+    const badges = this.viewedUser()?.badges || [];
+    if (!badges || badges.length === 0) {
+      Swal.fire({
+        title: 'Insignias',
+        text: 'Aún no tiene insignias.',
+        icon: 'info',
+        background: '#0d1b2a',
+        color: '#ffffff',
+        confirmButtonColor: '#00f2ff'
+      });
+      return;
+    }
+
+    let badgesHtml = `<div style="max-height: 400px; overflow-y: auto; padding: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; text-align: center;">`;
+
+    badges.forEach((b: any) => {
+      badgesHtml += `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer;" onclick="Swal.clickConfirm()">
+          <img src="${b.icon}" style="width: 60px; height: 60px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0,242,255,0.3));" title="${b.description}">
+          <span style="color: #fff; font-size: 0.85rem; font-weight: 600;">${b.name}</span>
+        </div>
+      `;
+    });
+
+    badgesHtml += '</div>';
+
+    Swal.fire({
+      title: `<span style="color: #00f2ff; letter-spacing: 2px;">INSIGNIAS DE USUARIO</span>`,
+      html: badgesHtml,
+      width: '600px',
+      background: '#050510',
+      showConfirmButton: false,
+      showCloseButton: true,
+      customClass: {
+        popup: 'swal-premium-popup'
+      }
     });
   }
 
