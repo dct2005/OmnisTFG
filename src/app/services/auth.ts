@@ -33,7 +33,7 @@ export class AuthService {
         const payload = JSON.parse(atob(token.split('.')[1]));
         console.log('[Auth] initializeFromToken - payload:', payload);
         // Seteamos lo mínimo necesario para que fetchCurrentUser pueda funcionar
-        this.currentUser.set({ email: payload.email, id: payload.id, role: payload.role });
+        this.currentUser.set({ email: payload.email, id: payload.id, username: payload.username, role: payload.role });
         this.fetchCurrentUser(); // Sincronizamos con el servidor
       } catch (e) {
         console.error('[Auth] Error parsing token:', e);
@@ -158,7 +158,7 @@ export class AuthService {
         .subscribe({
           next: (res: any) => {
             const currentUser = this.currentUser();
-            if (res.user && currentUser && currentUser.id === res.user.id) {
+            if (res.user && currentUser && currentUser.id == res.user.id) {
               this.currentUser.set({
                 ...res.user,
                 unreadNotifications: res.unreadNotifications || []

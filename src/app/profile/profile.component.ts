@@ -115,7 +115,7 @@ export class ProfileComponent implements OnDestroy {
   isOwnProfile = computed(() => {
     const current = this.authService.currentUser();
     const viewed = this.viewedUser();
-    return current && viewed && current.id === viewed.id;
+    return current && viewed && current.id == viewed.id;
   });
 
   statusLabel = computed(() => {

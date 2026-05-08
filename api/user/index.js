@@ -1026,8 +1026,13 @@ module.exports = async function handler(req, res) {
             if (action === 'register') {
                 if (!name || !username || !password) return res.status(400).json({ error: 'Faltan datos' });
 
-                const userCheck = await sql`SELECT * FROM users WHERE email = ${username}`;
-                if (userCheck.length > 0) return res.status(409).json({ error: 'El usuario ya existe' });
+                // Verificamos si el email ya existe
+                const emailCheck = await sql`SELECT id FROM users WHERE email = ${username}`;
+                if (emailCheck.length > 0) return res.status(409).json({ error: 'Este correo electrónico ya está registrado' });
+
+                // Verificamos si el nombre de usuario (display name) ya existe
+                const usernameCheck = await sql`SELECT id FROM users WHERE username = ${name}`;
+                if (usernameCheck.length > 0) return res.status(409).json({ error: 'Este nombre de usuario ya está en uso' });
 
                 const hashedPassword = await bcrypt.hash(password, 10);
                 const inserted = await sql`
@@ -1036,7 +1041,7 @@ module.exports = async function handler(req, res) {
                     RETURNING id, username, email, peppix, estado, role, created_at
                 `;
                 const user = inserted[0];
-                const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+                const token = jwt.sign({ id: user.id, email: user.email, username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
                 return res.status(201).json({ 
                     message: 'Registrado correctamente', 
                     token,
@@ -1053,7 +1058,7 @@ module.exports = async function handler(req, res) {
                 const valid = await bcrypt.compare(password, user.password);
                 if (!valid) return res.status(401).json({ error: 'Contraseña incorrecta' });
 
-                const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+                const token = jwt.sign({ id: user.id, email: user.email, username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
                 return res.status(200).json({
                     token, message: 'Login exitoso', user: {
                         id: user.id,
