@@ -67,7 +67,7 @@ export class DailyRewardComponent implements OnInit {
               });
             }
           }
-        }, 4000); 
+        }, 5000); 
       },
       error: (err: any) => {
         console.error('Error claiming reward:', err);
