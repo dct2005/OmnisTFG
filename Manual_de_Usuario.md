@@ -1,10 +1,51 @@
-# Manual de Usuario - Omnis
+# Manual del Proyecto y Usuario - Omnis
 
-Bienvenido al Manual de Usuario de Omnis. Esta guía está diseñada para ayudarte a conocer y utilizar todas las funciones que ofrece nuestra plataforma, desde la navegación básica hasta la gestión de tu perfil, compras de juegos y participación en comunidades.
+Bienvenido al manual integral de **Omnis**. Este documento combina la visión técnica y estratégica del proyecto con la guía detallada para el usuario final.
 
 ---
 
-## 1. Acceso y Requisitos del Sistema
+## 1. Visión Global del Proyecto
+
+### Origen y Motivación
+**Fundamentación:** El proyecto Omnis nace de la necesidad de evolucionar las plataformas de gestión de videojuegos hacia un modelo más social e inmersivo. Mientras que las tiendas actuales se centran en la transacción, Omnis prioriza la experiencia del usuario y la identidad digital del gamer.
+
+**Proceso de Gestación:** La idea surgió al analizar la falta de cohesión estética en las redes sociales de gaming actuales. Se buscó crear un ecosistema unificado que utilizara un lenguaje de diseño moderno (*Glassmorphism* y efectos *Aurora*) para ofrecer una sensación premium, alejándose de las interfaces industriales y planas de la competencia.
+
+### Finalidad y Público Objetivo
+**Problema que resuelve:** Centraliza la fragmentación social del gaming. Omnis resuelve la desconexión entre la compra del juego, la interacción con la comunidad y la progresión personal (recompensas y estatus).
+
+**Objetivos Principales:**
+- Ofrecer un catálogo de juegos interactivo con gestión de biblioteca real.
+- Implementar un sistema social completo (mensajería, amistades, comunidades).
+- Gamificar la experiencia mediante sistemas de recompensas diarias (Quests) y rankings globales.
+
+**Perfil del Usuario:** Gamers entusiastas, coleccionistas de contenido digital y usuarios que buscan una plataforma social estéticamente superior para gestionar su vida digital en los videojuegos.
+
+---
+
+## 2. Arquitectura y Stack Tecnológico
+
+El proyecto utiliza un stack de vanguardia para asegurar rendimiento y escalabilidad:
+
+- **Frontend:** **Angular 20**. Se han utilizado **Signals** para una gestión de estado reactiva y eficiente. El diseño es **Vanilla CSS** puro, implementando efectos visuales avanzados (Fondo Aurora, Glassmorphism) sin dependencias externas.
+- **Backend:** **Node.js** con arquitectura de funciones Serverless. La lógica de negocio reside en una API centralizada desplegada en **Vercel**.
+- **Base de Datos (DB):** **PostgreSQL** (alojado en **Supabase/Neon**), optimizado con consultas SQL nativas y relaciones complejas para la gestión de amigos, transacciones y mensajes.
+- **Estrategia de Despliegue:** Integración continua (CI/CD) mediante **Vercel**, permitiendo despliegues automáticos con cada actualización de código.
+
+---
+
+## 3. Metodología de Trabajo
+
+**Metodología adoptada:** Se ha seguido una metodología **Ágil (Scrum/Kanban)**, trabajando en ciclos iterativos de desarrollo para asegurar una evolución constante del producto.
+
+**Herramientas de Gestión:**
+- **Trello/Jira:** Para el control del flujo de trabajo y priorización de tareas.
+- **Git/GitHub:** Para el control de versiones y colaboración.
+- **Documentación:** Gestión continua de manuales técnicos y de usuario para asegurar la transferibilidad del conocimiento.
+
+---
+
+## 4. Acceso y Requisitos del Sistema
 
 ### Acceso a la Plataforma
 Puedes acceder a la aplicación desde cualquier navegador web a través del siguiente enlace:
@@ -23,7 +64,7 @@ Para garantizar una experiencia fluida, asegúrate de cumplir con los siguientes
 
 ---
 
-## 2. Instalación y Configuración
+## 5. Instalación y Configuración
 
 Omnis es una aplicación web progresiva (Web App), lo que significa que **no requiere instalación previa ni descargas de archivos APK o ejecutables**. 
 
@@ -35,7 +76,7 @@ Omnis es una aplicación web progresiva (Web App), lo que significa que **no req
 
 ---
 
-## 3. Roles de Usuario
+## 6. Roles de Usuario
 
 El sistema cuenta con dos tipos de perfiles, cada uno con diferentes niveles de acceso:
 
@@ -49,7 +90,7 @@ El sistema cuenta con dos tipos de perfiles, cada uno con diferentes niveles de 
 
 ---
 
-## 4. Guía de Navegación
+## 7. Guía de Navegación
 
 La interfaz de Omnis está diseñada para ser intuitiva. A continuación, se describen los elementos principales del menú de navegación.
 
@@ -76,7 +117,7 @@ Ubicados en la esquina superior derecha:
 
 ---
 
-## 5. Guía de Funciones (Paso a Paso)
+## 8. Guía de Funciones (Paso a Paso)
 
 A continuación, explicamos cómo realizar las operaciones más importantes en la plataforma.
 
