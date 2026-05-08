@@ -39,7 +39,7 @@
             <span class="price">{{ game.peppixPrice || '4999' }} <span class="peppix-icon"></span></span>
             }
             <div style="display: flex; gap: 10px;">
-              <button class="btn-obtain" [class.owned]="isOwned" [disabled]="isOwned" (click)="onObtenerClick(game.peppixPrice || '4999')">
+              <button class="btn-obtain" [class.owned]="isOwned" [disabled]="isOwned" (click)="onObtenerClick(game.id, game.name, game.peppixPrice || '4999')">
                 {{ isOwned ? 'Obtenido' : (currentUser() ? 'Comprar' : 'Obtener') }}
               </button>
               @if (isOwned) {
@@ -59,7 +59,7 @@
             <span class="price">{{ edition.peppixPrice || '1999' }} <span class="peppix-icon"></span></span>
             }
             <div style="display: flex; gap: 10px;">
-              <button class="btn-obtain" [class.owned]="isItemOwned(edition.id)" [disabled]="isItemOwned(edition.id)" (click)="onObtenerClick(edition.peppixPrice || '1999')">
+              <button class="btn-obtain" [class.owned]="isItemOwned(edition.id)" [disabled]="isItemOwned(edition.id)" (click)="onObtenerClick(edition.id, edition.name, edition.peppixPrice || '1999')">
                 {{ isItemOwned(edition.id) ? 'Obtenido' : (currentUser() ? 'Comprar' : 'Obtener') }}
               </button>
               @if (isItemOwned(edition.id)) {

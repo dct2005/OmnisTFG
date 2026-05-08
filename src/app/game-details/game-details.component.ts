@@ -167,23 +167,27 @@ export class GameDetailsComponent implements OnInit {
     this.router.navigate(['/game', id]);
   }
 
-  onObtenerClick(priceStr: string | number) {
+  onObtenerClick(itemId: number | string, itemName: string, priceStr: string | number) {
     const user = this.currentUser();
     if (!user) {
       this.router.navigate(['/catalogo'], { queryParams: { tab: 'mine' } });
       return;
     }
 
-    if (!this.game) return;
-
     const price = parseInt(priceStr.toString().replace(/\./g, ''), 10);
     const currentPeppix = typeof user.peppix === 'string' ? parseInt(user.peppix.toString().replace(/\./g, ''), 10) : (user.peppix || 0);
 
     if (currentPeppix >= price) {
-      this.authService.purchaseGame(this.game.id, price, this.game.name).subscribe({
+      this.authService.purchaseGame(itemId, price, itemName).subscribe({
         next: () => {
-          this.isOwned = true;
-          this.ownedGameIds.push(this.game!.id.toString());
+          this.ownedGameIds = [...this.ownedGameIds, itemId.toString()];
+          this.checkIfOwned();
+          
+          this.authService.currentUser.set({
+            ...user,
+            peppix: currentPeppix - price
+          });
+
           Swal.fire({
             title: '¡Gracias por tu compra!',
             text: 'El juego se ha añadido a tu biblioteca.',
