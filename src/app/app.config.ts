@@ -15,13 +15,13 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     
     provideFirebaseApp(() => initializeApp({
-      // Reemplaza esto con tu configuración de Firebase real
-      projectId: "TU_PROJECT_ID",
-      appId: "TU_APP_ID",
-      storageBucket: "TU_STORAGE_BUCKET",
-      apiKey: "TU_API_KEY",
-      authDomain: "TU_AUTH_DOMAIN",
-      messagingSenderId: "TU_MESSAGING_SENDER_ID"
+      apiKey: "AIzaSyCm_eSF_6WNT8QDvQ5PjnAr-XeCKxLHuNo",
+      authDomain: "omnistfg.firebaseapp.com",
+      projectId: "omnistfg",
+      storageBucket: "omnistfg.firebasestorage.app",
+      messagingSenderId: "670880231687",
+      appId: "1:670880231687:web:083457a63eaa54527d55a2",
+      measurementId: "G-MJWWNEXKF2"
     })),
     provideAuth(() => getAuth())
   ]
