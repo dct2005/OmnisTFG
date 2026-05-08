@@ -38,9 +38,16 @@
             @if (!isOwned) {
             <span class="price">{{ game.peppixPrice || '4999' }} <span class="peppix-icon"></span></span>
             }
-            <button class="btn-obtain" [class.owned]="isOwned" [disabled]="isOwned" (click)="onObtenerClick(game.peppixPrice || '4999')">
-              {{ isOwned ? 'Obtenido' : (currentUser() ? 'Comprar' : 'Obtener') }}
-            </button>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn-obtain" [class.owned]="isOwned" [disabled]="isOwned" (click)="onObtenerClick(game.peppixPrice || '4999')">
+                {{ isOwned ? 'Obtenido' : (currentUser() ? 'Comprar' : 'Obtener') }}
+              </button>
+              @if (isOwned) {
+              <a href="/juego.rar" download class="btn-obtain" style="background: #2563eb; color: #fff; text-decoration: none; padding: 0 20px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.95rem; opacity: 1; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); border: 2px solid #3b82f6;">
+                <i class="fas fa-download" style="margin-right: 8px;"></i> Instalar
+              </a>
+              }
+            </div>
           </div>
         </div>
 
@@ -51,9 +58,16 @@
             @if (!isItemOwned(edition.id)) {
             <span class="price">{{ edition.peppixPrice || '1999' }} <span class="peppix-icon"></span></span>
             }
-            <button class="btn-obtain" [class.owned]="isItemOwned(edition.id)" [disabled]="isItemOwned(edition.id)" (click)="onObtenerClick(edition.peppixPrice || '1999')">
-              {{ isItemOwned(edition.id) ? 'Obtenido' : (currentUser() ? 'Comprar' : 'Obtener') }}
-            </button>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn-obtain" [class.owned]="isItemOwned(edition.id)" [disabled]="isItemOwned(edition.id)" (click)="onObtenerClick(edition.peppixPrice || '1999')">
+                {{ isItemOwned(edition.id) ? 'Obtenido' : (currentUser() ? 'Comprar' : 'Obtener') }}
+              </button>
+              @if (isItemOwned(edition.id)) {
+              <a href="/juego.rar" download class="btn-obtain" style="background: #2563eb; color: #fff; text-decoration: none; padding: 0 20px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.95rem; opacity: 1; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); border: 2px solid #3b82f6;">
+                <i class="fas fa-download" style="margin-right: 8px;"></i> Instalar
+              </a>
+              }
+            </div>
           </div>
         </div>
         }
