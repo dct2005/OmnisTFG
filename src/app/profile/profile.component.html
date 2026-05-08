@@ -33,13 +33,6 @@
           <span class="user-location-inline" *ngIf="user?.city || user?.state || user?.country">
           </span>
         </div>
-        <div class="loyalty-badges-row" *ngIf="viewedUser()?.badges?.length > 0">
-            @for (badge of viewedUser().badges; track badge.id) {
-                <div class="premium-tooltip-container" [attr.data-tooltip]="badge.description">
-                    <div class="loyalty-badge-item" [class]="'badge-' + badge.id"></div>
-                </div>
-            }
-        </div>
       </div>
 
       <div class="header-actions-inline">
@@ -168,31 +161,7 @@
         </ng-template>
       </div>
 
-      <div class="section-card friends-activity" *ngIf="friendActivities().length > 0">
-        <h2 class="section-title">Actividad Reciente de Amigos</h2>
-        <div class="activity-feed">
-          <div class="activity-item" *ngFor="let activity of friendActivities()">
-            <img [src]="activity.profile_image || 'https://ui-avatars.com/api/?name=' + activity.username" 
-                 class="activity-user-avatar" 
-                 [routerLink]="['/perfil', activity.username]">
-            <div class="activity-details">
-              <p class="activity-text">
-                <span class="activity-username" [routerLink]="['/perfil', activity.username]">{{ activity.username }}</span>
-                <ng-container [ngSwitch]="activity.type">
-                  <span *ngSwitchCase="'purchase'"> acaba de comprar el juego </span>
-                  <span *ngSwitchCase="'join_community'"> acaba de unirse a la comunidad </span>
-                  <span *ngSwitchDefault> ha realizado una acción en </span>
-                </ng-container>
-                <span class="activity-target" 
-                      [routerLink]="activity.type === 'purchase' ? ['/game', activity.target_id] : ['/informacion-communities', activity.target_id]">
-                  {{ activity.target_name }}
-                </span>
-              </p>
-              <span class="activity-time">{{ activity.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+
 
       <div class="section-card comments-section">
         <h2 class="section-title">
@@ -208,7 +177,7 @@
         </div>
 
         <div class="comments-list" *ngIf="comments().length > 0; else noComments">
-          <div class="comment-item" *ngFor="let comment of comments()">
+          <div class="comment-item" *ngFor="let comment of paginatedComments()">
             
             <img *ngIf="user?.display_comments_type === 'profile'" 
                  [src]="comment.author_image || 'https://ui-avatars.com/api/?name=' + comment.author_name" 
@@ -240,9 +209,11 @@
             </div>
           </div>
 
-          <button class="btn-load-more" *ngIf="hasMoreComments()" (click)="loadMoreComments()">
-            Cargar más comentarios
-          </button>
+          <div class="pagination-controls" *ngIf="totalPages() > 1" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+            <button (click)="changePage(-1)" [disabled]="currentPage === 1" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 15px; border-radius: 4px; cursor: pointer;">Anterior</button>
+            <span style="display: flex; align-items: center; color: var(--text-muted);">Página {{ currentPage }} de {{ totalPages() }}</span>
+            <button (click)="changePage(1)" [disabled]="currentPage === totalPages()" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 15px; border-radius: 4px; cursor: pointer;">Siguiente</button>
+          </div>
         </div>
         <ng-template #noComments>
           <p class="no-data">No hay contenido para mostrar aún.</p>
@@ -269,16 +240,10 @@
           <span class="link-label">PREMIOS DEL PERFIL</span>
         </div>
 
-        <div class="link-item badges-link">
+        <div class="link-item" (click)="showAllBadges()" style="cursor: pointer;">
           <div class="link-header">
             <span class="link-label">INSIGNIAS</span>
             <span class="badge-count" *ngIf="user?.badges?.length">{{ user?.badges?.length }}</span>
-          </div>
-          <div class="badges-mini-gallery" *ngIf="user?.badges?.length">
-            <div class="badge-wrapper" *ngFor="let badge of user?.badges" (click)="showBadgeDetail(badge)"
-              style="cursor: pointer;">
-              <img [src]="badge.icon" class="mini-badge" [alt]="badge.name">
-            </div>
           </div>
         </div>
 

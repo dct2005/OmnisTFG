@@ -111,7 +111,7 @@
                 }
 
                 <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    @for (post of posts; track post.id) {
+                    @for (post of paginatedPosts; track post.id) {
                     <div class="glass-panel post-card">
                         <div class="post-author">
                         <div class="post-info-clickable" [routerLink]="['/perfil', post.author]" style="cursor: pointer;">
@@ -136,6 +136,12 @@
                         No hay mensajes aún. ¡Sé el primero en saludar!
                     </div>
                     }
+                </div>
+
+                <div class="pagination-controls" *ngIf="totalPages > 1" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+                    <button (click)="changePage(-1)" [disabled]="currentPage === 1" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 15px; border-radius: 4px; cursor: pointer;">Anterior</button>
+                    <span style="display: flex; align-items: center; color: var(--text-muted);">Página {{ currentPage }} de {{ totalPages }}</span>
+                    <button (click)="changePage(1)" [disabled]="currentPage === totalPages" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 15px; border-radius: 4px; cursor: pointer;">Siguiente</button>
                 </div>
             </div>
 
@@ -186,7 +192,7 @@
                 }
 
                 <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    @for (post of posts; track post.id) {
+                    @for (post of paginatedPosts; track post.id) {
                         @if (post.image_url) {
                             <div class="glass-panel post-card">
                                 <div class="post-author">
@@ -214,6 +220,12 @@
                             <p>No hay publicaciones multimedia aún.</p>
                         </div>
                     }
+                </div>
+
+                <div class="pagination-controls" *ngIf="totalPages > 1" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+                    <button (click)="changePage(-1)" [disabled]="currentPage === 1" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 15px; border-radius: 4px; cursor: pointer;">Anterior</button>
+                    <span style="display: flex; align-items: center; color: var(--text-muted);">Página {{ currentPage }} de {{ totalPages }}</span>
+                    <button (click)="changePage(1)" [disabled]="currentPage === totalPages" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 5px 15px; border-radius: 4px; cursor: pointer;">Siguiente</button>
                 </div>
             </div>
         </section>

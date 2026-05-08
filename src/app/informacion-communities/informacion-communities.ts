@@ -26,6 +26,25 @@ export class InformacionCommunities implements OnInit {
   members: any[] = [];
   newMessage: string = '';
   posts: any[] = [];
+  
+  // Pagination
+  currentPage: number = 1;
+  pageSize: number = 5;
+
+  get paginatedPosts() {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    return this.posts.slice(start, end);
+  }
+
+  get totalPages() {
+    return Math.max(1, Math.ceil(this.posts.length / this.pageSize));
+  }
+
+  changePage(delta: number) {
+    this.currentPage += delta;
+  }
+
   currentTab: 'general' | 'media' = 'general';
   mediaPreview: string | ArrayBuffer | null = null;
   uploadingMedia: boolean = false;
