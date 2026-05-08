@@ -1071,6 +1071,46 @@ module.exports = async function handler(req, res) {
                 });
             }
 
+            if (action === 'google-login') {
+                const { email, name, photoUrl, uid } = req.body;
+                if (!email || !uid) return res.status(400).json({ error: 'Faltan datos' });
+
+                let users = await sql`SELECT * FROM users WHERE email = ${email}`;
+                let user;
+
+                if (users.length === 0) {
+                    // Create user if they don't exist
+                    const hashedPassword = await bcrypt.hash(uid, 10); // Use uid as a fallback password, though they shouldn't use it directly
+                    const inserted = await sql`
+                        INSERT INTO users (username, email, password, profile_image, peppix, estado, role) 
+                        VALUES (${name || email.split('@')[0]}, ${email}, ${hashedPassword}, ${photoUrl || null}, 0, 'en-linea', 'cliente')
+                        RETURNING id, username, email, profile_image, peppix, estado, role, created_at
+                    `;
+                    user = inserted[0];
+                } else {
+                    user = users[0];
+                    // Optionally update profile image if they didn't have one
+                    if (!user.profile_image && photoUrl) {
+                        await sql`UPDATE users SET profile_image = ${photoUrl} WHERE id = ${user.id}`;
+                        user.profile_image = photoUrl;
+                    }
+                }
+
+                const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+                return res.status(200).json({
+                    token, message: 'Login con Google exitoso', user: {
+                        id: user.id,
+                        username: user.username,
+                        email: user.email,
+                        profile_image: user.profile_image,
+                        peppix: user.peppix,
+                        estado: user.estado,
+                        role: user.role,
+                        created_at: user.created_at
+                    }
+                });
+            }
+
             if (action === 'update-estado') {
                 if (!email || !estado) return res.status(400).json({ error: 'Faltan datos' });
                 const updated = await sql`UPDATE users SET estado = ${estado} WHERE email = ${email} RETURNING id, username, email, peppix, estado`;

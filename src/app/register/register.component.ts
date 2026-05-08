@@ -64,4 +64,43 @@ export class RegisterComponent {
             }
         });
     }
+
+    loginWithGoogle() {
+        console.log('Intentando iniciar sesión con Google...');
+        this.authService.loginWithGoogle().subscribe({
+            next: (response: any) => {
+                console.log('Registro/Login con Google exitoso:', response);
+
+                Swal.fire({
+                    title: '¡Registro/Login exitoso!',
+                    text: 'Bienvenido a Omnis.',
+                    icon: 'success',
+                    background: '#1a103c',
+                    color: '#ffffff',
+                    confirmButtonColor: '#7c3aed',
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    this.router.navigate(['/']);
+                });
+            },
+            error: (error) => {
+                console.error('Error del login con Google:', error);
+                
+                let mensaje = error.error?.error || error.error?.message || error.message || 'Error al iniciar sesión con Google';
+                if (typeof mensaje === 'object') {
+                    mensaje = JSON.stringify(mensaje);
+                }
+
+                Swal.fire({
+                    title: 'Error de acceso',
+                    text: mensaje,
+                    icon: 'error',
+                    background: '#1a103c',
+                    color: '#ffffff',
+                    confirmButtonColor: '#7c3aed'
+                });
+            }
+        });
+    }
 }
