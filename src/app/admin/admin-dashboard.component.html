@@ -468,7 +468,7 @@
                                     <td>{{ comm.categoria }}</td>
                                     <td>{{ comm.num_members }}</td>
                                     <td>
-                                        <button class="btn-action delete" (click)="deleteCommunity(comm.id, comm.name)">Eliminar</button>
+                                        <button class="btn-action delete" (click)="$event.stopPropagation(); deleteCommunity(comm.id, comm.name)">Eliminar</button>
                                     </td>
                                 </tr>
                             }

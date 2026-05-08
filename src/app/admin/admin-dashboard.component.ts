@@ -317,7 +317,6 @@ export class AdminDashboardComponent implements OnInit {
         if (deleteBtn) {
           deleteBtn.onclick = () => {
             this.deleteCommunity(community.id, community.name);
-            Swal.close();
           };
         }
       }
