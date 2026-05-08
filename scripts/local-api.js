@@ -10,8 +10,8 @@ app.use(express.json());
 
 // Import the serverless function
 const gamesHandler = require('../api/games');
-const genresHandler = require('../api/genres');
-const themesHandler = require('../api/themes');
+const metadataHandler = require('../api/metadata');
+const userHandler = require('../api/user/index');
 
 // Create a wrapper to adapt Express req/res to the function signature if needed
 // But since the function uses res.status().json(), it's already compatible with Express
@@ -26,22 +26,22 @@ app.all('/api/games', async (req, res) => {
     }
 });
 
-app.all('/api/genres', async (req, res) => {
+app.all('/api/metadata', async (req, res) => {
     try {
-        await genresHandler(req, res);
+        await metadataHandler(req, res);
     } catch (error) {
-        console.error('Error in Genres handler:', error);
+        console.error('Error in Metadata handler:', error);
         if (!res.headersSent) {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     }
 });
 
-app.all('/api/themes', async (req, res) => {
+app.all('/api/user', async (req, res) => {
     try {
-        await themesHandler(req, res);
+        await userHandler(req, res);
     } catch (error) {
-        console.error('Error in Themes handler:', error);
+        console.error('Error in User handler:', error);
         if (!res.headersSent) {
             res.status(500).json({ error: 'Internal Server Error' });
         }

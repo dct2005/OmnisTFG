@@ -1,7 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-
+import { Observable, tap, from } from 'rxjs';
+import { Auth, signInWithPopup, GoogleAuthProvider } from '@angular/fire/auth';
 @Injectable({
   providedIn: 'root'
 })
@@ -11,6 +11,7 @@ export class AuthService {
 
   currentUser = signal<any>(null);
   private http = inject(HttpClient);
+  private auth = inject(Auth);
 
   constructor() {
     this.initializeFromToken();
@@ -70,6 +71,27 @@ export class AuthService {
         }
       })
     );
+  }
+
+  loginWithGoogle(): Observable<any> {
+    return from(signInWithPopup(this.auth, new GoogleAuthProvider()).then(result => {
+      const user = result.user;
+      return this.http.post(`${this.apiUrl}/user`, {
+        action: 'google-login',
+        email: user.email,
+        name: user.displayName,
+        photoUrl: user.photoURL,
+        uid: user.uid
+      }).toPromise();
+    }).then((res: any) => {
+      if (res.token) {
+        localStorage.setItem('token', res.token);
+      }
+      if (res.user) {
+        this.currentUser.set(res.user);
+      }
+      return res;
+    }));
   }
 
   logout(event?: Event) {
