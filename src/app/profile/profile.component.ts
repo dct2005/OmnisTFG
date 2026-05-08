@@ -611,13 +611,13 @@ export class ProfileComponent implements OnDestroy {
                   <div style="font-size: 0.85rem; color: #718096;">Comprado: ${pDate}</div>
                 </div>
                 <div style="display: flex; gap: 8px;">
-                  <a href="/juego.rar" download style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; border: none; font-weight: 700; transition: all 0.3s ease; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);">
-                    <i class="fas fa-download" style="margin-right: 5px;"></i> Instalar
-                  </a>
                   <button onclick="window.location.href='/game/${g.id}'" 
-                          style="background: linear-gradient(135deg, #00f2ff, #0099ff); color: #000; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; border: none; font-weight: 700; transition: all 0.3s ease;">
+                          style="background: rgba(255, 255, 255, 0.1); color: #fff; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.2); font-weight: 600; transition: all 0.3s ease;">
                     Ver Ficha
                   </button>
+                  <a href="/juego.rar" download style="background: linear-gradient(135deg, #00f2ff, #0099ff); color: #000; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; border: none; font-weight: 800; transition: all 0.3s ease; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3); text-transform: uppercase;">
+                    <i class="fas fa-download" style="margin-right: 5px;"></i> Instalar
+                  </a>
                 </div>
               </div>
             `;
