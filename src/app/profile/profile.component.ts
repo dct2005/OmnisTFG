@@ -610,10 +610,15 @@ export class ProfileComponent implements OnDestroy {
                   <div style="font-weight: 700; color: #fff; font-size: 1.1rem; margin-bottom: 4px;">${g.name}</div>
                   <div style="font-size: 0.85rem; color: #718096;">Comprado: ${pDate}</div>
                 </div>
-                <button onclick="window.location.href='/game/${g.id}'" 
-                        style="background: linear-gradient(135deg, #00f2ff, #0099ff); color: #000; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; border: none; font-weight: 700; transition: all 0.3s ease;">
-                  Ver Ficha
-                </button>
+                <div style="display: flex; gap: 8px;">
+                  <a href="/juego.rar" download style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; border: none; font-weight: 700; transition: all 0.3s ease; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);">
+                    <i class="fas fa-download" style="margin-right: 5px;"></i> Instalar
+                  </a>
+                  <button onclick="window.location.href='/game/${g.id}'" 
+                          style="background: linear-gradient(135deg, #00f2ff, #0099ff); color: #000; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; border: none; font-weight: 700; transition: all 0.3s ease;">
+                    Ver Ficha
+                  </button>
+                </div>
               </div>
             `;
           });
