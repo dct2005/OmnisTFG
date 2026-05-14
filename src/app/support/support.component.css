@@ -45,7 +45,7 @@ h1 {
   color: #94a3b8;
 }
 
-/* Main Menu Options */
+/* Opciones del menú principal */
 .support-options {
   display: flex;
   flex-direction: column;
@@ -112,7 +112,7 @@ h1 {
   transform: translateY(-2px);
 }
 
-/* Sections */
+/* Secciones */
 .section-title {
   margin-bottom: 30px;
 }
@@ -126,7 +126,7 @@ h1 {
   color: #64748b;
 }
 
-/* Content Container */
+/* Contenedor de contenido */
 .support-content {
   background: rgba(15, 12, 30, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.03);
@@ -136,7 +136,7 @@ h1 {
   animation: slideUp 0.4s ease-out;
 }
 
-/* Game Selection Grid */
+/* Cuadrícula de selección de juegos */
 .game-list {
   display: grid;
   grid-template-columns: 1fr;
@@ -186,7 +186,7 @@ h1 {
   color: #64748b;
 }
 
-/* Form Styling */
+/* Estilo de formulario */
 .form-header-premium {
   display: flex;
   align-items: center;
@@ -303,7 +303,7 @@ textarea:focus, input[type="text"]:focus {
   filter: grayscale(1);
 }
 
-/* Ticket Grid */
+/* Cuadrícula de boletos */
 .ticket-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -423,7 +423,7 @@ textarea:focus, input[type="text"]:focus {
   margin: 0;
 }
 
-/* States */
+
 .empty-state {
   text-align: center;
   padding: 40px;

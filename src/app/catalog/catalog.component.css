@@ -8,7 +8,7 @@
     padding-bottom: 2rem;
 }
 
-/* Header Section */
+/* Sección de encabezado */
 .catalog-header {
     text-align: center;
     margin-bottom: 2rem;
@@ -62,7 +62,7 @@
     color: #dfe6e9;
 }
 
-/* Main Content Layout */
+/* Diseño del contenido principal */
 .main-content {
     display: flex;
     max-width: 1400px;
@@ -75,7 +75,7 @@
     flex: 1;
 }
 
-/* Search Bar & Quick Links */
+/* Barra de búsqueda y enlaces rápidos */
 .search-bar-container {
     display: flex;
     justify-content: space-between;
@@ -133,10 +133,10 @@
 .quick-link:hover,
 .quick-link.active {
     color: #2ecc71;
-    /* Green highlight from image */
+    /* Resaltado verde de la imagen */
 }
 
-/* Filters Sidebar */
+/* Barra lateral de filtros */
 .filters-sidebar {
     width: 250px;
     background: rgba(13, 13, 30, 0.8);
@@ -216,7 +216,7 @@
     transform: rotate(45deg);
 }
 
-/* Games Grid */
+/* Cuadrícula de juegos */
 .games-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -291,13 +291,13 @@
 
 .material-icons {
     font-family: 'Material Icons';
-    /* Assuming Material Icons are available or will be */
+    /* Suponiendo que los iconos de materiales estén disponibles o estarán disponibles */
     font-size: 1.2rem;
 }
 
-/* Fallback for Material Icons if not included */
+/* Respaldo para íconos de materiales si no están incluidos */
 
-/* States */
+
 .loading-state,
 .error-state,
 .no-results,
@@ -373,12 +373,12 @@
     }
 }
 
-/* Scrollable Filter List */
+/* Lista de filtros desplazables */
 .scrollable-list {
     max-height: 200px;
     overflow-y: auto;
     padding-right: 5px;
-    /* Prevent scrollbar from overlapping content */
+    /* Evitar que la barra de desplazamiento se superponga al contenido */
 }
 
 /* Barra de scroll para los filtros de categorias y tematicas porque no veas con la cantidad de categorias que tiene la API */

@@ -68,7 +68,7 @@ export class GameDetailsComponent implements OnInit {
       }
     });
 
-    // Check ownership if user is already logged in
+    // Verifique la propiedad si el usuario ya inició sesión
     if (this.currentUser()) {
       this.fetchOwnedGames();
     }
@@ -138,7 +138,7 @@ export class GameDetailsComponent implements OnInit {
 
     this.gameService.getGames(undefined, 0, genres, themes).subscribe({
       next: (games) => {
-        // Exclude the current game from similar games. Get up to 12.
+        // Excluye el juego actual de juegos similares. Llega hasta 12.
         this.allSimilarGames = games.filter(g => g.id !== this.game?.id).slice(0, 12);
         this.loadingSimilar = false;
       },
@@ -154,7 +154,7 @@ export class GameDetailsComponent implements OnInit {
     if (this.scrollIndex < maxScroll) {
       this.scrollIndex = Math.min(maxScroll, this.scrollIndex + 3);
     } else {
-      // Loop back to start if reached the end
+      // Regrese al inicio si llegó al final.
       this.scrollIndex = 0;
     }
   }

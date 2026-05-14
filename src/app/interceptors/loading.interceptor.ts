@@ -11,7 +11,7 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   const loadingService = inject(LoadingService);
   
   if (activeRequests === 0) {
-    // Only show the loader if the request takes more than 3 seconds
+    // Mostrar el cargador solo si la solicitud demora más de 3 segundos
     loadingTimer = timer(3000).subscribe(() => {
       loadingService.setLoading(true);
     });

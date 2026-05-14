@@ -18,7 +18,7 @@ module.exports = async function handler(req, res) {
             const { gameId, userId } = req.query;
 
             if (gameId) {
-                // Fetch reviews for a specific game
+                // Obtener reseñas de un juego específico
                 const reviews = await sql`
                     SELECT gr.id, gr.user_id, gr.game_api_id, gr.game_name, gr.content, gr.created_at, u.username, u.profile_image 
                     FROM game_reviews gr
@@ -30,7 +30,7 @@ module.exports = async function handler(req, res) {
             }
 
             if (userId) {
-                // Fetch reviews for a specific user
+                // Obtener reseñas de un usuario específico
                 const reviews = await sql`
                     SELECT id, user_id, game_api_id, game_name, content, created_at 
                     FROM game_reviews 

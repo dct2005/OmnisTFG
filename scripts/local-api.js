@@ -8,13 +8,13 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
-// Import the serverless function
+// Importar la función sin servidor
 const gamesHandler = require('../api/games');
 const metadataHandler = require('../api/metadata');
 const userHandler = require('../api/user/index');
 
-// Create a wrapper to adapt Express req/res to the function signature if needed
-// But since the function uses res.status().json(), it's already compatible with Express
+// Cree un contenedor para adaptar Express req/res a la firma de la función si es necesario
+// Pero como la función usa res.status().json(), ya es compatible con Express
 app.all('/api/games', async (req, res) => {
     try {
         await gamesHandler(req, res);

@@ -27,7 +27,7 @@ export class InformacionCommunities implements OnInit {
   newMessage: string = '';
   posts: any[] = [];
   
-  // Pagination
+  // Paginación
   currentPage: number = 1;
   pageSize: number = 5;
 

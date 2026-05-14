@@ -18,11 +18,11 @@ export class AccountDetailsComponent {
   authService = inject(AuthService);
   gameService = inject(GameService);
 
-  // States
+  
   userEmail = signal('');
   userPhone = signal('');
   
-  // viewMode: 'main' | 'peppix' | 'games'
+  // modo de vista: 'principal' | 'peppix' | 'juegos'
   viewMode = signal<string>('main');
   
   transactions = signal<any[]>([]);

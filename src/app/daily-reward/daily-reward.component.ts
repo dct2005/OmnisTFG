@@ -56,7 +56,7 @@ export class DailyRewardComponent implements OnInit {
           this.isSpinning = false;
           this.hasSpun = true;
 
-          // Update user balance locally after the spin finishes for suspense
+          // Actualice el saldo del usuario localmente después de que finalice el giro para generar suspenso
           if (this.prize && this.prize.type === 'peppix') {
             const user = this.authService.currentUser();
             if (user) {

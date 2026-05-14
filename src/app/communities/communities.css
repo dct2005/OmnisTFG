@@ -3,14 +3,14 @@
 
 .communities-container {
     padding-top: 100px;
-    /* Offset for fixed navbar */
+    /* Compensación para barra de navegación fija */
     min-height: 100vh;
     color: white;
     font-family: 'Audiowide', sans-serif;
     padding-bottom: 2rem;
 }
 
-/* Header Section */
+/* Sección de encabezado */
 .communities-header {
     text-align: center;
     margin-bottom: 2rem;
@@ -64,7 +64,7 @@
     color: #dfe6e9;
 }
 
-/* Main Content Layout */
+/* Diseño del contenido principal */
 .main-content {
     display: flex;
     max-width: 1400px;
@@ -77,7 +77,7 @@
     flex: 1;
 }
 
-/* Search Bar & Quick Links */
+/* Barra de búsqueda y enlaces rápidos */
 .search-bar-container {
     display: flex;
     justify-content: space-between;
@@ -137,7 +137,7 @@
     color: #2ecc71;
 }
 
-/* Filters Sidebar */
+/* Barra lateral de filtros */
 .filters-sidebar {
     width: 250px;
     background: rgba(13, 13, 30, 0.8);
@@ -217,7 +217,7 @@
     transform: rotate(45deg);
 }
 
-/* Communities Grid */
+/* Cuadrícula de comunidades */
 .communities-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -300,7 +300,7 @@
     font-size: 1.2rem;
 }
 
-/* States */
+
 .loading-state,
 .error-state,
 .no-results,
@@ -328,7 +328,7 @@
     font-size: 0.9rem;
 }
 
-/* Scrollable Filter List */
+/* Lista de filtros desplazables */
 .scrollable-list {
     max-height: 200px;
     overflow-y: auto;

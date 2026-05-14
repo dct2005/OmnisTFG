@@ -165,15 +165,15 @@
 
 .register-prompt a {
     color: #d946ef;
-    /* Pinkish accent */
+    /* acento rosado */
     text-decoration: none;
     font-weight: 600;
 }
 
-/* Validation Styles */
+/* Estilos de validación */
 .form-control.ng-invalid.ng-touched {
     border-color: #ef4444;
-    /* Red border */
+    /* borde rojo */
     box-shadow: 0 0 0 1px #ef4444;
 }
 

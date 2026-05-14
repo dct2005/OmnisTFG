@@ -50,7 +50,7 @@
   font-size: 32px;
 }
 
-/*Navbar*/
+/*Barra de navegación*/
 
 .nav-link {
   color: #fff;
@@ -107,7 +107,7 @@
   color: #a855f7;
 }
 
-/* Responsiveness con CSS Grid */
+/* Capacidad de respuesta con CSS Grid */
 @media (max-width: 1300px) {
   .nav-links {
     gap: 2.5rem;
@@ -701,7 +701,7 @@
   color: rgba(168, 85, 247, 0.6);
 }
 
-/* Scrollbar personalizado */
+/* Barra de desplazamiento personalizada */
 .notifications-list::-webkit-scrollbar {
   width: 4px;
 }

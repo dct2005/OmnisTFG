@@ -8,7 +8,7 @@
     padding: 2rem;
 }
 
-/* Efecto Cristal (Glassmorphism) */
+/* Efecto Cristal (Glassmorfismo) */
 .glass-panel {
     background: rgba(16, 18, 27, 0.6);
     /* Fondo oscuro semitransparente */
@@ -60,7 +60,7 @@
     /* Un rojo/rosa suave para los asteriscos */
 }
 
-/* Inputs, Textareas y Selects */
+/* Entradas, áreas de texto y selecciones */
 .form-input {
     width: 100%;
     background: rgba(0, 0, 0, 0.25);

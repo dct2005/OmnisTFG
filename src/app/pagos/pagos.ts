@@ -16,14 +16,14 @@ export class Pagos implements OnInit {
   peppix: string = '25.000';
   precio: string = '500,00';
 
-  // State for form and selection
+  // Estado para forma y selección.
   metodoSeleccionado: string = 'tarjeta';
   numTarjeta: string = '';
   caducidad: string = '';
   nombreTarjeta: string = '';
   cvv: string = '';
 
-  // Billing State
+  // Estado de facturación
   billingInfo = {
     firstName: '',
     lastName: '',

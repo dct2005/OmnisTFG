@@ -2,12 +2,12 @@
     color: white;
     text-align: center;
     padding-top: 30px;
-    /* Ensure it takes full height if content is short, but allows scrolling */
+    /* Asegúrese de que ocupe todo el alto si el contenido es corto, pero permite el desplazamiento. */
     min-height: calc(100vh - 80px);
-    /* Adjust based on navbar height */
+    /* Ajustar según la altura de la barra de navegación */
 }
 
-/* Hero Section */
+/* Sección de héroe */
 .hero {
     margin-bottom: 3rem;
     animation: fadeIn 0.8s ease-out;
@@ -49,7 +49,7 @@
     box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
 }
 
-/* Games Section */
+/* Sección de Juegos */
 .games-section {
     padding: 0 2rem;
     max-width: 1200px;
@@ -66,11 +66,11 @@
     font-weight: 500;
     color: #fff;
     border-left: 3px solid #6c5ce7;
-    /* Optional accent */
+    /* Acento opcional */
     padding-left: 0.8rem;
 }
 
-/* Carousel */
+/* Carrusel */
 .games-carousel {
     display: flex;
     align-items: center;
@@ -85,7 +85,7 @@
     overflow-x: auto;
     padding: 1rem 0;
     scroll-behavior: smooth;
-    /* Hide scrollbar for cleaner look */
+    /* Ocultar la barra de desplazamiento para una apariencia más limpia */
     scrollbar-width: thin;
     scrollbar-color: #6c5ce7 transparent;
 }
@@ -103,7 +103,7 @@
 .card-image {
     width: 100%;
     aspect-ratio: 3/4;
-    /* Standard game cover ratio */
+    /* Proporción de cobertura de juego estándar */
     border-radius: 15px;
     overflow: hidden;
     margin-bottom: 0.8rem;
@@ -155,7 +155,7 @@
     font-family: 'Poppins', sans-serif;
 }
 
-/* Discover More */
+/* Descubre más */
 .discover-more {
     margin-top: 3rem;
     display: flex;
@@ -209,12 +209,12 @@
 
     .games-carousel {
         flex-wrap: wrap;
-        /* Or keep it scrolling but hide buttons? Let's keep scrolling */
+        /* ¿O seguir desplazándose pero ocultar los botones? Sigamos desplazándonos */
     }
 
     .nav-btn {
         display: none;
-        /* Hide buttons on mobile, use touch scroll */
+        /* Ocultar botones en el móvil, utilizar el desplazamiento táctil */
     }
 }
 

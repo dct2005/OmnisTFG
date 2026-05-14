@@ -53,7 +53,7 @@ export class DirectMessagesComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Check query params for starting a specific chat
+    // Verifique los parámetros de consulta para iniciar un chat específico
     this.route.queryParams.subscribe(params => {
       const targetId = params['userId'];
       const groupId = params['groupId'];
@@ -66,7 +66,7 @@ export class DirectMessagesComponent implements OnInit {
       }
     });
 
-    // Start global polling for new conversations/unread dots
+    // Iniciar una encuesta global para nuevas conversaciones/puntos no leídos
     this.startGlobalPolling();
   }
 
@@ -75,7 +75,7 @@ export class DirectMessagesComponent implements OnInit {
     if (this.typingInterval) clearInterval(this.typingInterval);
     if (this.typingTimeout) clearTimeout(this.typingTimeout);
     
-    // Ensure we stop typing status if we leave
+    // Asegúrese de que dejemos de escribir el estado si nos vamos
     const user = this.currentUser();
     const other = this.activeChat();
     if (user && other) {
@@ -89,7 +89,7 @@ export class DirectMessagesComponent implements OnInit {
       this.loadConversations();
       this.loadGroups();
       if (this.activeChat()) {
-        this.loadMessages(false); // Silent load
+        this.loadMessages(false); // Carga silenciosa
       }
     }, 20000);
 
@@ -116,10 +116,10 @@ export class DirectMessagesComponent implements OnInit {
     const other = this.activeChat();
     if (!user || !other) return;
 
-    // Send typing status
+    // Enviar estado de escritura
     this.chatService.setTypingStatus(user.id, other.id, true).subscribe();
 
-    // Reset timeout to stop typing status after 3s of inactivity
+    // Restablecer el tiempo de espera para dejar de escribir el estado después de 3 segundos de inactividad
     if (this.typingTimeout) clearTimeout(this.typingTimeout);
     this.typingTimeout = setTimeout(() => {
       this.chatService.setTypingStatus(user.id, other.id, false).subscribe();
@@ -127,13 +127,13 @@ export class DirectMessagesComponent implements OnInit {
   }
 
   startChatWith(userId: number) {
-    // Wait for conversations to load first if needed
+    // Espere a que las conversaciones se carguen primero si es necesario
     const checkAndSelect = () => {
       const existing = this.conversations().find(c => c.id === userId);
       if (existing) {
         this.selectChat(existing);
       } else {
-        // Fetch user info to create a "temporary" conversation item
+        // Obtener información del usuario para crear un elemento de conversación "temporal"
         this.authService.getUserById(userId).subscribe({
           next: (user) => {
             const tempConv = {
@@ -153,7 +153,7 @@ export class DirectMessagesComponent implements OnInit {
     if (this.conversations().length > 0) {
       checkAndSelect();
     } else {
-      // Small timeout to allow initial load or wait for loadConversations
+      // Pequeño tiempo de espera para permitir la carga inicial o esperar las conversaciones de carga
       setTimeout(checkAndSelect, 500);
     }
   }
@@ -205,7 +205,7 @@ export class DirectMessagesComponent implements OnInit {
     this.isGroup.set(true);
     this.activeChat.set(group);
     this.loadMessages();
-    // Logic for marking group as read could be added later
+    // La lógica para marcar el grupo como leído podría agregarse más adelante
   }
 
   loadMessages(showLoading: boolean = true) {
@@ -221,7 +221,7 @@ export class DirectMessagesComponent implements OnInit {
 
     obs.subscribe({
       next: (data) => {
-        // Only update and scroll if new messages arrived
+        // Actualizar y desplazarse solo si llegaron nuevos mensajes
         if (data.length !== this.messages().length) {
           this.messages.set(data);
           this.scrollToBottom();
@@ -279,7 +279,7 @@ export class DirectMessagesComponent implements OnInit {
     if (!user) return;
 
     this.chatService.markAsRead(user.id, otherId).subscribe({
-      next: () => this.loadConversations(), // Refresh unread badges
+      next: () => this.loadConversations(), // Actualizar insignias no leídas
       error: (err) => console.error('Error marcando como leído:', err)
     });
   }

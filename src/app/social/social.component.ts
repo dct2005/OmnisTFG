@@ -176,7 +176,7 @@ export class SocialComponent implements OnInit, OnDestroy {
     return '';
   }
 
-  // Fallback for missing profile images
+  // Respaldo para imágenes de perfil faltantes
   getProfileImage(imageUrl: string | null): string {
     return imageUrl || 'assets/default-avatar.png';
   }

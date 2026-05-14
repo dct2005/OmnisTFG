@@ -10,11 +10,11 @@ async function grantExisting() {
         const awards = await sql`SELECT id, type, requirement FROM awards`;
 
         for (const user of users) {
-            // Games
+            // Juegos
             const gamesCountQuery = await sql`SELECT COUNT(*) as count FROM user_games WHERE user_id = ${user.id}`;
             const gamesCount = parseInt(gamesCountQuery[0].count, 10);
             
-            // Communities
+            // Comunidades
             const commsCountQuery = await sql`SELECT COUNT(*) as count FROM community_members WHERE user_id = ${user.id}`;
             const commsCount = parseInt(commsCountQuery[0].count, 10);
 
@@ -35,8 +35,8 @@ async function grantExisting() {
     }
 }
 
-// Fixed a typo in the above script (award.id vs award.id) and improved it.
-// Actually, I'll just write the correct version now.
+// Se corrigió un error tipográfico en el script anterior (award.id vs Award.id) y lo mejoró.
+// En realidad, ahora escribiré la versión correcta.
 async function grantExistingCorrect() {
     const sql = neon(process.env.DATABASE_URL);
     console.log('Granting awards to existing users (Corrected)...');

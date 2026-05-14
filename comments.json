@@ -1,0 +1,2942 @@
+[
+  {
+    "file": "api/communities/[id].js",
+    "comment": "// --- JOIN / LEAVE ---",
+    "index": 710
+  },
+  {
+    "file": "api/communities/[id].js",
+    "comment": "// LEVELING: +50 XP on Join",
+    "index": 2180
+  },
+  {
+    "file": "api/communities/[id].js",
+    "comment": "// QUESTS: Check 'join_community'",
+    "index": 2376
+  },
+  {
+    "file": "api/communities/[id].js",
+    "comment": "// --- MEMBERS ---",
+    "index": 3965
+  },
+  {
+    "file": "api/communities/[id].js",
+    "comment": "// --- MESSAGES ---",
+    "index": 5401
+  },
+  {
+    "file": "api/communities/[id].js",
+    "comment": "// Short cache for messages to reduce polling impact",
+    "index": 5514
+  },
+  {
+    "file": "api/communities/[id].js",
+    "comment": "// LEVELING: +10 XP on Message",
+    "index": 6683
+  },
+  {
+    "file": "api/communities/[id].js",
+    "comment": "// QUESTS: Check 'send_message'",
+    "index": 6858
+  },
+  {
+    "file": "api/communities/index.js",
+    "comment": "// Permisos CORS",
+    "index": 268
+  },
+  {
+    "file": "api/communities/index.js",
+    "comment": "// Si nos piden \"Mis Comunidades\"",
+    "index": 664
+  },
+  {
+    "file": "api/communities/index.js",
+    "comment": "// Si no, devolvemos TODAS las comunidades normales",
+    "index": 1314
+  },
+  {
+    "file": "api/communities/index.js",
+    "comment": "// Acción: Crear Comunidad",
+    "index": 1799
+  },
+  {
+    "file": "api/communities/index.js",
+    "comment": "// Acción: Actualizar Comunidad",
+    "index": 3353
+  },
+  {
+    "file": "api/game-reviews/index.js",
+    "comment": "// Fetch reviews for a specific game",
+    "index": 663
+  },
+  {
+    "file": "api/game-reviews/index.js",
+    "comment": "// Fetch reviews for a specific user",
+    "index": 1201
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Construir la query paso a paso para evitar errores de sintaxis",
+    "index": 632
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Campos",
+    "index": 736
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Condiciones",
+    "index": 1026
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Juego base, remake, remaster, expanded, port, pack",
+    "index": 1441
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Búsqueda más flexible",
+    "index": 1553
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Filtro base para calidad",
+    "index": 1715
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// ... (Filtros de generos y tematicas omitidos por brevedad en este chunk)",
+    "index": 1817
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Ordenar",
+    "index": 2463
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Limite y paginacion",
+    "index": 2577
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//api.igdb.com/v4/games\",",
+    "index": 2796
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Función auxiliar para calcular precios en Peppix",
+    "index": 3121
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Para DLCs/Expansiones, precio base menor",
+    "index": 3284
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Cálculo base más balanceado",
+    "index": 3533
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Multiplicadores por edición",
+    "index": 3664
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Colecciones notablemente más caras",
+    "index": 3864
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Redondear al 99 mas cercano (ej: 4999)",
+    "index": 4501
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Procesar cada juego para añadir el precio",
+    "index": 4633
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// También a contenido adicional si existe",
+    "index": 4814
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Bundles notablemente más caros",
+    "index": 5235
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Si consultamos un juego en concreto (id existe) y tiene resumen, lo traducimos",
+    "index": 5316
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=es&dt=t&q=\" + encodeURIComponent(game.summary);",
+    "index": 5572
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Si la traducción falla (servidor caído, límite de uso), pasamos silenciosamente y devolvemos texto en inglés",
+    "index": 6225
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Este código ha sido editado a altas horas de la madrugada, con altos niveles de cafeína y azúcar en sangre.",
+    "index": 6607
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//                      :::!~!!!!!:.",
+    "index": 6718
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//                   .xUHWH!! !!?M88WHX:.",
+    "index": 6755
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//                 .X*#M@$!!  !X!M$$$$$$WWx:.",
+    "index": 6797
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//                :!!!!!!?H! :!$!$$$$$$$$$$8X:",
+    "index": 6843
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//               !!~  ~:~!! :~!$!#$$$$$$$$$$8X:",
+    "index": 6890
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//              :!~::!H!<   ~.U$X!?R$$$$$$$$MM!",
+    "index": 6938
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//              ~!~!!!!~~ .:XW$$$U!!?$$$$$$RMM!",
+    "index": 6986
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//                !:~~~ .:!M\"T#$$$$WX??#MRRMMM!",
+    "index": 7034
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//                ~?WuxiW*`   `\"#$$$$8!!!!??!!!",
+    "index": 7082
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//              :X- M$$$$       `\"T#$T~!8$WUXU~",
+    "index": 7130
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//             :%`  ~#$$$m:        ~!~ ?$$$$$$",
+    "index": 7178
+  },
+  {
+    "file": "api/games.js",
+    "comment": "//           :!`.-   ~T$$$$8xx.  .xWW- ~\"\"##*\"",
+    "index": 7225
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// .....   -~~:<` !    ~?T#$$@@W@*?$$      /`",
+    "index": 7272
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// W$@@M!!! .!~~ !!     .:XUW$W!~ `\"~:    :",
+    "index": 7318
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// #\"~~`.:x%`!!  !H:   !WM$$$$Ti.: .!WUn+!`",
+    "index": 7362
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// :::~:!!`:X~ .: ?H.!u \"$$$B$$$!W:U!T$$M~",
+    "index": 7406
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// .~~   :X@!.-~   ?@WTWo(\"*$$$W$TH$! `",
+    "index": 7449
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// Wi.~!X$?!-~    : ?$$$B$Wu(\"**$RM!",
+    "index": 7489
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// $R@i.~~ !     :   ~$$$$$B$$en:``",
+    "index": 7526
+  },
+  {
+    "file": "api/games.js",
+    "comment": "// ?MXT@Wx.~    :     ~\"##*$$$$M~",
+    "index": 7562
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// Asegurar tablas necesarias",
+    "index": 581
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// Tablas de Grupos",
+    "index": 885
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// Obtener lista de conversaciones (usuarios con los que se ha hablado)",
+    "index": 2031
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// Esta consulta obtiene los usuarios que han enviado o recibido mensajes de userId",
+    "index": 2301
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// y el último mensaje de cada conversación",
+    "index": 2401
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// Obtener el chat completo entre dos usuarios",
+    "index": 5822
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// Obtener mensajes no leídos para notificaciones",
+    "index": 6671
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// Verificar si el otro usuario está escribiendo",
+    "index": 7350
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// Enviar un mensaje",
+    "index": 8065
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// Asegurar columna image_url si no existe (Neon soporta IF NOT EXISTS)",
+    "index": 8400
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// 2. Insertar notificación para el receptor",
+    "index": 9022
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// 1. Crear el grupo",
+    "index": 10277
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// 2. Añadir miembros",
+    "index": 10523
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// Notificar a los miembros (excepto al creador)",
+    "index": 10920
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// Añadir nombre del emisor para la UI inmediata",
+    "index": 12328
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// Actualizar estado de \"escribiendo\"",
+    "index": 12721
+  },
+  {
+    "file": "api/messages/index.js",
+    "comment": "// Marcar mensajes como leídos",
+    "index": 13632
+  },
+  {
+    "file": "api/metadata.js",
+    "comment": "//api.igdb.com/v4/${type}`;",
+    "index": 817
+  },
+  {
+    "file": "api/social.js",
+    "comment": "// --- RANKINGS ---",
+    "index": 573
+  },
+  {
+    "file": "api/social.js",
+    "comment": "// Rankings can be cached for a few minutes to reduce DB load",
+    "index": 756
+  },
+  {
+    "file": "api/social.js",
+    "comment": "// --- ACTIVITIES ---",
+    "index": 2916
+  },
+  {
+    "file": "api/social.js",
+    "comment": "// Optimized activity query using the new indexes",
+    "index": 3221
+  },
+  {
+    "file": "api/social.js",
+    "comment": "// --- AWARDS ---",
+    "index": 4064
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Must be under 4.5MB for Vercel edge limits",
+    "index": 249
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 1.2 Loyalty Badges (Time based)",
+    "index": 1589
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 2. Premios del Perfil (3D Trophies from DB)",
+    "index": 3528
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Identificar la insignia actual (lateral)",
+    "index": 3932
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 3. Mascota Activa",
+    "index": 4372
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Se mantienen como insignias secundarias",
+    "index": 4905
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Todos los premios obtenidos",
+    "index": 5033
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Premios para la Vitrina",
+    "index": 5132
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Auto-desbloquear mascota asociada",
+    "index": 6728
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Auto-desbloquear mascota asociada",
+    "index": 8415
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// OBTENER RECURSO DEL USUARIO",
+    "index": 8898
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// No cache for lightweight status to ensure realtime-like updates",
+    "index": 9228
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Evitamos SELECT * para ahorrar ancho de banda, especialmente por campos de imagen/música si fueran pesados",
+    "index": 10373
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 1. Tablas de Misiones",
+    "index": 13188
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 2. XP y Nivel en Comunidades",
+    "index": 14283
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 3. Música en el Perfil",
+    "index": 14531
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 4. Insertar Misiones Iniciales si no existen",
+    "index": 14681
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Actualizar las existentes por si acaso",
+    "index": 15504
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Asegurar schema por si no se corrió la migración manual",
+    "index": 16237
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Actualizar misiones base si no tienen descripción (solo una vez)",
+    "index": 16503
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Sincronizar misiones (asegurar que el usuario tenga registros en user_quests para hoy)",
+    "index": 17016
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Obtener el conteo acumulativo de miembros por día",
+    "index": 21926
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// --- HIGHLIGHTS / HALL OF FAME ---",
+    "index": 34074
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 1. Juego más vendido (Histórico)",
+    "index": 34144
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 2. Comunidad más popular",
+    "index": 34538
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 3. Mayor Comprador (Histórico)",
+    "index": 35250
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 4. Coleccionista de Élite (Más juegos)",
+    "index": 36059
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Fetch initial 5 comments based on preference",
+    "index": 40545
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Fetch unread notifications for logged in user (if applicable)",
+    "index": 41589
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Marcar como completada y dar recompensas",
+    "index": 43346
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Return with author info",
+    "index": 44384
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Add notification for the profile owner",
+    "index": 44592
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Only the author or the profile owner can delete",
+    "index": 46350
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Borrar datos relacionados antes de borrar al usuario",
+    "index": 47584
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 1. Eliminar juego de la biblioteca",
+    "index": 51645
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 2. Devolver Peppix al usuario",
+    "index": 51816
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 3. Registrar transacción",
+    "index": 51960
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 4. Cerrar el reporte con mensaje automático",
+    "index": 52247
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 1. Sumar Peppix al saldo del usuario",
+    "index": 53324
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 2. Registrar transacción de ingreso manual",
+    "index": 53475
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// 3. Cerrar el reporte con respuesta técnica",
+    "index": 53786
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Verificamos si el email ya existe",
+    "index": 54365
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Verificamos si el nombre de usuario (display name) ya existe",
+    "index": 54642
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Create user if they don't exist",
+    "index": 57449
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Use uid as a fallback password, though they shouldn't use it directly",
+    "index": 57555
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Optionally update profile image if they didn't have one",
+    "index": 58172
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Fetch game metadata from IGDB to cache it locally",
+    "index": 61362
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "//api.igdb.com/v4/games\",",
+    "index": 61583
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Registrar actividad",
+    "index": 63481
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Comprobar premios",
+    "index": 63751
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Sanitize integer fields",
+    "index": 70641
+  },
+  {
+    "file": "api/user/index.js",
+    "comment": "// Also return initial comments based on the new preference",
+    "index": 72483
+  },
+  {
+    "file": "lib/db.js",
+    "comment": "// lib/db.js",
+    "index": 0
+  },
+  {
+    "file": "query_igdb.js",
+    "comment": "//api.igdb.com/v4/games\", ",
+    "index": 102
+  },
+  {
+    "file": "scratch_extract.js",
+    "comment": "<!--[\\s\\S]*?-->",
+    "index": 776
+  },
+  {
+    "file": "scratch_extract.js",
+    "comment": "//g;",
+    "index": 824
+  },
+  {
+    "file": "scratch_extract.js",
+    "comment": "// Skip if it looks like a URL in a string, crude check",
+    "index": 1015
+  },
+  {
+    "file": "scratch_extract.js",
+    "comment": "//') && content.substring(match.index - 5, match.index).includes('http')) {",
+    "index": 1104
+  },
+  {
+    "file": "scripts/backfill_awards.js",
+    "comment": "// Games",
+    "index": 438
+  },
+  {
+    "file": "scripts/backfill_awards.js",
+    "comment": "// Communities",
+    "index": 659
+  },
+  {
+    "file": "scripts/backfill_awards.js",
+    "comment": "// Fixed a typo in the above script (award.id vs award.id) and improved it.",
+    "index": 1449
+  },
+  {
+    "file": "scripts/backfill_awards.js",
+    "comment": "// Actually, I'll just write the correct version now.",
+    "index": 1525
+  },
+  {
+    "file": "scripts/backfill_genres.js",
+    "comment": "// Obtener todos los géneros y temáticas de los juegos que posee el usuario",
+    "index": 231
+  },
+  {
+    "file": "scripts/backfill_genres.js",
+    "comment": "// 1. Obtener todos los IDs de juegos únicos en user_games",
+    "index": 1538
+  },
+  {
+    "file": "scripts/backfill_genres.js",
+    "comment": "// 2. Poblar tabla games (metadatos)",
+    "index": 1813
+  },
+  {
+    "file": "scripts/backfill_genres.js",
+    "comment": "//api.igdb.com/v4/games\",",
+    "index": 2032
+  },
+  {
+    "file": "scripts/backfill_genres.js",
+    "comment": "// 3. Procesar premios para cada usuario",
+    "index": 3175
+  },
+  {
+    "file": "scripts/local-api.js",
+    "comment": "// Import the serverless function",
+    "index": 203
+  },
+  {
+    "file": "scripts/local-api.js",
+    "comment": "// Create a wrapper to adapt Express req/res to the function signature if needed",
+    "index": 386
+  },
+  {
+    "file": "scripts/local-api.js",
+    "comment": "// But since the function uses res.status().json(), it's already compatible with Express",
+    "index": 467
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "// =============================================================================",
+    "index": 89
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "// CONFIGURATION",
+    "index": 170
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "// =============================================================================",
+    "index": 187
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "// Use the old Neon URL here. If it's different from what's below, please update it.",
+    "index": 268
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "// Use the UNPOOLED Neon URL to see if it bypasses the pooler's quota restriction",
+    "index": 353
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "//neondb_owner:npg_k3OPFrbURXc1@ep-odd-paper-ahr2qwqc.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require\";",
+    "index": 472
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "// Order is CRITICAL due to Foreign Key constraints",
+    "index": 896
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "// 1. Fetch data from old DB",
+    "index": 1632
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "// 2. Insert into new DB",
+    "index": 2002
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "// We use ON CONFLICT DO NOTHING to avoid issues with repeated runs",
+    "index": 2039
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "// Note: This assumes 'id' is the primary key for most tables",
+    "index": 2119
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "// 3. Reset sequences for SERIAL columns",
+    "index": 2335
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "// Some tables might not have an 'id' or a sequence, ignore errors here",
+    "index": 2608
+  },
+  {
+    "file": "scripts/migrate_full_data.js",
+    "comment": "// We continue with other tables if one fails, but usually errors here are critical",
+    "index": 2871
+  },
+  {
+    "file": "scripts/test-daily.js",
+    "comment": "// Let's call the logic",
+    "index": 504
+  },
+  {
+    "file": "scripts/test-daily.js",
+    "comment": "// Let's reset it for testing",
+    "index": 899
+  },
+  {
+    "file": "scripts/test-daily.js",
+    "comment": "// Force a Peppix prize",
+    "index": 1364
+  },
+  {
+    "file": "src/app/account-details/account-details.component.css",
+    "comment": "/* Responsive */",
+    "index": 2209
+  },
+  {
+    "file": "src/app/account-details/account-details.component.css",
+    "comment": "/* HISTORIAL DE COMPRAS */",
+    "index": 2312
+  },
+  {
+    "file": "src/app/account-details/account-details.component.html",
+    "comment": "//upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg\" alt=\"Visa\"",
+    "index": 935
+  },
+  {
+    "file": "src/app/account-details/account-details.component.html",
+    "comment": "//img.icons8.com/material-rounded/24/ffffff/smartphone.png\" alt=\"phone icon\"",
+    "index": 2489
+  },
+  {
+    "file": "src/app/account-details/account-details.component.html",
+    "comment": "<!-- VISTA DE HISTORIAL PEPPIX -->",
+    "index": 2695
+  },
+  {
+    "file": "src/app/account-details/account-details.component.html",
+    "comment": "<!-- VISTA DE HISTORIAL DE TIENDA (JUEGOS) -->",
+    "index": 4402
+  },
+  {
+    "file": "src/app/account-details/account-details.component.ts",
+    "comment": "// States",
+    "index": 651
+  },
+  {
+    "file": "src/app/account-details/account-details.component.ts",
+    "comment": "// viewMode: 'main' | 'peppix' | 'games'",
+    "index": 718
+  },
+  {
+    "file": "src/app/account-details/account-details.component.ts",
+    "comment": "// Combinar los datos de IGDB con las fechas de compra de nuestra BD",
+    "index": 1746
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.css",
+    "comment": "/* Estadísticas Styles */",
+    "index": 5860
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.css",
+    "comment": "/* Colores por categoría */",
+    "index": 7338
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.css",
+    "comment": "/* Detailed Highlights Container */",
+    "index": 8777
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.css",
+    "comment": "/* Banner Variations */",
+    "index": 11343
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.css",
+    "comment": "/* Estilos para nuevas secciones */",
+    "index": 12635
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.css",
+    "comment": "/* Mejoras para la tabla de comunidades */",
+    "index": 13282
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.html",
+    "comment": "//ui-avatars.com/api/?name=' + user.username + '&background=6b46c1&color=fff'\" ",
+    "index": 2925
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.html",
+    "comment": "<!-- Banner Juego Top -->",
+    "index": 11744
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.html",
+    "comment": "<!-- Banner Comunidad Top -->",
+    "index": 14523
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.html",
+    "comment": "<!-- Banner Comprador Top -->",
+    "index": 17066
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.html",
+    "comment": "<!-- Banner Coleccionista -->",
+    "index": 19395
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.ts",
+    "comment": "// Usar búsqueda en lugar de carga estática",
+    "index": 2116
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.ts",
+    "comment": "// Nueva función para buscar en el catálogo completo",
+    "index": 4589
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.ts",
+    "comment": "// 1. Buscar en IGDB",
+    "index": 4800
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.ts",
+    "comment": "// 2. Obtener ventas de todos los juegos para cruzar datos",
+    "index": 4925
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.ts",
+    "comment": "// Fallback: mostrar solo resultados de IGDB sin ventas",
+    "index": 5624
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.ts",
+    "comment": "// Agrupar IDs para evitar peticiones demasiado largas",
+    "index": 6221
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.ts",
+    "comment": "// Normalizar fechas a medianoche local para comparar sin problemas de hora",
+    "index": 17401
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.ts",
+    "comment": "// Hasta hoy",
+    "index": 17842
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.ts",
+    "comment": "// Listeners para botones personalizados",
+    "index": 36568
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.ts",
+    "comment": "// Confirmación final con detalles del usuario",
+    "index": 39042
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.ts",
+    "comment": "// Evita que se cierre el modal",
+    "index": 42138
+  },
+  {
+    "file": "src/app/admin/admin-dashboard.component.ts",
+    "comment": "// Si el usuario borrado tenía reportes, podríamos refrescarlos",
+    "index": 43118
+  },
+  {
+    "file": "src/app/app.config.ts",
+    "comment": "// 1. IMPORTANTE: Importar esto",
+    "index": 207
+  },
+  {
+    "file": "src/app/app.config.ts",
+    "comment": "// 2. IMPORTANTE: Añadir esto. Sin esto, AuthService no funciona.",
+    "index": 652
+  },
+  {
+    "file": "src/app/app.routes.ts",
+    "comment": "// ... (existing guards)",
+    "index": 700
+  },
+  {
+    "file": "src/app/app.routes.ts",
+    "comment": "// Placeholder necesario para que actue el guard",
+    "index": 2429
+  },
+  {
+    "file": "src/app/app.ts",
+    "comment": "// Señal que controla si la navbar se ve o no (por defecto true)",
+    "index": 593
+  },
+  {
+    "file": "src/app/app.ts",
+    "comment": "// Escuchamos cada vez que la navegación termina",
+    "index": 860
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "//fonts.googleapis.com/icon?family=Material+Icons');",
+    "index": 19
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "/* Header Section */",
+    "index": 229
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "/* Secondary Nav \"DESCUBRE\" */",
+    "index": 1130
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "/* Main Content Layout */",
+    "index": 1275
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "/* Search Bar & Quick Links */",
+    "index": 1450
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "/* Green highlight from image */",
+    "index": 2504
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "/* Filters Sidebar */",
+    "index": 2540
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "/* Games Grid */",
+    "index": 3971
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "/* Assuming Material Icons are available or will be */",
+    "index": 5143
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "/* Fallback for Material Icons if not included */",
+    "index": 5224
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "/* States */",
+    "index": 5275
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "/* Scrollable Filter List */",
+    "index": 6582
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "/* Prevent scrollbar from overlapping content */",
+    "index": 6703
+  },
+  {
+    "file": "src/app/catalog/catalog.component.css",
+    "comment": "/* Barra de scroll para los filtros de categorias y tematicas porque no veas con la cantidad de categorias que tiene la API */",
+    "index": 6755
+  },
+  {
+    "file": "src/app/catalog/catalog.component.ts",
+    "comment": "// En \"Mis Juegos\", cargamos todos de una vez por ahora (o paginados si implementamos después)",
+    "index": 5623
+  },
+  {
+    "file": "src/app/catalog/catalog.component.ts",
+    "comment": "// Por ahora no paginamos \"Mis Juegos\"",
+    "index": 6035
+  },
+  {
+    "file": "src/app/catalog/catalog.component.ts",
+    "comment": "// Revert on error",
+    "index": 9148
+  },
+  {
+    "file": "src/app/communities/communities.css",
+    "comment": "//fonts.googleapis.com/icon?family=Material+Icons');",
+    "index": 19
+  },
+  {
+    "file": "src/app/communities/communities.css",
+    "comment": "//fonts.googleapis.com/css2?family=Audiowide&family=Poppins:wght@400;600&display=swap');",
+    "index": 91
+  },
+  {
+    "file": "src/app/communities/communities.css",
+    "comment": "/* Offset for fixed navbar */",
+    "index": 234
+  },
+  {
+    "file": "src/app/communities/communities.css",
+    "comment": "/* Header Section */",
+    "index": 376
+  },
+  {
+    "file": "src/app/communities/communities.css",
+    "comment": "/* Secondary Nav \"DESCUBRE\" */",
+    "index": 1289
+  },
+  {
+    "file": "src/app/communities/communities.css",
+    "comment": "/* Main Content Layout */",
+    "index": 1434
+  },
+  {
+    "file": "src/app/communities/communities.css",
+    "comment": "/* Search Bar & Quick Links */",
+    "index": 1609
+  },
+  {
+    "file": "src/app/communities/communities.css",
+    "comment": "/* Filters Sidebar */",
+    "index": 2662
+  },
+  {
+    "file": "src/app/communities/communities.css",
+    "comment": "/* Communities Grid */",
+    "index": 4094
+  },
+  {
+    "file": "src/app/communities/communities.css",
+    "comment": "/* Evitar que descripciones muy largas rompan la tarjeta */",
+    "index": 5012
+  },
+  {
+    "file": "src/app/communities/communities.css",
+    "comment": "/* States */",
+    "index": 5470
+  },
+  {
+    "file": "src/app/communities/communities.css",
+    "comment": "/* Scrollable Filter List */",
+    "index": 5943
+  },
+  {
+    "file": "src/app/communities/communities.html",
+    "comment": "//placehold.co/600x338'\" alt=\"{{ community.name }}\">",
+    "index": 2209
+  },
+  {
+    "file": "src/app/communities/communities.ts",
+    "comment": "// Sincronizado automáticamente con el servicio central",
+    "index": 808
+  },
+  {
+    "file": "src/app/communities/communities.ts",
+    "comment": "// Limpiamos para que no se vean las de \"Todas\"",
+    "index": 1798
+  },
+  {
+    "file": "src/app/communities/communities.ts",
+    "comment": "// Nos quedamos en la pestaña vacía con el error",
+    "index": 2093
+  },
+  {
+    "file": "src/app/compras/compras.css",
+    "comment": "/* --- CONTENEDOR PRINCIPAL --- */",
+    "index": 0
+  },
+  {
+    "file": "src/app/compras/compras.css",
+    "comment": "/* Fondo galáctico (asumiendo el global, o puesto aquí si se necesita) */",
+    "index": 239
+  },
+  {
+    "file": "src/app/compras/compras.css",
+    "comment": "/* --- PERSONAJES LATERALES --- */",
+    "index": 351
+  },
+  {
+    "file": "src/app/compras/compras.css",
+    "comment": "/* --- TARJETA DE COMPRA (ESTILO CRISTAL) --- */",
+    "index": 756
+  },
+  {
+    "file": "src/app/compras/compras.css",
+    "comment": "/* --- TABLA DE PRECIOS --- */",
+    "index": 1328
+  },
+  {
+    "file": "src/app/compras/compras.css",
+    "comment": "/* Alineaciones de la tabla */",
+    "index": 1924
+  },
+  {
+    "file": "src/app/compras/compras.css",
+    "comment": "/* Para alinearlo con el texto encima de los iconos */",
+    "index": 2224
+  },
+  {
+    "file": "src/app/compras/compras.css",
+    "comment": "/* --- BOTÓN DE COMPRA --- */",
+    "index": 2458
+  },
+  {
+    "file": "src/app/compras/compras.css",
+    "comment": "/* Esconder cabecera en móvil, es más intuitivo apilado */",
+    "index": 3272
+  },
+  {
+    "file": "src/app/compras/compras.css",
+    "comment": "/* Esconder personajes si tapan contenido en móvil */",
+    "index": 3565
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Contenedor principal para centrar absolutamente todo */",
+    "index": 0
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Ajusta este 80px si tu barra de navegación superior es más grande o más pequeña */",
+    "index": 154
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Efecto Cristal (Glassmorphism) */",
+    "index": 298
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Fondo oscuro semitransparente */",
+    "index": 393
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Ancho máximo del formulario */",
+    "index": 643
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Textos de la cabecera */",
+    "index": 748
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Estructura del formulario */",
+    "index": 1012
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Un rojo/rosa suave para los asteriscos */",
+    "index": 1296
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Inputs, Textareas y Selects */",
+    "index": 1344
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Evita que se salgan de la caja */",
+    "index": 1695
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Color primario (cámbialo por tu --primary si quieres) */",
+    "index": 1853
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Opciones del select para que se vean bien en modo oscuro */",
+    "index": 2003
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Caja para subir la imagen */",
+    "index": 2134
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Imagen de previsualización */",
+    "index": 2832
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Botón de enviar */",
+    "index": 3328
+  },
+  {
+    "file": "src/app/create-community/create-community.css",
+    "comment": "/* Botón ancho para darle protagonismo */",
+    "index": 3736
+  },
+  {
+    "file": "src/app/daily-reward/daily-reward.component.html",
+    "comment": "<!-- Divisores visuales -->",
+    "index": 1122
+  },
+  {
+    "file": "src/app/daily-reward/daily-reward.component.ts",
+    "comment": "// Los premios deben coincidir visualmente con los del backend (aprox)",
+    "index": 583
+  },
+  {
+    "file": "src/app/daily-reward/daily-reward.component.ts",
+    "comment": "// Color gris para 'Nada'",
+    "index": 801
+  },
+  {
+    "file": "src/app/daily-reward/daily-reward.component.ts",
+    "comment": "// Recalibración: ",
+    "index": 1309
+  },
+  {
+    "file": "src/app/daily-reward/daily-reward.component.ts",
+    "comment": "// 1. Cada segmento tiene 45 grados.",
+    "index": 1336
+  },
+  {
+    "file": "src/app/daily-reward/daily-reward.component.ts",
+    "comment": "// 2. El punto medio del segmento 'i' es i * 45 + 22.5.",
+    "index": 1381
+  },
+  {
+    "file": "src/app/daily-reward/daily-reward.component.ts",
+    "comment": "// 3. Para que ese punto medio quede a las 12 (0 grados), rotamos 360 - (i * 45 + 22.5).",
+    "index": 1445
+  },
+  {
+    "file": "src/app/daily-reward/daily-reward.component.ts",
+    "comment": "// 10 vueltas completas",
+    "index": 1628
+  },
+  {
+    "file": "src/app/daily-reward/daily-reward.component.ts",
+    "comment": "// +/- 15 grados de margen desde el centro",
+    "index": 1753
+  },
+  {
+    "file": "src/app/daily-reward/daily-reward.component.ts",
+    "comment": "// Update user balance locally after the spin finishes for suspense",
+    "index": 1984
+  },
+  {
+    "file": "src/app/daily-reward/daily-reward.component.ts",
+    "comment": "// 50 Peppix",
+    "index": 3124
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.css",
+    "comment": "/* Sidebar */",
+    "index": 476
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.css",
+    "comment": "/* GRUPOS STYLES */",
+    "index": 2202
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.css",
+    "comment": "/* Group Message Identity */",
+    "index": 4182
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.css",
+    "comment": "/* Chat Area */",
+    "index": 6746
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.css",
+    "comment": "/* Imagenes en mensajes */",
+    "index": 10562
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.css",
+    "comment": "/* Previsualización antes de enviar */",
+    "index": 10957
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.css",
+    "comment": "/* Typing Indicator */",
+    "index": 11721
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.html",
+    "comment": "<!-- Sidebar: Lista de Conversaciones -->",
+    "index": 31
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.html",
+    "comment": "<!-- Avatar en mensajes de grupo -->",
+    "index": 5821
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// Check query params for starting a specific chat",
+    "index": 1772
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// Start global polling for new conversations/unread dots",
+    "index": 2206
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// Ensure we stop typing status if we leave",
+    "index": 2521
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// 1. Polling más lento (cada 20s) para conversaciones, grupos y lista de mensajes",
+    "index": 2782
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// Silent load",
+    "index": 3034
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// 2. Polling rápido (cada 10s) solo para el estado de \"escribiendo\"",
+    "index": 3077
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// Send typing status",
+    "index": 3712
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// Reset timeout to stop typing status after 3s of inactivity",
+    "index": 3814
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// Wait for conversations to load first if needed",
+    "index": 4117
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// Fetch user info to create a \"temporary\" conversation item",
+    "index": 4354
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// Small timeout to allow initial load or wait for loadConversations",
+    "index": 4978
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// Logic for marking group as read could be added later",
+    "index": 6366
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// Only update and scroll if new messages arrived",
+    "index": 6852
+  },
+  {
+    "file": "src/app/direct-messages/direct-messages.ts",
+    "comment": "// Refresh unread badges",
+    "index": 8548
+  },
+  {
+    "file": "src/app/game-details/game-details.component.css",
+    "comment": "/* Scroll horizontal si el contenido es muy ancho */",
+    "index": 1313
+  },
+  {
+    "file": "src/app/game-details/game-details.component.css",
+    "comment": "/* Ancho mínimo para forzar el scroll y evitar que se aplaste */",
+    "index": 1440
+  },
+  {
+    "file": "src/app/game-details/game-details.component.css",
+    "comment": "/* 3 cards (160px * 3) + 2 gaps (24px * 2) = 480 + 48 = 528px */",
+    "index": 4406
+  },
+  {
+    "file": "src/app/game-details/game-details.component.css",
+    "comment": "/* fixed height */",
+    "index": 4869
+  },
+  {
+    "file": "src/app/game-details/game-details.component.css",
+    "comment": "/* =========================================\n   Estilos para Contenido Adicional (DLCs)\n   ========================================= */",
+    "index": 6170
+  },
+  {
+    "file": "src/app/game-details/game-details.component.css",
+    "comment": "/* =========================================\n   Estilos para Reseñas / Opiniones\n   ========================================= */",
+    "index": 8544
+  },
+  {
+    "file": "src/app/game-details/game-details.component.css",
+    "comment": "/* Responsive adjustments for game details */",
+    "index": 10890
+  },
+  {
+    "file": "src/app/game-details/game-details.component.html",
+    "comment": "//ui-avatars.com/api/?name=' + review.username\" class=\"user-avatar\">",
+    "index": 5580
+  },
+  {
+    "file": "src/app/game-details/game-details.component.ts",
+    "comment": "// Check ownership if user is already logged in",
+    "index": 2247
+  },
+  {
+    "file": "src/app/game-details/game-details.component.ts",
+    "comment": "// Buscar ediciones especiales en DLCs, expansiones y bundles del juego",
+    "index": 3179
+  },
+  {
+    "file": "src/app/game-details/game-details.component.ts",
+    "comment": "// Exclude the current game from similar games. Get up to 12.",
+    "index": 4446
+  },
+  {
+    "file": "src/app/game-details/game-details.component.ts",
+    "comment": "// Loop back to start if reached the end",
+    "index": 4994
+  },
+  {
+    "file": "src/app/guards/admin.guard.ts",
+    "comment": "// Si no es admin, redirigir al home o mostrar error",
+    "index": 371
+  },
+  {
+    "file": "src/app/home/home.component.css",
+    "comment": "/* Ensure it takes full height if content is short, but allows scrolling */",
+    "index": 87
+  },
+  {
+    "file": "src/app/home/home.component.css",
+    "comment": "/* Adjust based on navbar height */",
+    "index": 203
+  },
+  {
+    "file": "src/app/home/home.component.css",
+    "comment": "/* Hero Section */",
+    "index": 242
+  },
+  {
+    "file": "src/app/home/home.component.css",
+    "comment": "/* Games Section */",
+    "index": 1083
+  },
+  {
+    "file": "src/app/home/home.component.css",
+    "comment": "/* Optional accent */",
+    "index": 1380
+  },
+  {
+    "file": "src/app/home/home.component.css",
+    "comment": "/* Carousel */",
+    "index": 1431
+  },
+  {
+    "file": "src/app/home/home.component.css",
+    "comment": "/* Hide scrollbar for cleaner look */",
+    "index": 1711
+  },
+  {
+    "file": "src/app/home/home.component.css",
+    "comment": "/* Standard game cover ratio */",
+    "index": 2015
+  },
+  {
+    "file": "src/app/home/home.component.css",
+    "comment": "/* Discover More */",
+    "index": 2993
+  },
+  {
+    "file": "src/app/home/home.component.css",
+    "comment": "/* Or keep it scrolling but hide buttons? Let's keep scrolling */",
+    "index": 3783
+  },
+  {
+    "file": "src/app/home/home.component.css",
+    "comment": "/* Hide buttons on mobile, use touch scroll */",
+    "index": 3902
+  },
+  {
+    "file": "src/app/home/home.component.html",
+    "comment": "<!-- Hero Section -->",
+    "index": 33
+  },
+  {
+    "file": "src/app/home/home.component.html",
+    "comment": "<!-- Games Section -->",
+    "index": 417
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Global Components */",
+    "index": 856
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Navbar */",
+    "index": 1117
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Banner Section */",
+    "index": 2822
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Grid Layout */",
+    "index": 4941
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Sidebar Elements */",
+    "index": 5193
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Content Area */",
+    "index": 6342
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Post Cards */",
+    "index": 7192
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Right Sidebar & Stats */",
+    "index": 8467
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Admin List */",
+    "index": 9274
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Promo Card */",
+    "index": 10266
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Footer */",
+    "index": 11381
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Responsive Design */",
+    "index": 11836
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Utility Classes */",
+    "index": 12911
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* Admin Styles */",
+    "index": 13079
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* --- ESTILOS PESTAÑA MEDIA (FEED STYLE) --- */",
+    "index": 15555
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.css",
+    "comment": "/* LEVEL HUD STYLES */",
+    "index": 17047
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.html",
+    "comment": "//placehold.co/1200x400'\" />",
+    "index": 164
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.html",
+    "comment": "<!-- PESTAÑA GENERAL -->",
+    "index": 3528
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.html",
+    "comment": "//ui-avatars.com/api/?name=' + (currentUser()?.username || 'U') + '&background=0d1b2a&color=fff'\" ",
+    "index": 4727
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.html",
+    "comment": "<!-- PESTAÑA MEDIA -->",
+    "index": 8566
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.html",
+    "comment": "//ui-avatars.com/api/?name=' + (currentUser()?.username || 'U') + '&background=0d1b2a&color=fff'\" ",
+    "index": 9106
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.html",
+    "comment": "<!-- Área de Imagen -->",
+    "index": 9871
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.html",
+    "comment": "//ui-avatars.com/api/?name=' + member.username\" class=\"member-avatar-small\">",
+    "index": 16206
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.ts",
+    "comment": "// Pagination",
+    "index": 969
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.ts",
+    "comment": "// Simplificando para que sea un %",
+    "index": 1917
+  },
+  {
+    "file": "src/app/informacion-communities/informacion-communities.ts",
+    "comment": "//ui-avatars.com/api/?name=${m.author}&background=0d1b2a&color=fff`",
+    "index": 3428
+  },
+  {
+    "file": "src/app/interceptors/loading.interceptor.ts",
+    "comment": "// Only show the loader if the request takes more than 3 seconds",
+    "index": 475
+  },
+  {
+    "file": "src/app/login/login.component.css",
+    "comment": "/* Pinkish accent */",
+    "index": 3073
+  },
+  {
+    "file": "src/app/login/login.component.css",
+    "comment": "/* Validation Styles */",
+    "index": 3146
+  },
+  {
+    "file": "src/app/login/login.component.css",
+    "comment": "/* Red border */",
+    "index": 3239
+  },
+  {
+    "file": "src/app/login/login.component.html",
+    "comment": "//fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg\" alt=\"Google\" width=\"20\">",
+    "index": 2392
+  },
+  {
+    "file": "src/app/login/login.component.ts",
+    "comment": "// Recuerda: en tu API esto es el email",
+    "index": 518
+  },
+  {
+    "file": "src/app/login/login.component.ts",
+    "comment": "// Redirigimos al inicio; la Navbar ya mostrará el avatar",
+    "index": 1777
+  },
+  {
+    "file": "src/app/login/login.component.ts",
+    "comment": "// Intentamos extraer un mensaje legible del error",
+    "index": 2035
+  },
+  {
+    "file": "src/app/login/login.component.ts",
+    "comment": "// Si el error es un objeto pero no tiene las propiedades anteriores (e.g. Vercel error)",
+    "index": 2210
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Evitar saltos internos en la fila superior */",
+    "index": 580
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/*Navbar*/",
+    "index": 897
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Responsiveness con CSS Grid */",
+    "index": 1816
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Reducir un poco más moderadamente */",
+    "index": 1915
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Mantener en una línea hasta 850px */",
+    "index": 2071
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Forzar una línea */",
+    "index": 2198
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Reducción ligera */",
+    "index": 2465
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Salto a dos líneas solo por debajo de 850px */",
+    "index": 2711
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* --- ESTILOS DE PEPPIX --- */",
+    "index": 4397
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Evitar que el icono y el texto se separen */",
+    "index": 4629
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Reducido para que sea más pequeño */",
+    "index": 5159
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Necesario para que el transform funcione en el span */",
+    "index": 5318
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* --- ESTILO PARA PERFIL DE USUARIO --- */",
+    "index": 5556
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Fondo original azul oscuro por defecto */",
+    "index": 5692
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Cambiado de hidden a visible para mostrar el dropdown */",
+    "index": 5927
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Recorta la imagen del avatar en el borde curvo */",
+    "index": 5989
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Modificadores de Estado (Más Notorios) */",
+    "index": 6115
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Verde esmeralda oscuro / Conectado */",
+    "index": 6221
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Gris ceniza / Desconectado */",
+    "index": 6487
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Naranja-Dorado / Ausente */",
+    "index": 6747
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Rojo carmesí / Ocupado */",
+    "index": 6998
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Asegura que la imagen siga el borde redondeado */",
+    "index": 7288
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Hacemos relativo para anclar el dropdown */",
+    "index": 7863
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* --- ESTILOS DEL DROPDOWN DE ESTADO --- */",
+    "index": 7991
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Azul muy oscuro con transparencia */",
+    "index": 8171
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Efecto cristal */",
+    "index": 8244
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Evita que las opciones en hover se salgan de las esquinas redondeadas */",
+    "index": 8393
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Estilo futurista como en la imagen */",
+    "index": 8976
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Centrar texto como en la imagen */",
+    "index": 9161
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Tinte morado al pasar */",
+    "index": 9273
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* --- NOTIFICACIONES --- */",
+    "index": 10506
+  },
+  {
+    "file": "src/app/navbar/navbar.component.css",
+    "comment": "/* Scrollbar personalizado */",
+    "index": 13593
+  },
+  {
+    "file": "src/app/navbar/navbar.component.html",
+    "comment": "<!-- Sección Peppix -->",
+    "index": 1462
+  },
+  {
+    "file": "src/app/navbar/navbar.component.html",
+    "comment": "<!-- Notificaciones -->",
+    "index": 1934
+  },
+  {
+    "file": "src/app/navbar/navbar.component.html",
+    "comment": "//ui-avatars.com/api/?name=' + usernameValue() + '&background=0d1b2a&color=fff'\"",
+    "index": 4302
+  },
+  {
+    "file": "src/app/navbar/navbar.component.html",
+    "comment": "<!-- Menú Desplegable -->",
+    "index": 4942
+  },
+  {
+    "file": "src/app/navbar/navbar.component.ts",
+    "comment": "// IMPORTANTE para el ngClass",
+    "index": 256
+  },
+  {
+    "file": "src/app/navbar/navbar.component.ts",
+    "comment": "// Hace un \"polling\" (consulta periódica) cada 80 segundos a la base de datos (ligeramente aumentado para salvar cuota)",
+    "index": 740
+  },
+  {
+    "file": "src/app/navbar/navbar.component.ts",
+    "comment": "// Actualizamos solo lo necesario en el signal global",
+    "index": 1132
+  },
+  {
+    "file": "src/app/navbar/navbar.component.ts",
+    "comment": "// Guardamos el conteo para la UI",
+    "index": 1484
+  },
+  {
+    "file": "src/app/navbar/navbar.component.ts",
+    "comment": "// Mockeamos la estructura de notificaciones si es necesario o manejamos el conteo directo",
+    "index": 1534
+  },
+  {
+    "file": "src/app/navbar/navbar.component.ts",
+    "comment": "// Si abrimos y hay notificaciones, marcamos como leídas después de un pequeño delay",
+    "index": 2617
+  },
+  {
+    "file": "src/app/navbar/navbar.component.ts",
+    "comment": "// Marcar como leída (ya lo hace el toggle si estaba abierta, pero aseguramos)",
+    "index": 3225
+  },
+  {
+    "file": "src/app/navbar/navbar.component.ts",
+    "comment": "// Navegar manualmente para manejar queryParams correctamente",
+    "index": 3398
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* --- CONTENEDOR PRINCIPAL CON FONDO GALÁCTICO --- */",
+    "index": 0
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* Tu fondo galáctico característico */",
+    "index": 260
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* --- PERSONAJES LATERALES --- */",
+    "index": 569
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* Ajusta según el tamaño de tus imágenes */",
+    "index": 676
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* Para que no molesten al hacer clic en el centro */",
+    "index": 767
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* Un poco hacia afuera */",
+    "index": 886
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* --- TARJETA DE COMPRA (ESTILO CRISTAL) --- */",
+    "index": 1112
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* Fondo translúcido gris oscuro */",
+    "index": 1334
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* Efecto Glassmorphism */",
+    "index": 1407
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* --- INFORMACIÓN DEL PRODUCTO --- */",
+    "index": 1760
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* --- MÉTODOS DE PAGO --- */",
+    "index": 2060
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* El seleccionado (Cian brillante como en la captura) */",
+    "index": 2686
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* --- FORMULARIO DE PAGO --- */",
+    "index": 2927
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* --- BOTÓN DE PAGO (PÚRPURA OMNIS) --- */",
+    "index": 3760
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* El púrpura de Omnis */",
+    "index": 3844
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* Logos inferiores (Visa, MC, etc.) */",
+    "index": 4233
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* Step Navigation */",
+    "index": 4991
+  },
+  {
+    "file": "src/app/pagos/pagos.css",
+    "comment": "/* Ensure step containers layout correctly */",
+    "index": 5565
+  },
+  {
+    "file": "src/app/pagos/pagos.html",
+    "comment": "<!-- PASO 1: INFORMACIÓN DE FACTURACIÓN -->",
+    "index": 440
+  },
+  {
+    "file": "src/app/pagos/pagos.html",
+    "comment": "<!-- FORMULARIO DE TARJETA CON FACTURACIÓN INTEGRADA -->",
+    "index": 1319
+  },
+  {
+    "file": "src/app/pagos/pagos.ts",
+    "comment": "// State for form and selection",
+    "index": 534
+  },
+  {
+    "file": "src/app/pagos/pagos.ts",
+    "comment": "// Billing State",
+    "index": 714
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Fondo semitransparente basado en el color de fondo personalizado */",
+    "index": 194
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Header Section */",
+    "index": 2592
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Permitir que la mascota orbite fuera del marco */",
+    "index": 2973
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Un pelín menos que el wrapper para encajar */",
+    "index": 3229
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Modal Media Edit Actions */",
+    "index": 5511
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Level Section */",
+    "index": 6088
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Color base gris */",
+    "index": 6354
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* TIERS DE NIVEL (Cambian cada 10 niveles) */",
+    "index": 6546
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Bronce (0-9) */",
+    "index": 6696
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Verde (10-19) */",
+    "index": 6818
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Azul (20-29) */",
+    "index": 6941
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Púrpura (30-39) */",
+    "index": 7064
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Rojo (40-49) */",
+    "index": 7190
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Dorado Legendario (50+) */",
+    "index": 7411
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Content Layout */",
+    "index": 7827
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Cards */",
+    "index": 7940
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Highlighted border for activity */",
+    "index": 8381
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Sidebar Favorite Badge */",
+    "index": 9266
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Sidebar Links */",
+    "index": 10322
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Zoom in para ocultar cuadros */",
+    "index": 11770
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Responsive */",
+    "index": 11956
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Edit Profile Button */",
+    "index": 18131
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Modal Styles */",
+    "index": 18895
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* ELIMINADO DE AQUÍ PARA MOVERLO FUERA */",
+    "index": 22740
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Fine-tuning accents with the new background theme color */",
+    "index": 22785
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* If I still had it, but let's be safe */",
+    "index": 23036
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Color Picker UI */",
+    "index": 23180
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* PREMIUM HUD ACTIVITY INDICATOR - REFINED v2 */",
+    "index": 23203
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Scanline Effect */",
+    "index": 26537
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/*Seleccionar colores venga los chavales*/",
+    "index": 27294
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Activity Feed */",
+    "index": 28668
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Vitrina de Premios */",
+    "index": 30025
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Incrementado para trofeos 3D */",
+    "index": 31338
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* FIX: Eliminar fondos cuadriculados en la vitrina */",
+    "index": 31468
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Zoom extra para descartar bordes */",
+    "index": 31625
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Recorte circular ajustado */",
+    "index": 31844
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Rarity Styles */",
+    "index": 32457
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Mascotas de Perfil */",
+    "index": 33004
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Estilo Base para Mascotas */",
+    "index": 33194
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Ciclo de 4 frames (Dragón, Agua, Zorro) */",
+    "index": 33447
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Ciclo de 6 frames (Fantasma, Mago) */",
+    "index": 33602
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* --- Dragón Azul --- */",
+    "index": 33752
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* --- Fantasmitu --- */",
+    "index": 34032
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* --- Mago Arcano --- */",
+    "index": 34308
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* --- Bruja --- */",
+    "index": 34587
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Ocultamos la img estática */",
+    "index": 34898
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Hover effects for modal items */",
+    "index": 35897
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* --- LOYALTY BADGES --- */",
+    "index": 36297
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Zoom extremo para descartar el fondo cuadriculado */",
+    "index": 36634
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Máxima restricción circular */",
+    "index": 36936
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Expandir un poco al hover */",
+    "index": 37365
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Individual badge icons */",
+    "index": 37400
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* --- PREMIUM TOOLTIPS --- */",
+    "index": 37723
+  },
+  {
+    "file": "src/app/profile/profile.component.css",
+    "comment": "/* Triángulo del tooltip */",
+    "index": 38500
+  },
+  {
+    "file": "src/app/profile/profile.component.html",
+    "comment": "//ui-avatars.com/api/?name=' + user?.username + '&background=0d1b2a&color=fff'\"",
+    "index": 536
+  },
+  {
+    "file": "src/app/profile/profile.component.html",
+    "comment": "//flagcdn.com/w40/' + user?.country?.toLowerCase() + '.png'\"",
+    "index": 1727
+  },
+  {
+    "file": "src/app/profile/profile.component.html",
+    "comment": "//ui-avatars.com/api/?name=User'\" class=\"mini-avatar\">",
+    "index": 8402
+  },
+  {
+    "file": "src/app/profile/profile.component.html",
+    "comment": "//ui-avatars.com/api/?name=' + comment.author_name\" ",
+    "index": 9015
+  },
+  {
+    "file": "src/app/profile/profile.component.html",
+    "comment": "//ejemplo.com/musica.mp3\" style=\"flex-grow: 1;\">",
+    "index": 17352
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Profile data signal",
+    "index": 1185
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Signals",
+    "index": 1812
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Edit Profile signals",
+    "index": 2496
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Pagination",
+    "index": 3345
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Tanto invisible como desconectado muestran \"Desconectado\"",
+    "index": 4132
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Pero desconectado muestra el tiempo transcurrido",
+    "index": 4197
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Usamos currentTime() para que el computed se reevalúe periódicamente",
+    "index": 4315
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Iniciar timer para actualizar el contador de \"hace X min\" cada minuto",
+    "index": 5668
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Reaccionamos a cambios en la ruta (username)",
+    "index": 5848
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Reaccionamos cuando el usuario visualizado cambie para cargar sus datos",
+    "index": 6240
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Efecto para controlar el fondo global del body",
+    "index": 6486
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Usar getLightweightUpdate si es el propio perfil, o mantener getUserStatus si es otro pero con intervalo mayor",
+    "index": 7570
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Aumentado a 60s",
+    "index": 8579
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Cargar lo primero que haya en la base de datos por defecto",
+    "index": 10615
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Refinar con datos del usuario",
+    "index": 11171
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Priorizar el juego favorito si está marcado, si no el primero",
+    "index": 11516
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Actualizamos los stats de juegos",
+    "index": 11766
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// ... insignias ...",
+    "index": 11956
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Priorizar el grupo favorito",
+    "index": 12182
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Comentarios basados en preferencia",
+    "index": 12895
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "//')) {",
+    "index": 15128
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "//ui-avatars.com/api/?name=${f.username}&background=0d1b2a&color=fff`;",
+    "index": 18607
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Fetch detailed info for all games in parallel",
+    "index": 20727
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "//placehold.co/100x120';",
+    "index": 21533
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "//')) coverUrl = 'https:' + coverUrl;",
+    "index": 21595
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Recargar el perfil visualizado si es el propio",
+    "index": 36766
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Si el username cambió, redirigir a la nueva URL",
+    "index": 37165
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Intentar obtener ID por varias vías para asegurar que no sea undefined",
+    "index": 37816
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Mostrar un pequeño indicador de carga para que el usuario sepa que está pasando algo",
+    "index": 38168
+  },
+  {
+    "file": "src/app/profile/profile.component.ts",
+    "comment": "// Cerramos el loading y abrimos la modal real",
+    "index": 38714
+  },
+  {
+    "file": "src/app/register/register.component.css",
+    "comment": "/* Validation Styles */",
+    "index": 2998
+  },
+  {
+    "file": "src/app/register/register.component.css",
+    "comment": "/* Red border */",
+    "index": 3091
+  },
+  {
+    "file": "src/app/register/register.component.html",
+    "comment": "//fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg\" alt=\"Google\" width=\"20\">",
+    "index": 3577
+  },
+  {
+    "file": "src/app/register/register.component.ts",
+    "comment": "// Ajusta la ruta si es necesario",
+    "index": 199
+  },
+  {
+    "file": "src/app/register/register.component.ts",
+    "comment": "// Redirigimos al inicio; la Navbar ya mostrará el avatar",
+    "index": 1333
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "// 1. CAMBIO CRÍTICO: Usamos '/api' sin el localhost para que Vercel encuentre sus funciones",
+    "index": 304
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "// Seteamos lo mínimo necesario para que fetchCurrentUser pueda funcionar",
+    "index": 1079
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "// Sincronizamos con el servidor",
+    "index": 1306
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "// --- SISTEMA DE AMISTADES ---",
+    "index": 11331
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "// --- ACCIONES DE ADMINISTRADOR ---",
+    "index": 14166
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Obtiene todos los usuarios (solo para administradores)\n   */",
+    "index": 14206
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Elimina un usuario y todos sus datos asociados (solo para administradores)\n   */",
+    "index": 14537
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Obtiene todos los reportes (tickets de soporte) - Solo administradores\n   */",
+    "index": 14959
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Actualiza el estado de un reporte - Solo administradores\n   */",
+    "index": 15310
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Obtiene estadísticas globales - Solo administradores\n   */",
+    "index": 15820
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Procesa un reembolso de juego - Solo administradores\n   */",
+    "index": 16148
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Obtiene todas las comunidades - Solo administradores\n   */",
+    "index": 16598
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Elimina una comunidad - Solo administradores\n   */",
+    "index": 16942
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Obtiene todas las transacciones globales - Solo administradores\n   */",
+    "index": 17310
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Obtiene todos los juegos vendidos (solo para administradores)\n   */",
+    "index": 17678
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Obtiene la evolución de ventas de un juego - Solo administradores\n   */",
+    "index": 18030
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Obtiene la evolución de miembros de una comunidad - Solo administradores\n   */",
+    "index": 18423
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Obtiene las transacciones de un usuario específico - Solo administradores\n   */",
+    "index": 18996
+  },
+  {
+    "file": "src/app/services/auth.ts",
+    "comment": "/**\n   * Resuelve un reporte de compra ingresando Peppix manualmente - Solo administradores\n   */",
+    "index": 19407
+  },
+  {
+    "file": "src/app/services/chat.service.ts",
+    "comment": "// --- MÉTODOS DE GRUPOS ---",
+    "index": 1541
+  },
+  {
+    "file": "src/app/services/game.service.ts",
+    "comment": "// Handle array params for HttpParams or simple object",
+    "index": 1099
+  },
+  {
+    "file": "src/app/services/game.service.ts",
+    "comment": "// Angular HttpClient handles arrays in params as 'key': ['val1', 'val2'] if using HttpParams,",
+    "index": 1162
+  },
+  {
+    "file": "src/app/services/game.service.ts",
+    "comment": "// but for simple object it might need distinct handling. Let's use simple object with repeating keys logic if needed,",
+    "index": 1265
+  },
+  {
+    "file": "src/app/services/game.service.ts",
+    "comment": "// or just pass as is hoping HttpClient serialization works for array.",
+    "index": 1392
+  },
+  {
+    "file": "src/app/services/game.service.ts",
+    "comment": "// Actually, simpler to pass as is.",
+    "index": 1471
+  },
+  {
+    "file": "src/app/services/game.service.ts",
+    "comment": "// extraer desarrollador",
+    "index": 1899
+  },
+  {
+    "file": "src/app/services/notification.service.ts",
+    "comment": "// Escuchar cambios en el usuario para iniciar/detener el polling",
+    "index": 712
+  },
+  {
+    "file": "src/app/services/notification.service.ts",
+    "comment": "// Polling cada 8 segundos",
+    "index": 1071
+  },
+  {
+    "file": "src/app/services/notification.service.ts",
+    "comment": "// No notificar si ya estamos en la pantalla de chat",
+    "index": 1210
+  },
+  {
+    "file": "src/app/social/social.component.css",
+    "comment": "/* Rankings Grid */",
+    "index": 1058
+  },
+  {
+    "file": "src/app/social/social.component.css",
+    "comment": "/* Glassmorphism Card */",
+    "index": 1373
+  },
+  {
+    "file": "src/app/social/social.component.css",
+    "comment": "/* Ranking Items */",
+    "index": 2366
+  },
+  {
+    "file": "src/app/social/social.component.css",
+    "comment": "/* SweetAlert Customization */",
+    "index": 4738
+  },
+  {
+    "file": "src/app/social/social.component.css",
+    "comment": "/* Loading & Error */",
+    "index": 5166
+  },
+  {
+    "file": "src/app/social/social.component.css",
+    "comment": "/* Responsiveness */",
+    "index": 5761
+  },
+  {
+    "file": "src/app/social/social.component.css",
+    "comment": "/* Search Section */",
+    "index": 6063
+  },
+  {
+    "file": "src/app/social/social.component.css",
+    "comment": "/* Search Results Overlay */",
+    "index": 7085
+  },
+  {
+    "file": "src/app/social/social.component.html",
+    "comment": "<!-- Resultados de búsqueda -->",
+    "index": 575
+  },
+  {
+    "file": "src/app/social/social.component.html",
+    "comment": "<!-- Top Buyers -->",
+    "index": 2045
+  },
+  {
+    "file": "src/app/social/social.component.html",
+    "comment": "<!-- Top Community Members -->",
+    "index": 3594
+  },
+  {
+    "file": "src/app/social/social.component.html",
+    "comment": "<!-- Top Socialites (Friends) -->",
+    "index": 5109
+  },
+  {
+    "file": "src/app/social/social.component.html",
+    "comment": "<!-- Top Investors (Library Value) -->",
+    "index": 6554
+  },
+  {
+    "file": "src/app/social/social.component.ts",
+    "comment": "// Búsqueda de usuarios",
+    "index": 1046
+  },
+  {
+    "file": "src/app/social/social.component.ts",
+    "comment": "//ui-avatars.com/api/?name=${u.username}&background=0d1b2a&color=fff`;",
+    "index": 3721
+  },
+  {
+    "file": "src/app/social/social.component.ts",
+    "comment": "// Fallback for missing profile images",
+    "index": 6366
+  },
+  {
+    "file": "src/app/support/support.component.css",
+    "comment": "/* Main Menu Options */",
+    "index": 892
+  },
+  {
+    "file": "src/app/support/support.component.css",
+    "comment": "/* Sections */",
+    "index": 2192
+  },
+  {
+    "file": "src/app/support/support.component.css",
+    "comment": "/* Content Container */",
+    "index": 2356
+  },
+  {
+    "file": "src/app/support/support.component.css",
+    "comment": "/* Game Selection Grid */",
+    "index": 2593
+  },
+  {
+    "file": "src/app/support/support.component.css",
+    "comment": "/* Form Styling */",
+    "index": 3426
+  },
+  {
+    "file": "src/app/support/support.component.css",
+    "comment": "/* Ticket Grid */",
+    "index": 5553
+  },
+  {
+    "file": "src/app/support/support.component.css",
+    "comment": "/* States */",
+    "index": 7660
+  },
+  {
+    "file": "src/app/support/support.component.html",
+    "comment": "<!-- Main Menu -->",
+    "index": 333
+  },
+  {
+    "file": "src/app/support/support.component.html",
+    "comment": "<!-- Games Selection -->",
+    "index": 1308
+  },
+  {
+    "file": "src/app/support/support.component.html",
+    "comment": "//placehold.co/60x80/1a1a2e/ffffff?text=Game'\" class=\"mini-cover\">",
+    "index": 1845
+  },
+  {
+    "file": "src/app/support/support.component.html",
+    "comment": "<!-- Game Details Form -->",
+    "index": 2566
+  },
+  {
+    "file": "src/app/support/support.component.html",
+    "comment": "<!-- Generic Professional Form Template -->",
+    "index": 3862
+  },
+  {
+    "file": "src/app/support/support.component.html",
+    "comment": "<!-- Community Options -->",
+    "index": 6081
+  },
+  {
+    "file": "src/app/support/support.component.html",
+    "comment": "<!-- Ticket List -->",
+    "index": 6691
+  },
+  {
+    "file": "src/app/support/support.component.ts",
+    "comment": "// View states: 'main', 'games', 'game-details', 'purchases', 'store', 'community', 'community-question', 'community-report', 'tickets'",
+    "index": 745
+  },
+  {
+    "file": "src/app/support/support.component.ts",
+    "comment": "// Data for forms",
+    "index": 926
+  },
+  {
+    "file": "src/app/support/support.component.ts",
+    "comment": "// Ticket list",
+    "index": 1125
+  },
+  {
+    "file": "src/app/support/support.component.ts",
+    "comment": "// Fetch detailed info for all games in parallel",
+    "index": 1955
+  },
+  {
+    "file": "src/index.html",
+    "comment": "//fonts.googleapis.com/icon?family=Material+Icons+Round\" rel=\"stylesheet\">",
+    "index": 272
+  },
+  {
+    "file": "src/index.html",
+    "comment": "//cdn.jsdelivr.net/npm/sweetalert2@11\"></script>",
+    "index": 369
+  },
+  {
+    "file": "src/index.html",
+    "comment": "//cdn.jsdelivr.net/npm/chart.js\"></script>",
+    "index": 440
+  },
+  {
+    "file": "src/styles.css",
+    "comment": "//fonts.googleapis.com/css2?family=Audiowide&family=Poppins:wght@400;500;600&display=swap');",
+    "index": 19
+  },
+  {
+    "file": "src/styles.css",
+    "comment": "/* Fallback dark color */",
+    "index": 225
+  }
+]

@@ -7,7 +7,7 @@ const SECRET_KEY = 'mi_secreto_temporal';
 module.exports.config = {
     api: {
         bodyParser: {
-            sizeLimit: '4mb' // Must be under 4.5MB for Vercel edge limits
+            sizeLimit: '4mb' // Debe tener menos de 4,5 MB para los límites de borde de Vercel
         }
     }
 };
@@ -45,7 +45,7 @@ module.exports = async function handler(req, res) {
             const gamesCountQuery = await sql`SELECT COUNT(id) as count FROM user_games WHERE user_id = ${user.id}`;
             const gamesCount = parseInt(gamesCountQuery[0].count, 10);
 
-            // 1.2 Loyalty Badges (Time based)
+            // 1.2 Insignias de Lealtad (basadas en el tiempo)
             const accountAgeInDays = Math.floor((new Date() - new Date(user.created_at)) / (1000 * 60 * 60 * 24));
             const loyaltyBadges = [];
             if (accountAgeInDays >= 7) loyaltyBadges.push({ id: 'loyalty_7d', name: 'Omnis: Iniciación al Tiempo', icon: '/images/badges/loyalty_7d.png', description: 'conseguida al entrar 7 días a la página' });
@@ -60,7 +60,7 @@ module.exports = async function handler(req, res) {
             if (gamesCount >= 7) hardcodedBadges.push({ id: 104, name: 'Cállese y Tome mi Dinero', icon: '/images/ins_callese.png', description: 'Compraste 7 juegos.' });
             if (gamesCount >= 10) hardcodedBadges.push({ id: 105, name: 'Frozen Mind Legend', icon: '/images/ins_frozenmind.png', description: 'Compraste 10 juegos.' });
 
-            // 2. Premios del Perfil (3D Trophies from DB)
+            // 2. Premios del Perfil (Trofeos 3D de DB)
             const userAwards = await sql`
                 SELECT a.id, a.name, a.type, a.requirement, a.icon_url as icon, ua.obtained_at, ua.is_pinned
                 FROM awards a
@@ -186,7 +186,7 @@ module.exports = async function handler(req, res) {
                 const { userId } = req.query;
                 if (!userId) return res.status(400).json({ error: 'Falta userId' });
 
-                // No cache for lightweight status to ensure realtime-like updates
+                // Sin caché para el estado liviano para garantizar actualizaciones en tiempo real
                 res.setHeader('Cache-Control', 'no-store');
 
                 const status = await sql`SELECT estado, last_activity, xp, peppix FROM users WHERE id = ${userId} LIMIT 1`;
@@ -654,7 +654,7 @@ module.exports = async function handler(req, res) {
                 const communities = await sql`SELECT COUNT(*) as count FROM communities`;
                 stats.totalCommunities = parseInt(communities[0].count, 10);
 
-                // --- HIGHLIGHTS / HALL OF FAME ---
+                // --- DESTACADOS / SALÓN DE LA FAMA ---
                 
                 // 1. Juego más vendido (Histórico)
                 const topGame = await sql`
@@ -776,7 +776,7 @@ module.exports = async function handler(req, res) {
 
             const fullUser = await getUserWithBadges(user);
 
-            // Fetch initial 5 comments based on preference
+            // Obtener los 5 comentarios iniciales según la preferencia
             let initialComments = [];
             if (fullUser.display_comments_type === 'profile') {
                 initialComments = await sql`
@@ -798,7 +798,7 @@ module.exports = async function handler(req, res) {
                 `;
             }
 
-            // Fetch unread notifications for logged in user (if applicable)
+            // Obtener notificaciones no leídas para el usuario que inició sesión (si corresponde)
             let unreadNotifications = [];
             const decoded = await verifyToken(req);
             if (decoded && decoded.email === user.email) {
@@ -858,10 +858,10 @@ module.exports = async function handler(req, res) {
                     RETURNING *
                 `;
 
-                // Return with author info
+                // Volver con información del autor
                 const commenter = await sql`SELECT username as author_name, profile_image as author_image FROM users WHERE id = ${author_user_id}`;
                 
-                // Add notification for the profile owner
+                // Agregar notificación para el propietario del perfil
                 if (profile_user_id !== author_user_id) {
                     const profileOwner = await sql`SELECT username FROM users WHERE id = ${profile_user_id}`;
                     const profileOwnerName = profileOwner[0]?.username || '';
@@ -894,7 +894,7 @@ module.exports = async function handler(req, res) {
                 const { commentId, userId } = req.body;
                 if (!commentId || !userId) return res.status(400).json({ error: 'Faltan datos' });
 
-                // Only the author or the profile owner can delete
+                // Sólo el autor o el propietario del perfil pueden eliminar
                 const comment = await sql`SELECT profile_user_id, author_user_id FROM profile_comments WHERE id = ${commentId}`;
                 if (comment.length === 0) return res.status(404).json({ error: 'Comentario no encontrado' });
 
@@ -1084,8 +1084,8 @@ module.exports = async function handler(req, res) {
                 let user;
 
                 if (users.length === 0) {
-                    // Create user if they don't exist
-                    const hashedPassword = await bcrypt.hash(uid, 10); // Use uid as a fallback password, though they shouldn't use it directly
+                    // Crear usuario si no existe
+                    const hashedPassword = await bcrypt.hash(uid, 10); // Utilice uid como contraseña alternativa, aunque no deberían utilizarla directamente
                     const inserted = await sql`
                         INSERT INTO users (username, email, password, profile_image, peppix, estado, role) 
                         VALUES (${name || email.split('@')[0]}, ${email}, ${hashedPassword}, ${photoUrl || null}, 0, 'en-linea', 'cliente')
@@ -1094,7 +1094,7 @@ module.exports = async function handler(req, res) {
                     user = inserted[0];
                 } else {
                     user = users[0];
-                    // Optionally update profile image if they didn't have one
+                    // Opcionalmente, actualice la imagen de perfil si no tenían una.
                     if (!user.profile_image && photoUrl) {
                         await sql`UPDATE users SET profile_image = ${photoUrl} WHERE id = ${user.id}`;
                         user.profile_image = photoUrl;
@@ -1152,7 +1152,7 @@ module.exports = async function handler(req, res) {
                 const user = userCheck[0];
                 if (user.peppix < price) return res.status(400).json({ error: 'Saldo insuficiente' });
 
-                // Fetch game metadata from IGDB to cache it locally
+                // Obtener metadatos del juego desde IGDB para almacenarlos en caché localmente
                 try {
                     const axios = require('axios');
                     const gameInfoResponse = await axios.post(
@@ -1355,7 +1355,7 @@ module.exports = async function handler(req, res) {
 
                 if (!email) return res.status(400).json({ error: 'Falta email' });
 
-                // Sanitize integer fields
+                // Desinfectar campos de números enteros
                 const favGroupId = favorite_group_id === '' ? null : favorite_group_id;
                 const favGameId = favorite_game_id === '' ? null : favorite_game_id;
                 const badgeId = selected_badge_id === '' ? null : selected_badge_id;
@@ -1389,7 +1389,7 @@ module.exports = async function handler(req, res) {
 
                 const fullUser = await getUserWithBadges(updated[0]);
 
-                // Also return initial comments based on the new preference
+                // También devolver comentarios iniciales basados ​​en la nueva preferencia.
                 let initialComments = [];
                 if (fullUser.display_comments_type === 'profile') {
                     initialComments = await sql`

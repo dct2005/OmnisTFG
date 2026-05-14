@@ -17,7 +17,7 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Sidebar */
+/* Barra lateral */
 .conversations-sidebar {
     width: 320px;
     background: rgba(0, 0, 0, 0.4);
@@ -211,7 +211,7 @@
     font-size: 2rem;
 }
 
-/* Group Message Identity */
+/* Identidad del mensaje grupal */
 .msg-sender-avatar {
     width: 32px;
     height: 32px;
@@ -351,7 +351,7 @@
     text-overflow: ellipsis;
 }
 
-/* Chat Area */
+/* Área de chat */
 .chat-area {
     flex: 1;
     display: flex;
@@ -606,7 +606,7 @@
     transform: scale(1.1);
 }
 
-/* Typing Indicator */
+/* Indicador de escritura */
 .typing-indicator {
     padding: 10px 30px;
     background: rgba(0, 0, 0, 0.1);

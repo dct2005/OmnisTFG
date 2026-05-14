@@ -12,14 +12,14 @@ async function test() {
         const user = users[0];
         console.log('Testing with user:', user.email, 'Current Peppix:', user.peppix, 'Last Reward:', user.last_daily_reward);
         
-        // Let's call the logic
+        // Llamemos a la lógica
         const check = await sql`SELECT last_daily_reward, peppix FROM users WHERE email = ${user.email}`;
         console.log('check result:', check);
         
         const lastReward = check[0].last_daily_reward;
         if (lastReward && new Date(lastReward).toDateString() === new Date().toDateString()) {
             console.log('Ya ha reclamado hoy.');
-            // Let's reset it for testing
+            // Reiniciémoslo para probarlo.
             await sql`UPDATE users SET last_daily_reward = NULL WHERE email = ${user.email}`;
             console.log('Reseteado last_daily_reward. Ejecuta de nuevo el test.');
             process.exit(0);
@@ -30,7 +30,7 @@ async function test() {
             { type: 'nada', value: 0, label: 'Nada', weight: 100 }
         ];
         
-        let prize = prizes[0]; // Force a Peppix prize
+        let prize = prizes[0]; // Forzar un premio Peppix
         
         console.log('Updating last_daily_reward...');
         await sql`UPDATE users SET last_daily_reward = NOW() WHERE email = ${user.email}`;

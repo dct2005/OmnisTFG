@@ -33,7 +33,7 @@ module.exports = async function handler(req, res) {
                 whereConditions.push(`id = (${ids.join(",")})`);
             }
         } else if (search) {
-            whereConditions.push("game_type = (0, 8, 9, 10, 11, 13)"); // Juego base, remake, remaster, expanded, port, pack
+            whereConditions.push("game_type = (0, 8, 9, 10, 11, 13)"); // Juego base, remake, remaster, ampliado, port, pack
             whereConditions.push(`name ~ *"${search}"*`); // Búsqueda más flexible
         } else {
             whereConditions.push("game_type = (0, 8, 9, 10, 11, 13)");
@@ -60,7 +60,7 @@ module.exports = async function handler(req, res) {
             queryParts.push("sort popularity desc;");
         }
 
-        // Limite y paginacion
+        // Límites y paginación
         queryParts.push(`limit 20;`);
         queryParts.push(`offset ${offset || 0};`);
 
@@ -150,23 +150,23 @@ module.exports = async function handler(req, res) {
 };
 
 // Este código ha sido editado a altas horas de la madrugada, con altos niveles de cafeína y azúcar en sangre.
-//                      :::!~!!!!!:.
+
 //                   .xUHWH!! !!?M88WHX:.
 //                 .X*#M@$!!  !X!M$$$$$$WWx:.
-//                :!!!!!!?H! :!$!$$$$$$$$$$8X:
-//               !!~  ~:~!! :~!$!#$$$$$$$$$$8X:
-//              :!~::!H!<   ~.U$X!?R$$$$$$$$MM!
+//                :!!!!!?H! :!$!$$$$$$$$$$$$8X:
+//               !!~ ~:~!! :~!$!#$$$$$$$$$$$8X:
+//              :!~::!H!< ~.U$X!?R$$$$$$$$MM!
 //              ~!~!!!!~~ .:XW$$$U!!?$$$$$$RMM!
 //                !:~~~ .:!M"T#$$$$WX??#MRRMMM!
-//                ~?WuxiW*`   `"#$$$$8!!!!??!!!
-//              :X- M$$$$       `"T#$T~!8$WUXU~
-//             :%`  ~#$$$m:        ~!~ ?$$$$$$
-//           :!`.-   ~T$$$$8xx.  .xWW- ~""##*"
-// .....   -~~:<` !    ~?T#$$@@W@*?$$      /`
-// W$@@M!!! .!~~ !!     .:XUW$W!~ `"~:    :
-// #"~~`.:x%`!!  !H:   !WM$$$$Ti.: .!WUn+!`
+//                ~?WuxiW*` `"#$$$$8!!!!??!!!
+//              :X- M$$$$ `"T#$T~!8$WUXU~
+//             :%` ~#$$$m: ~!~ ?$$$$$$
+//           :!`.- ~T$$$$8xx.  .xWW- ~""##*"
+// ..... -~~:<`!    ~?T#$$@@W@*?$$ /`
+// W$@@M!!! .!~~ !!     .:XUW$W!~ `"~: :
+// #"~~`.:x%`!! !H: !WM$$$$Ti.: .!WUn+!`
 // :::~:!!`:X~ .: ?H.!u "$$$B$$$!W:U!T$$M~
-// .~~   :X@!.-~   ?@WTWo("*$$$W$TH$! `
-// Wi.~!X$?!-~    : ?$$$B$Wu("**$RM!
-// $R@i.~~ !     :   ~$$$$$B$$en:``
-// ?MXT@Wx.~    :     ~"##*$$$$M~
+// .~~ :X@!.-~ ?@WTWo("*$$$W$TH$! `
+// Wi.~!X$?!-~ : ?$$$B$Wu("**$RM!
+// $R@i.~~ !     : ~$$$$$B$$es:``
+// ?MXT@Wx.~ : ~"##*$$$$M~

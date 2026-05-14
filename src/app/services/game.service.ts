@@ -40,11 +40,11 @@ export class GameService {
     }
     if (genres && genres.length > 0) {
       genres.forEach(g => {
-        // Handle array params for HttpParams or simple object
-        // Angular HttpClient handles arrays in params as 'key': ['val1', 'val2'] if using HttpParams,
-        // but for simple object it might need distinct handling. Let's use simple object with repeating keys logic if needed,
-        // or just pass as is hoping HttpClient serialization works for array.
-        // Actually, simpler to pass as is.
+        // Manejar parámetros de matriz para HttpParams u objeto simple
+        // Angular HttpClient maneja matrices en parámetros como 'clave': ['val1', 'val2'] si usa HttpParams,
+        // pero para un objeto simple puede necesitar un manejo distinto. Usemos un objeto simple con lógica de claves repetidas si es necesario,
+        // o simplemente pase como espera que la serialización de HttpClient funcione para la matriz.
+        // En realidad, es más sencillo pasarlo tal como está.
       });
       params.genres = genres;
     }

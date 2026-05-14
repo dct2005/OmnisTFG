@@ -1,11 +1,11 @@
 const postgres = require('postgres');
 require('dotenv').config({ path: '.env.local' });
 
-// =============================================================================
-// CONFIGURATION
-// =============================================================================
-// Use the old Neon URL here. If it's different from what's below, please update it.
-// Use the UNPOOLED Neon URL to see if it bypasses the pooler's quota restriction
+
+// CONFIGURACIÓN
+
+// Utilice la antigua URL de Neon aquí. Si es diferente de lo que se muestra a continuación, actualícelo.
+// Utilice la URL de Neon UNPOOLED para ver si pasa por alto la restricción de cuota del pooler
 const OLD_DATABASE_URL = "postgresql://neondb_owner:npg_k3OPFrbURXc1@ep-odd-paper-ahr2qwqc.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require";
 const NEW_DATABASE_URL = process.env.DATABASE_URL;
 
@@ -17,7 +17,7 @@ if (!OLD_DATABASE_URL || !NEW_DATABASE_URL) {
 const sqlOld = postgres(OLD_DATABASE_URL, { ssl: 'require' });
 const sqlNew = postgres(NEW_DATABASE_URL, { ssl: 'require' });
 
-// Order is CRITICAL due to Foreign Key constraints
+// El pedido es CRÍTICO debido a restricciones de clave externa
 const TABLES = [
     'users',
     'communities',
@@ -50,7 +50,7 @@ async function migrate() {
         try {
             console.log(`\n--- Migrando tabla: ${table} ---`);
             
-            // 1. Fetch data from old DB
+            // 1. Obtener datos de la base de datos antigua
             const rows = await sqlOld`SELECT * FROM ${sqlOld(table)}`;
             
             if (rows.length === 0) {
@@ -60,27 +60,27 @@ async function migrate() {
 
             console.log(`Encontradas ${rows.length} filas en Neon. Insertando en Supabase...`);
 
-            // 2. Insert into new DB
-            // We use ON CONFLICT DO NOTHING to avoid issues with repeated runs
-            // Note: This assumes 'id' is the primary key for most tables
+            // 2. Insertar en una nueva base de datos
+            // Usamos ON CONFLICT DO Nothing para evitar problemas con ejecuciones repetidas.
+            // Nota: Esto supone que 'id' es la clave principal para la mayoría de las tablas.
             await sqlNew`
                 INSERT INTO ${sqlNew(table)} ${sqlNew(rows)}
                 ON CONFLICT DO NOTHING
             `;
 
-            // 3. Reset sequences for SERIAL columns
+            // 3. Restablecer secuencias para columnas SERIAL
             try {
                 await sqlNew`
                     SELECT setval(pg_get_serial_sequence(${table}, 'id'), COALESCE(MAX(id), 1)) FROM ${sqlNew(table)}
                 `;
             } catch (seqErr) {
-                // Some tables might not have an 'id' or a sequence, ignore errors here
+                // Es posible que algunas tablas no tengan una 'id' o una secuencia; ignore los errores aquí
             }
 
             console.log(`✅ Tabla ${table} migrada con éxito.`);
         } catch (err) {
             console.error(`❌ Error migrando tabla ${table}:`, err.message);
-            // We continue with other tables if one fails, but usually errors here are critical
+            // Continuamos con otras tablas si alguna falla, pero normalmente los errores aquí son críticos.
         }
     }
 

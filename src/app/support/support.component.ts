@@ -20,10 +20,10 @@ export class SupportComponent implements OnInit {
 
   currentUser = this.authService.currentUser;
   
-  // View states: 'main', 'games', 'game-details', 'purchases', 'store', 'community', 'community-question', 'community-report', 'tickets'
+  // Ver estados: 'principal', 'juegos', 'detalles del juego', 'compras', 'tienda', 'comunidad', 'pregunta-de la comunidad', 'informe-de la comunidad', 'entradas'
   currentView = signal<string>('main');
   
-  // Data for forms
+  // Datos para formularios
   ownedGames = signal<any[]>([]);
   loadingGames = signal(false);
   selectedGame = signal<any>(null);
@@ -31,7 +31,7 @@ export class SupportComponent implements OnInit {
   ticketDetails = '';
   submitting = signal(false);
   
-  // Ticket list
+  // Lista de entradas
   tickets = signal<any[]>([]);
   loadingTickets = signal(false);
 
@@ -68,7 +68,7 @@ export class SupportComponent implements OnInit {
           return;
         }
 
-        // Fetch detailed info for all games in parallel
+        // Obtenga información detallada para todos los juegos en paralelo
         const detailPromises = gameRecords.map((record: any) => 
           new Promise((resolve) => {
             this.gameService.getGameById(record.game_api_id).subscribe({

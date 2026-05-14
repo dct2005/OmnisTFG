@@ -26,7 +26,7 @@ export class ProfileComponent implements OnDestroy {
   private router = inject(Router);
   private renderer = inject(Renderer2);
 
-  // Profile data signal
+  // Señal de datos de perfil
   profileData = signal({
     level: 1,
     currentBadge: {
@@ -62,7 +62,7 @@ export class ProfileComponent implements OnDestroy {
     }
   });
 
-  // Signals
+  // Señales
   viewedUser = signal<any>(null);
   cacheBuster = Date.now();
   pinnedAwards = computed(() => this.viewedUser()?.pinned_awards || []);
@@ -79,7 +79,7 @@ export class ProfileComponent implements OnDestroy {
   totalLibraryValue = signal<number>(0);
   friendActivities = signal<any[]>([]);
 
-  // Edit Profile signals
+  // Editar señales de perfil
   isEditModalOpen = signal(false);
   userGames = signal<any[]>([]);
   userCommunities = signal<any[]>([]);
@@ -112,7 +112,7 @@ export class ProfileComponent implements OnDestroy {
   commentsOffset = signal(0);
   hasMoreComments = signal(true);
 
-  // Pagination
+  // Paginación
   currentPage = 1;
   pageSize = 5;
 
@@ -489,7 +489,7 @@ export class ProfileComponent implements OnDestroy {
     this.gameService.getGameById(gameId).subscribe({
       next: (game: Game) => {
         let coverUrl = game.cover?.url || '';
-        if (coverUrl.startsWith('//')) {
+        if (coverUrl.startsWith('
           coverUrl = 'https:' + coverUrl;
         }
 
@@ -640,7 +640,7 @@ export class ProfileComponent implements OnDestroy {
       didOpen: () => {
         Swal.showLoading();
         
-        // Fetch detailed info for all games in parallel
+        // Obtenga información detallada para todos los juegos en paralelo
         const detailPromises = gameRecords.map(record => 
           new Promise((resolve) => {
             this.gameService.getGameById(record.game_api_id).subscribe({
@@ -657,7 +657,7 @@ export class ProfileComponent implements OnDestroy {
 
           games.forEach(g => {
             let coverUrl = g.cover?.url || 'https://placehold.co/100x120';
-            if (coverUrl.startsWith('//')) coverUrl = 'https:' + coverUrl;
+            if (coverUrl.startsWith('//')) cubiertaUrl = 'https:' + cubiertaUrl;
             
             const pDate = new Date(g.purchaseDate).toLocaleDateString();
 

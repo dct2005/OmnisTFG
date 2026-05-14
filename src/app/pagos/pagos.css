@@ -56,7 +56,7 @@
     background: rgba(43, 43, 46, 0.8);
     /* Fondo translúcido gris oscuro */
     backdrop-filter: blur(15px);
-    /* Efecto Glassmorphism */
+    /* Efecto Glassmorfismo */
     -webkit-backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 16px;
@@ -207,7 +207,7 @@ input[type="text"]:focus {
     transform: translateY(-2px);
 }
 
-/* Logos inferiores (Visa, MC, etc.) */
+/* Logotipos inferiores (Visa, MC, etc.) */
 .payment-logos {
     position: absolute;
     bottom: 20px;
@@ -246,7 +246,7 @@ input[type="text"]:focus {
     font-weight: 700;
 }
 
-/* Step Navigation */
+/* Navegación por pasos */
 .action-buttons {
     display: flex;
     justify-content: center;
@@ -277,7 +277,7 @@ input[type="text"]:focus {
     font-style: italic;
 }
 
-/* Ensure step containers layout correctly */
+/* Asegúrese de que los contenedores de pasos estén correctamente distribuidos */
 .step-container {
     animation: fadeIn 0.4s ease-out;
 }

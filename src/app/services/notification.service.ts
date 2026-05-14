@@ -35,7 +35,7 @@ export class NotificationService {
     if (this.isInitialized) return;
     this.isInitialized = true;
 
-    // Polling cada 8 segundos
+    // Sondeo cada 8 segundos
     this.pollingSubscription = interval(8000).pipe(
       filter(() => !this.router.url.includes('/mensajes')), // No notificar si ya estamos en la pantalla de chat
       switchMap(() => this.chatService.getUnreadMessages(userId))

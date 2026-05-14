@@ -226,7 +226,7 @@
 
 .similar-window {
   height: 528px;
-  /* 3 cards (160px * 3) + 2 gaps (24px * 2) = 480 + 48 = 528px */
+  /* 3 tarjetas (160px * 3) + 2 espacios (24px * 2) = 480 + 48 = 528px */
   overflow: hidden;
   position: relative;
 }
@@ -247,7 +247,7 @@
   background-color: rgba(30, 30, 45, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.1);
   height: 160px;
-  /* fixed height */
+  /* altura fija */
   flex-shrink: 0;
 }
 
@@ -581,7 +581,7 @@
   font-style: italic;
 }
 
-/* Responsive adjustments for game details */
+/* Ajustes responsivos para los detalles del juego. */
 @media (max-width: 1024px) {
   .game-details-wrapper {
     flex-direction: column;

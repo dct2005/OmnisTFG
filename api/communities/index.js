@@ -8,7 +8,7 @@ module.exports = async function handler(req, res) {
         return res.status(500).json({ error: 'Configuración de base de datos incorrecta' });
     }
 
-    // Permisos CORS
+    // Permisos CORAZONES
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');

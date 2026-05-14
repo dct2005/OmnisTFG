@@ -7,7 +7,7 @@
     <p class="subtitle" *ngIf="currentView() === 'main'">¿En qué podemos ayudarte?</p>
   </div>
 
-  <!-- Main Menu -->
+  <!-- Menú de reproducción -->
   <div class="support-options" *ngIf="currentView() === 'main'">
     <button class="support-card" (click)="setView('games')">
       <span>Juegos, software, etc.</span>
@@ -34,7 +34,7 @@
     </div>
   </div>
 
-  <!-- Games Selection -->
+  <!-- Selección de juegos -->
   <div class="support-content" *ngIf="currentView() === 'games'">
     <div class="section-title">
       <h2>Selecciona un producto</h2>
@@ -67,7 +67,7 @@
     </ng-template>
   </div>
 
-  <!-- Game Details Form -->
+  <!-- Formulario de detalles del juego -->
   <div class="support-content" *ngIf="currentView() === 'game-details'">
     <div class="form-header-premium">
       <img [src]="selectedGame()?.cover?.url" class="form-item-img" *ngIf="selectedGame()?.cover">
@@ -96,7 +96,7 @@
     </div>
   </div>
 
-  <!-- Generic Professional Form Template -->
+  <!-- Plantilla de formulario profesional genérico -->
   <div class="support-content" *ngIf="['purchases', 'store', 'community-question', 'community-report'].includes(currentView())">
     <div class="form-header-premium">
       <div class="form-icon-large">
@@ -141,7 +141,7 @@
     </div>
   </div>
 
-  <!-- Community Options -->
+  <!-- Opciones comunitarias -->
   <div class="support-options" *ngIf="currentView() === 'community'">
     <div class="section-title">
       <h2>Comunidad de Omnis</h2>
@@ -157,7 +157,7 @@
     </button>
   </div>
 
-  <!-- Ticket List -->
+  <!-- Lista de entradas -->
   <div class="support-content" *ngIf="currentView() === 'tickets'">
     <div class="section-title">
       <h2>Mis solicitudes de ayuda</h2>

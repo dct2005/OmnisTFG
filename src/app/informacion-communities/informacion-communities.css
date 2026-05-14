@@ -39,7 +39,7 @@ button {
     font-family: inherit;
 }
 
-/* Global Components */
+/* Componentes globales */
 .glass-panel {
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
@@ -53,7 +53,7 @@ button {
     padding: 0 1.5rem;
 }
 
-/* Navbar */
+/* Barra de navegación */
 .navbar {
     position: sticky;
     top: 0;
@@ -142,7 +142,7 @@ button {
     background: var(--primary-hover);
 }
 
-/* Banner Section */
+/* Sección de pancartas */
 .banner {
     position: relative;
     width: 100%;
@@ -256,7 +256,7 @@ button {
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* Grid Layout */
+/* Diseño de cuadrícula */
 .main-grid {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
@@ -272,7 +272,7 @@ button {
     gap: 1.5rem;
 }
 
-/* Sidebar Elements */
+/* Elementos de la barra lateral */
 .section-title {
     font-family: var(--font-display);
     font-size: 0.75rem;
@@ -333,7 +333,7 @@ button {
     justify-content: center;
 }
 
-/* Content Area */
+/* Área de contenido */
 .about-card {
     padding: 1.5rem;
     border-left: 4px solid var(--primary);
@@ -379,7 +379,7 @@ button {
     text-transform: uppercase;
 }
 
-/* Post Cards */
+/* Postales */
 .post-card {
     padding: 1.5rem;
     display: flex;
@@ -461,7 +461,7 @@ button {
     color: var(--primary);
 }
 
-/* Right Sidebar & Stats */
+/* Barra lateral derecha y estadísticas */
 .stats-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -507,7 +507,7 @@ button {
     width: 75%;
 }
 
-/* Admin List */
+/* Lista de administradores */
 .admin-item {
     display: flex;
     align-items: center;
@@ -566,7 +566,7 @@ button {
     border-color: #475569;
 }
 
-/* Promo Card */
+/* Tarjeta Promocional */
 .promo-card {
     background: linear-gradient(135deg, var(--primary), #5b21b6);
     padding: 1.5rem;
@@ -622,7 +622,7 @@ button {
     transform: scale(1.1);
 }
 
-/* Footer */
+/* Pie de página */
 .footer {
     margin-top: 3rem;
     margin-bottom: 2rem;
@@ -646,7 +646,7 @@ button {
     letter-spacing: 0.1em;
 }
 
-/* Responsive Design */
+/* Diseño Responsivo */
 @media (max-width: 768px) {
     .banner {
         height: auto;
@@ -711,7 +711,7 @@ button {
     }
 }
 
-/* Utility Classes */
+/* Clases de utilidad */
 .p-6 {
     padding: 1.5rem;
 }
@@ -728,7 +728,7 @@ button {
     color: #4ade80;
 }
 
-/* Admin Styles */
+/* Estilos de administrador */
 .btn-admin {
     background: rgba(124, 58, 237, 0.15);
     color: var(--primary);
@@ -928,7 +928,7 @@ button {
     transform: scale(1.1);
 }
 
-/* LEVEL HUD STYLES */
+/* ESTILOS DE HUD DE NIVEL */
 .community-level-hud {
     display: flex;
     flex-direction: column;

@@ -18,7 +18,7 @@ module.exports = async function handler(req, res) {
     if (!communityId) return res.status(400).json({ error: 'Falta ID de comunidad' });
 
     try {
-        // --- JOIN / LEAVE ---
+        // --- UNIRSE / SALIR ---
         if (action === 'join') {
             if (req.method === 'GET') {
                 const { userId } = req.query;
@@ -38,10 +38,10 @@ module.exports = async function handler(req, res) {
                 } else {
                     await sql`INSERT INTO community_members (user_id, community_id, joined_at, role) VALUES (${userId}, ${communityId}, NOW(), 'member')`;
                     
-                    // LEVELING: +50 XP on Join
+                    // NIVELACIÓN: +50 XP al unirse
                     await sql`UPDATE communities SET member_count = member_count + 1, xp = xp + 50 WHERE id = ${communityId}`;
                     
-                    // QUESTS: Check 'join_community'
+                    // MISIONES: Marque 'unirse_comunidad'
                     await sql`
                         INSERT INTO user_quests (user_id, quest_id, current_value)
                         SELECT ${userId}, id, 1 FROM daily_quests WHERE type = 'join_community'
@@ -63,7 +63,7 @@ module.exports = async function handler(req, res) {
             }
         }
 
-        // --- MEMBERS ---
+        // --- MIEMBROS ---
         if (action === 'members') {
             if (req.method === 'GET') {
                 res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
@@ -87,10 +87,10 @@ module.exports = async function handler(req, res) {
             }
         }
 
-        // --- MESSAGES ---
+        // --- MENSAJES ---
         if (action === 'messages') {
             if (req.method === 'GET') {
-                // Short cache for messages to reduce polling impact
+                // Caché corto para mensajes para reducir el impacto de las encuestas
                 res.setHeader('Cache-Control', 'public, s-maxage=5, stale-while-revalidate=10');
                 const messages = await sql`
                     SELECT m.id, m.content, m.image_url, m.created_at as time, u.username as author, u.profile_image
@@ -108,10 +108,10 @@ module.exports = async function handler(req, res) {
                 
                 const newMessage = await sql`INSERT INTO community_messages (community_id, user_id, content, image_url) VALUES (${communityId}, ${userId}, ${content || ''}, ${image_url || null}) RETURNING id, content, image_url, created_at`;
                 
-                // LEVELING: +10 XP on Message
+                // NIVELACIÓN: +10 XP en mensaje
                 await sql`UPDATE communities SET total_messages = total_messages + 1, xp = xp + 10 WHERE id = ${communityId}`;
 
-                // QUESTS: Check 'send_message'
+                // MISIONES: Marque 'enviar_mensaje'
                 await sql`
                     INSERT INTO user_quests (user_id, quest_id, current_value)
                     SELECT ${userId}, id, 1 FROM daily_quests WHERE type = 'send_message'

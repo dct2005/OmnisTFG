@@ -15,11 +15,11 @@ module.exports = async function handler(req, res) {
     const { action } = req.query;
 
     try {
-        // --- RANKINGS ---
+        // --- CLASIFICACIONES ---
         if (action === 'rankings') {
             if (req.method !== 'GET') return res.status(405).json({ error: 'Método no permitido' });
             
-            // Rankings can be cached for a few minutes to reduce DB load
+            // Las clasificaciones se pueden almacenar en caché durante unos minutos para reducir la carga de la base de datos.
             res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
 
             const topBuyers = await sql`
@@ -67,13 +67,13 @@ module.exports = async function handler(req, res) {
             });
         }
 
-        // --- ACTIVITIES ---
+        // --- ACTIVIDADES ---
         if (action === 'activities') {
             if (req.method !== 'GET') return res.status(405).json({ error: 'Método no permitido' });
             const { userId } = req.query;
             if (!userId) return res.status(400).json({ error: 'Falta ID de usuario' });
 
-            // Optimized activity query using the new indexes
+            // Consulta de actividad optimizada utilizando los nuevos índices.
             const activities = await sql`
                 SELECT a.id, a.user_id, a.type, a.target_id, a.target_name, a.created_at, u.username, u.profile_image
                 FROM activities a
@@ -91,7 +91,7 @@ module.exports = async function handler(req, res) {
             return res.status(200).json(activities);
         }
 
-        // --- AWARDS ---
+        // --- PREMIOS ---
         if (action === 'awards' || (!action && (req.method === 'GET' || req.method === 'POST'))) {
             if (req.method === 'GET') {
                 const { userId } = req.query;

@@ -256,7 +256,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
             },
             error: (err) => {
                 console.error('Error toggling wishlist', err);
-                game.isFavorite = !game.isFavorite; // Revert on error
+                game.isFavorite = !game.isFavorite; // Revertir en caso de error
             }
         });
     }

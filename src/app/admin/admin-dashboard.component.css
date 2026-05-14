@@ -424,7 +424,7 @@ tr.closed {
     50% { opacity: 1; }
 }
 
-/* Detailed Highlights Container */
+/* Contenedor detallado de aspectos destacados */
 .highlights-container {
     margin-top: 4rem;
     padding-top: 3rem;
@@ -570,7 +570,7 @@ tr.closed {
     margin: 0;
 }
 
-/* Banner Variations */
+/* Variaciones de banner */
 .game-banner { border-left: 8px solid #00f2ff; }
 .game-banner .title { background: linear-gradient(to right, #00f2ff, #0088ff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 

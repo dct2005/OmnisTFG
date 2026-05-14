@@ -106,7 +106,7 @@
     cursor: default;
 }
 
-/* Header Section */
+/* Sección de encabezado */
 .profile-header {
     display: flex;
     align-items: center;
@@ -239,7 +239,7 @@
     opacity: 0.4;
 }
 
-/* Modal Media Edit Actions */
+/* Acciones de edición de medios modales */
 .media-edit-actions {
     display: flex;
     gap: 10px;
@@ -269,7 +269,7 @@
     color: #00f2ff;
 }
 
-/* Level Section */
+/* Sección de nivel */
 .level-section {
     display: flex;
     flex-direction: column;
@@ -356,14 +356,14 @@
     color: #fff;
 }
 
-/* Content Layout */
+/* Diseño de contenido */
 .profile-content {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 30px;
 }
 
-/* Cards */
+/* Tarjetas */
 .section-card {
     background: rgba(20, 30, 48, 0.6);
     border-radius: 12px;
@@ -388,7 +388,7 @@
     gap: 20px;
 }
 
-/* Highlighted border for activity */
+/* Borde resaltado para la actividad */
 .highlight-border {
     border: 2px solid #00f2ff55;
     box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
@@ -450,7 +450,7 @@
     color: #f687b3;
 }
 
-/* Sidebar Favorite Badge */
+/* Insignia de favorito de la barra lateral */
 .current-badge-sidebar {
     background: rgba(255, 242, 0, 0.05);
     padding: 15px;
@@ -497,7 +497,7 @@
     line-height: 1.2;
 }
 
-/* Sidebar Links */
+/* Enlaces de la barra lateral */
 .links-list-card {
     display: flex;
     flex-direction: column;
@@ -595,7 +595,7 @@
     clip-path: circle(38%);
 }
 
-/* Responsive */
+/* Sensible */
 @media (max-width: 900px) {
     .profile-content {
         grid-template-columns: 1fr;
@@ -925,7 +925,7 @@
     transform: scale(1.1);
 }
 
-/* Edit Profile Button */
+/* Botón Editar perfil */
 .btn-edit-profile {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -961,7 +961,7 @@
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-/* Modal Styles */
+/* Estilos modales */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -1170,16 +1170,16 @@
 /* ELIMINADO DE AQUÍ PARA MOVERLO FUERA */
 
 
-/* Fine-tuning accents with the new background theme color */
+/* Acentos afinados con el nuevo color del tema de fondo */
 .section-title { color: var(--bg-color); }
 .community-name { color: var(--bg-color); }
 .level-circle { border-color: var(--bg-color); }
-.status-indicator { border-color: var(--bg-color); } /* If I still had it, but let's be safe */
+.status-indicator { border-color: var(--bg-color); } /* Si todavía lo tuviera, pero estemos a salvo. */
 .online-status { border-color: color-mix(in srgb, var(--bg-color) 30%, rgba(255, 255, 255, 0.1)); }
 
-/* Color Picker UI */
+/* Interfaz de usuario del selector de color */
 
-/* PREMIUM HUD ACTIVITY INDICATOR - REFINED v2 */
+/* INDICADOR DE ACTIVIDAD HUD PREMIUM - REFINADO v2 */
 .activity-hud-card {
     position: relative;
     display: flex;
@@ -1317,7 +1317,7 @@
     letter-spacing: 0.5px;
 }
 
-/* Scanline Effect */
+/* Efecto de línea de exploración */
 .activity-hud-card::after {
     content: "";
     position: absolute;
@@ -1415,7 +1415,7 @@
     text-align: center;
     max-width: 80%;
 }
-/* Activity Feed */
+/* Feed de actividad */
 .friends-activity {
     margin-bottom: 30px;
 }
@@ -1576,7 +1576,7 @@
     z-index: 2;
     filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.7));
     transition: transform 0.3s ease;
-    clip-path: circle(38%); /* Recorte circular ajustado */
+    clip-path: circle(38%); /* Recorte circular ajustado. */
     -webkit-mask-image: radial-gradient(circle, black 50%, transparent 68%);
     mask-image: radial-gradient(circle, black 50%, transparent 68%);
 }
@@ -1606,7 +1606,7 @@
     line-height: 1.2;
 }
 
-/* Rarity Styles */
+/* Estilos raros */
 .common .rarity-glow { background: #cbd5e0; }
 .rare .rarity-glow { background: #4299e1; opacity: 0.6; filter: blur(20px); }
 .epic .rarity-glow { background: #9f7aea; opacity: 0.7; filter: blur(25px); }
@@ -1660,7 +1660,7 @@
     animation: fly-cycle-4 0.8s steps(4) infinite, orbit-pet 15s ease-in-out infinite;
 }
 
-/* --- Fantasmitu --- */
+/* --- mito fantasma --- */
 .active-pet-wrapper.pet-ghost {
     width: 60px; height: 60px;
     background-image: url('/images/pet_ghost_sprites.png?v=7');
@@ -1722,7 +1722,7 @@
     }
 }
 
-/* Hover effects for modal items */
+/* Efectos de desplazamiento para elementos modales */
 .pet-gallery-item {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -1737,7 +1737,7 @@
     opacity: 0.3;
 }
 
-/* --- LOYALTY BADGES --- */
+/* --- INSIGNIAS DE FIDELIDAD --- */
 .loyalty-badges-row {
   display: flex;
   gap: 12px;
@@ -1774,13 +1774,13 @@
   clip-path: circle(50%); /* Expandir un poco al hover */
 }
 
-/* Individual badge icons */
+/* Iconos de insignias individuales */
 .loyalty_7d  { background-image: url('/images/badges/loyalty_7d.png'); }
 .loyalty_30d { background-image: url('/images/badges/loyalty_30d.png'); }
 .loyalty_1y  { background-image: url('/images/badges/loyalty_1y.png'); }
 .loyalty_3y  { background-image: url('/images/badges/loyalty_3y.png'); }
 
-/* --- PREMIUM TOOLTIPS --- */
+/* --- CONSEJOS SOBRE HERRAMIENTAS PREMIUM --- */
 .premium-tooltip-container {
   position: relative;
   display: inline-flex;
