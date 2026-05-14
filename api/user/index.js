@@ -45,7 +45,7 @@ module.exports = async function handler(req, res) {
             const gamesCountQuery = await sql`SELECT COUNT(id) as count FROM user_games WHERE user_id = ${user.id}`;
             const gamesCount = parseInt(gamesCountQuery[0].count, 10);
 
-            // 1.2 Insignias de Lealtad (basadas en el tiempo)
+            // insignias basadas en tiempo
             const accountAgeInDays = Math.floor((new Date() - new Date(user.created_at)) / (1000 * 60 * 60 * 24));
             const loyaltyBadges = [];
             if (accountAgeInDays >= 7) loyaltyBadges.push({ id: 'loyalty_7d', name: 'Omnis: Iniciación al Tiempo', icon: '/images/badges/loyalty_7d.png', description: 'conseguida al entrar 7 días a la página' });
@@ -60,7 +60,7 @@ module.exports = async function handler(req, res) {
             if (gamesCount >= 7) hardcodedBadges.push({ id: 104, name: 'Cállese y Tome mi Dinero', icon: '/images/ins_callese.png', description: 'Compraste 7 juegos.' });
             if (gamesCount >= 10) hardcodedBadges.push({ id: 105, name: 'Frozen Mind Legend', icon: '/images/ins_frozenmind.png', description: 'Compraste 10 juegos.' });
 
-            // 2. Premios del Perfil (Trofeos 3D de DB)
+            // premios del perfil 
             const userAwards = await sql`
                 SELECT a.id, a.name, a.type, a.requirement, a.icon_url as icon, ua.obtained_at, ua.is_pinned
                 FROM awards a
@@ -69,7 +69,7 @@ module.exports = async function handler(req, res) {
                 ORDER BY a.requirement DESC
             `;
 
-            // Identificar la insignia actual (lateral)
+            // Identificar la insignia actual panel lateral
             let currentBadge = hardcodedBadges.find(b => b.id == user.selected_badge_id);
             if (!currentBadge && hardcodedBadges.length > 0) {
                 currentBadge = hardcodedBadges[hardcodedBadges.length - 1];
@@ -78,7 +78,7 @@ module.exports = async function handler(req, res) {
                 currentBadge = { name: 'Sin Insignias', icon: 'images/ins_nonecesito.png' };
             }
 
-            // 3. Mascota Activa
+            // Mascota activa
             const activePetQuery = await sql`
                 SELECT p.id, p.name, p.icon_url 
                 FROM pets p
@@ -107,7 +107,7 @@ module.exports = async function handler(req, res) {
                     JOIN games g ON ug.game_api_id = CAST(g.id AS TEXT)
                     WHERE ug.user_id = ${userId}
                 `;
-                
+
                 const allPlayerGenres = new Set();
                 userGamesMetadata.forEach(g => {
                     if (g.genres) g.genres.forEach(gen => allPlayerGenres.add(gen));
@@ -123,7 +123,7 @@ module.exports = async function handler(req, res) {
                 for (const award of potentialAwards) {
                     const requiredGenres = award.requirement.split(',');
                     const hasAchievement = requiredGenres.some(req => allPlayerGenres.has(req));
-                    
+
                     if (hasAchievement) {
                         await sql`
                             INSERT INTO user_awards (user_id, award_id, obtained_at)
@@ -185,8 +185,6 @@ module.exports = async function handler(req, res) {
             if (action === 'get-lightweight-update') {
                 const { userId } = req.query;
                 if (!userId) return res.status(400).json({ error: 'Falta userId' });
-
-                // Sin caché para el estado liviano para garantizar actualizaciones en tiempo real
                 res.setHeader('Cache-Control', 'no-store');
 
                 const status = await sql`SELECT estado, last_activity, xp, peppix FROM users WHERE id = ${userId} LIMIT 1`;
@@ -206,7 +204,6 @@ module.exports = async function handler(req, res) {
             if (action === 'get-by-id') {
                 const { id } = req.query;
                 if (!id) return res.status(400).json({ error: 'Falta id' });
-                // Evitamos SELECT * para ahorrar ancho de banda, especialmente por campos de imagen/música si fueran pesados
                 const users = await sql`
                     SELECT id, username, email, role, created_at, xp, peppix, country, state, city, 
                            privacy_profile, privacy_games, privacy_inventory, privacy_comments, 
@@ -248,7 +245,7 @@ module.exports = async function handler(req, res) {
             }
 
             if (action === 'migrate-gamification') {
-                // 1. Tablas de Misiones
+                //Tablas de Misiones
                 await sql`
                     CREATE TABLE IF NOT EXISTS daily_quests (
                         id SERIAL PRIMARY KEY,
@@ -271,14 +268,14 @@ module.exports = async function handler(req, res) {
                     )
                 `;
 
-                // 2. XP y Nivel en Comunidades
+                // XP y Nivel en Comunidades
                 await sql`ALTER TABLE communities ADD COLUMN IF NOT EXISTS xp INTEGER DEFAULT 0`;
                 await sql`ALTER TABLE communities ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1`;
 
-                // 3. Música en el Perfil
+                // Música en el Perfil
                 await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_music_url TEXT DEFAULT NULL`;
 
-                // 4. Insertar Misiones Iniciales si no existen
+                // Insertar Misiones Iniciales si no existen
                 await sql`ALTER TABLE daily_quests ADD COLUMN IF NOT EXISTS description TEXT`;
                 await sql`ALTER TABLE daily_quests ADD COLUMN IF NOT EXISTS icon VARCHAR(50)`;
 
@@ -462,7 +459,7 @@ module.exports = async function handler(req, res) {
                     ORDER BY username ASC
                     LIMIT 15
                 `;
-                
+
                 return res.status(200).json(users);
             }
 
@@ -526,7 +523,7 @@ module.exports = async function handler(req, res) {
             if (action === 'get-all-users') {
                 const { requesterEmail } = req.query;
                 if (!requesterEmail) return res.status(400).json({ error: 'Falta email del solicitante' });
-                
+
                 const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
                 if (requester.length === 0 || requester[0].role !== 'administrador') {
                     return res.status(403).json({ error: 'No tienes permisos de administrador' });
@@ -539,7 +536,7 @@ module.exports = async function handler(req, res) {
             if (action === 'get-all-reports') {
                 const { requesterEmail } = req.query;
                 if (!requesterEmail) return res.status(400).json({ error: 'Falta email del solicitante' });
-                
+
                 const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
                 if (requester.length === 0 || requester[0].role !== 'administrador') {
                     return res.status(403).json({ error: 'No tienes permisos de administrador' });
@@ -557,7 +554,7 @@ module.exports = async function handler(req, res) {
             if (action === 'get-all-communities') {
                 const { requesterEmail } = req.query;
                 if (!requesterEmail) return res.status(400).json({ error: 'Falta email del solicitante' });
-                
+
                 const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
                 if (requester.length === 0 || requester[0].role !== 'administrador') {
                     return res.status(403).json({ error: 'No tienes permisos de administrador' });
@@ -576,7 +573,7 @@ module.exports = async function handler(req, res) {
             if (action === 'get-all-transactions-admin') {
                 const { requesterEmail } = req.query;
                 if (!requesterEmail) return res.status(400).json({ error: 'Falta email del solicitante' });
-                
+
                 const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
                 if (requester.length === 0 || requester[0].role !== 'administrador') {
                     return res.status(403).json({ error: 'No tienes permisos de administrador' });
@@ -595,7 +592,7 @@ module.exports = async function handler(req, res) {
             if (action === 'get-all-games-admin') {
                 const { requesterEmail } = req.query;
                 if (!requesterEmail) return res.status(400).json({ error: 'Falta email del solicitante' });
-                
+
                 const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
                 if (requester.length === 0 || requester[0].role !== 'administrador') {
                     return res.status(403).json({ error: 'No tienes permisos de administrador' });
@@ -612,24 +609,24 @@ module.exports = async function handler(req, res) {
             if (action === 'bootstrap-admin') {
                 const { email: emailToBootstrap } = req.query;
                 if (!emailToBootstrap) return res.status(400).json({ error: 'Falta email' });
-                
+
                 const updated = await sql`UPDATE users SET role = 'administrador' WHERE email = ${emailToBootstrap} RETURNING id, email, role`;
                 if (updated.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
-                
+
                 return res.status(200).json({ message: '¡Ahora eres administrador!', user: updated[0] });
             }
 
             if (action === 'get-admin-stats') {
                 const { requesterEmail } = req.query;
                 if (!requesterEmail) return res.status(400).json({ error: 'Falta email del solicitante' });
-                
+
                 const requester = await sql`SELECT role FROM users WHERE email = ${requesterEmail}`;
                 if (requester.length === 0 || requester[0].role !== 'administrador') {
                     return res.status(403).json({ error: 'No tienes permisos de administrador' });
                 }
 
                 const stats = {};
-                
+
                 const userCounts = await sql`SELECT COUNT(*) as total, SUM(peppix) as total_peppix FROM users`;
                 stats.totalUsers = parseInt(userCounts[0].total, 10);
                 stats.totalPeppix = parseInt(userCounts[0].total_peppix || 0, 10);
@@ -655,7 +652,7 @@ module.exports = async function handler(req, res) {
                 stats.totalCommunities = parseInt(communities[0].count, 10);
 
                 // --- DESTACADOS / SALÓN DE LA FAMA ---
-                
+
                 // 1. Juego más vendido (Histórico)
                 const topGame = await sql`
                     SELECT game_api_id, COUNT(*) as count 
@@ -675,9 +672,9 @@ module.exports = async function handler(req, res) {
                     ORDER BY total_members DESC
                     LIMIT 1
                 `;
-                stats.topCommunity = topCommunity.length > 0 ? { 
-                    ...topCommunity[0], 
-                    total_members: parseInt(topCommunity[0].total_members, 10) 
+                stats.topCommunity = topCommunity.length > 0 ? {
+                    ...topCommunity[0],
+                    total_members: parseInt(topCommunity[0].total_members, 10)
                 } : null;
 
                 // 3. Mayor Comprador (Histórico)
@@ -689,8 +686,8 @@ module.exports = async function handler(req, res) {
                     ORDER BY total_spent DESC
                     LIMIT 1
                 `;
-                stats.topBuyer = topBuyer.length > 0 ? { 
-                    username: topBuyer[0].username, 
+                stats.topBuyer = topBuyer.length > 0 ? {
+                    username: topBuyer[0].username,
                     profile_image: topBuyer[0].profile_image,
                     total_spent: parseFloat(topBuyer[0].total_spent || 0),
                     last_purchase: topBuyer[0].last_purchase
@@ -705,10 +702,10 @@ module.exports = async function handler(req, res) {
                     ORDER BY total_games DESC
                     LIMIT 1
                 `;
-                stats.topCollector = topCollector.length > 0 ? { 
-                    username: topCollector[0].username, 
+                stats.topCollector = topCollector.length > 0 ? {
+                    username: topCollector[0].username,
                     profile_image: topCollector[0].profile_image,
-                    total_games: parseInt(topCollector[0].total_games, 10) 
+                    total_games: parseInt(topCollector[0].total_games, 10)
                 } : null;
 
                 console.log('[Admin Stats] Detailed highlights calculated');
@@ -763,9 +760,9 @@ module.exports = async function handler(req, res) {
             if (action === 'get-user-games') {
                 const games = await sql`SELECT game_api_id, purchase_date, price_paid FROM user_games WHERE user_id = ${user.id} ORDER BY purchase_date DESC`;
                 const totalValue = await sql`SELECT SUM(price_paid) as total FROM user_games WHERE user_id = ${user.id}`;
-                return res.status(200).json({ 
-                    games, 
-                    totalLibraryValue: parseInt(totalValue[0].total || 0, 10) 
+                return res.status(200).json({
+                    games,
+                    totalLibraryValue: parseInt(totalValue[0].total || 0, 10)
                 });
             }
 
@@ -840,8 +837,8 @@ module.exports = async function handler(req, res) {
                 // Marcar como completada y dar recompensas
                 await sql`UPDATE user_quests SET is_completed = TRUE WHERE id = ${quest.id}`;
                 await sql`UPDATE users SET xp = xp + ${quest.xp_reward} WHERE id = ${userId}`;
-                
-                return res.status(200).json({ 
+
+                return res.status(200).json({
                     message: 'Recompensa reclamada con éxito',
                     xp_reward: quest.xp_reward,
                     points_reward: quest.points_reward
@@ -860,12 +857,12 @@ module.exports = async function handler(req, res) {
 
                 // Volver con información del autor
                 const commenter = await sql`SELECT username as author_name, profile_image as author_image FROM users WHERE id = ${author_user_id}`;
-                
+
                 // Agregar notificación para el propietario del perfil
                 if (profile_user_id !== author_user_id) {
                     const profileOwner = await sql`SELECT username FROM users WHERE id = ${profile_user_id}`;
                     const profileOwnerName = profileOwner[0]?.username || '';
-                    
+
                     await sql`
                         INSERT INTO notifications (user_id, type, title, message, link)
                         VALUES (${profile_user_id}, 'profile_comment', 'Nuevo comentario', 'Tienes un nuevo comentario de ' || ${commenter[0].author_name}, '/perfil/' || ${profileOwnerName})
@@ -924,7 +921,7 @@ module.exports = async function handler(req, res) {
                 await sql`DELETE FROM support_tickets WHERE user_id = ${userIdToDelete}`;
                 await sql`DELETE FROM transactions WHERE user_id = ${userIdToDelete}`;
                 await sql`DELETE FROM friendships WHERE sender_id = ${userIdToDelete} OR receiver_id = ${userIdToDelete}`;
-                
+
                 const deleted = await sql`DELETE FROM users WHERE id = ${userIdToDelete} RETURNING id`;
                 if (deleted.length === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
 
@@ -943,7 +940,7 @@ module.exports = async function handler(req, res) {
                 await sql`DELETE FROM community_messages WHERE community_id = ${communityId}`;
                 await sql`DELETE FROM community_members WHERE community_id = ${communityId}`;
                 const deleted = await sql`DELETE FROM communities WHERE id = ${communityId} RETURNING id`;
-                
+
                 if (deleted.length === 0) return res.status(404).json({ error: 'Comunidad no encontrada' });
 
                 return res.status(200).json({ message: 'Comunidad eliminada correctamente' });
@@ -1007,16 +1004,16 @@ module.exports = async function handler(req, res) {
                     return res.status(403).json({ error: 'No tienes permisos de administrador' });
                 }
 
-                // 1. Sumar Peppix al saldo del usuario
+                // Sumar Peppix al saldo del usuario
                 await sql`UPDATE users SET peppix = peppix + ${amount} WHERE id = ${userId}`;
 
-                // 2. Registrar transacción de ingreso manual
+                // Registrar transacción de ingreso manual
                 await sql`
                     INSERT INTO transactions (user_id, peppix_amount, real_money_euro, payment_method, created_at)
                     VALUES (${userId}, ${amount}, 0, 'Compra Manual (Soporte)', NOW())
                 `;
 
-                // 3. Cerrar el reporte con respuesta técnica
+                // Cerrar el reporte con respuesta técnica
                 const resolutionMsg = `Soporte ha ingresado manualmente ${amount} Peppix tras verificar la reclamación.`;
                 await sql`UPDATE support_tickets SET status = 'closed', admin_response = ${resolutionMsg} WHERE id = ${reportId}`;
 
@@ -1042,10 +1039,10 @@ module.exports = async function handler(req, res) {
                 `;
                 const user = inserted[0];
                 const token = jwt.sign({ id: user.id, email: user.email, username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
-                return res.status(201).json({ 
-                    message: 'Registrado correctamente', 
+                return res.status(201).json({
+                    message: 'Registrado correctamente',
                     token,
-                    user 
+                    user
                 });
             }
 
@@ -1170,7 +1167,7 @@ module.exports = async function handler(req, res) {
                         const g = gameInfoResponse.data[0];
                         const genres = g.genres ? g.genres.map(gen => gen.name) : [];
                         const themes = g.themes ? g.themes.map(t => t.name) : [];
-                        
+
                         await sql`
                             INSERT INTO games (id, name, genres, themes)
                             VALUES (${g.id}, ${g.name}, ${genres}, ${themes})
@@ -1389,7 +1386,6 @@ module.exports = async function handler(req, res) {
 
                 const fullUser = await getUserWithBadges(updated[0]);
 
-                // También devolver comentarios iniciales basados ​​en la nueva preferencia.
                 let initialComments = [];
                 if (fullUser.display_comments_type === 'profile') {
                     initialComments = await sql`
@@ -1525,7 +1521,7 @@ module.exports = async function handler(req, res) {
                 if (!userId) return res.status(400).json({ error: 'Falta userId' });
 
                 await sql`UPDATE user_pets SET is_active = FALSE WHERE user_id = ${userId}`;
-                
+
                 if (active && petId) {
                     await sql`
                         UPDATE user_pets 
@@ -1533,7 +1529,7 @@ module.exports = async function handler(req, res) {
                         WHERE user_id = ${userId} AND pet_id = ${petId}
                     `;
                 }
-                
+
                 const userQuery = await sql`SELECT * FROM users WHERE id = ${userId}`;
                 const userData = await getUserWithBadges(userQuery[0]);
                 return res.status(200).json(userData);
@@ -1568,11 +1564,11 @@ module.exports = async function handler(req, res) {
         }
     } catch (error) {
         console.error('[API User Error]', error);
-        return res.status(500).json({ 
-            error: 'Error del servidor', 
+        return res.status(500).json({
+            error: 'Error del servidor',
             message: error.message,
             stack: error.stack,
-            env_check: !!process.env.DATABASE_URL 
+            env_check: !!process.env.DATABASE_URL
         });
     }
 };

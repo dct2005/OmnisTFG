@@ -16,7 +16,6 @@ module.exports = async function handler(req, res) {
 
     try {
         const { search, offset, genres, themes, id } = req.query;
-        // Construir la query paso a paso para evitar errores de sintaxis
         let queryParts = [];
 
         // Campos
@@ -34,14 +33,13 @@ module.exports = async function handler(req, res) {
             }
         } else if (search) {
             whereConditions.push("game_type = (0, 8, 9, 10, 11, 13)"); // Juego base, remake, remaster, ampliado, port, pack
-            whereConditions.push(`name ~ *"${search}"*`); // Búsqueda más flexible
+            whereConditions.push(`name ~ *"${search}"*`);
         } else {
             whereConditions.push("game_type = (0, 8, 9, 10, 11, 13)");
-            whereConditions.push("rating > 70"); // Filtro base para calidad
+            whereConditions.push("rating > 70");
             whereConditions.push("rating_count > 10");
         }
 
-        // ... (Filtros de generos y tematicas omitidos por brevedad en este chunk)
         if (genres) {
             const genresArr = Array.isArray(genres) ? genres : [genres];
             const genresString = genresArr.map(g => `"${g}"`).join(",");
@@ -82,18 +80,15 @@ module.exports = async function handler(req, res) {
         // Función auxiliar para calcular precios en Peppix
         const calculatePeppixPrice = (game, isNested = false) => {
             if (isNested) {
-                // Para DLCs/Expansiones, precio base menor
                 return 1499 + Math.floor(Math.random() * 1500);
             }
             const rating = game.rating || 60;
             const ratingCount = game.rating_count || 0;
-            
-            // Cálculo base más balanceado
+
             let price = (rating * 45) + (Math.min(ratingCount, 1000) / 5);
-            
-            // Multiplicadores por edición
+
             const name = (game.name || "").toLowerCase();
-            if (name.includes('collection') || name.includes('bundle') || name.includes('pack')) price *= 3.0; // Colecciones notablemente más caras
+            if (name.includes('collection') || name.includes('bundle') || name.includes('pack')) price *= 3.0;
             else if (name.includes('collector')) price *= 1.6;
             else if (name.includes('ultimate')) price *= 1.5;
             else if (name.includes('premium')) price *= 1.4;
@@ -111,16 +106,14 @@ module.exports = async function handler(req, res) {
         // Procesar cada juego para añadir el precio
         processedData = processedData.map(game => {
             game.peppixPrice = calculatePeppixPrice(game);
-            
-            // También a contenido adicional si existe
+
             if (game.dlcs) game.dlcs = game.dlcs.map(d => ({ ...d, peppixPrice: calculatePeppixPrice(d, true) }));
             if (game.expansions) game.expansions = game.expansions.map(e => ({ ...e, peppixPrice: calculatePeppixPrice(e, true) }));
-            if (game.bundles) game.bundles = game.bundles.map(b => ({ ...b, peppixPrice: calculatePeppixPrice(b, true) * 1.5 })); // Bundles notablemente más caros
+            if (game.bundles) game.bundles = game.bundles.map(b => ({ ...b, peppixPrice: calculatePeppixPrice(b, true) * 1.5 }));
 
             return game;
         });
 
-        // Si consultamos un juego en concreto (id existe) y tiene resumen, lo traducimos
         if (id && processedData.length > 0 && processedData[0].summary) {
             try {
                 const game = processedData[0];
@@ -135,7 +128,6 @@ module.exports = async function handler(req, res) {
                 }
             } catch (translateErr) {
                 console.error("Translation Error (Google Translate):", translateErr.message);
-                // Si la traducción falla (servidor caído, límite de uso), pasamos silenciosamente y devolvemos texto en inglés
             }
         }
 

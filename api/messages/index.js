@@ -23,7 +23,7 @@ module.exports = async function handler(req, res) {
                 conversation_with INTEGER,
                 last_typed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )`;
-            
+
             // Tablas de Grupos
             await sql`CREATE TABLE IF NOT EXISTS chat_groups (
                 id SERIAL PRIMARY KEY,
@@ -31,13 +31,13 @@ module.exports = async function handler(req, res) {
                 created_by INTEGER REFERENCES users(id),
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             )`;
-            
+
             await sql`CREATE TABLE IF NOT EXISTS group_members (
                 group_id INTEGER REFERENCES chat_groups(id) ON DELETE CASCADE,
                 user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
                 PRIMARY KEY (group_id, user_id)
             )`;
-            
+
             await sql`CREATE TABLE IF NOT EXISTS group_messages (
                 id SERIAL PRIMARY KEY,
                 group_id INTEGER REFERENCES chat_groups(id) ON DELETE CASCADE,
@@ -183,7 +183,6 @@ module.exports = async function handler(req, res) {
                     return res.status(400).json({ error: 'Faltan datos obligatorios' });
                 }
 
-                // Asegurar columna image_url si no existe (Neon soporta IF NOT EXISTS)
                 try {
                     await sql`ALTER TABLE direct_messages ADD COLUMN IF NOT EXISTS image_url TEXT`;
                 } catch (e) {
@@ -200,7 +199,7 @@ module.exports = async function handler(req, res) {
                 try {
                     const sender = await sql`SELECT username FROM users WHERE id = ${senderId}`;
                     const senderName = sender[0]?.username || 'Alguien';
-                    
+
                     await sql`
                         INSERT INTO notifications (user_id, type, title, message, link)
                         VALUES (
@@ -224,14 +223,14 @@ module.exports = async function handler(req, res) {
                     return res.status(400).json({ error: 'Faltan datos para el grupo' });
                 }
 
-                // 1. Crear el grupo
+                // Crear el grupo
                 const [group] = await sql`
                     INSERT INTO chat_groups (name, created_by)
                     VALUES (${name}, ${creatorId})
                     RETURNING *
                 `;
 
-                // 2. Añadir miembros
+                // Añadir miembros
                 const allMembers = [creatorId, ...memberIds];
                 for (const uid of allMembers) {
                     await sql`
@@ -239,7 +238,7 @@ module.exports = async function handler(req, res) {
                         VALUES (${group.id}, ${uid})
                         ON CONFLICT DO NOTHING
                     `;
-                    
+
                     // Notificar a los miembros (excepto al creador)
                     if (uid !== creatorId) {
                         const creator = await sql`SELECT username FROM users WHERE id = ${creatorId}`;
@@ -273,10 +272,10 @@ module.exports = async function handler(req, res) {
 
                 // Añadir nombre del emisor para la UI inmediata
                 const sender = await sql`SELECT username, profile_image FROM users WHERE id = ${senderId}`;
-                return res.status(201).json({ 
-                    ...msg, 
-                    sender_name: sender[0].username, 
-                    sender_image: sender[0].profile_image 
+                return res.status(201).json({
+                    ...msg,
+                    sender_name: sender[0].username,
+                    sender_image: sender[0].profile_image
                 });
             }
 

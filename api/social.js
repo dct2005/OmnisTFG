@@ -15,13 +15,9 @@ module.exports = async function handler(req, res) {
     const { action } = req.query;
 
     try {
-        // --- CLASIFICACIONES ---
         if (action === 'rankings') {
             if (req.method !== 'GET') return res.status(405).json({ error: 'Método no permitido' });
-            
-            // Las clasificaciones se pueden almacenar en caché durante unos minutos para reducir la carga de la base de datos.
             res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
-
             const topBuyers = await sql`
                 SELECT u.id, u.username, u.profile_image, u.estado, COUNT(ug.game_api_id) as count
                 FROM users u
@@ -67,13 +63,10 @@ module.exports = async function handler(req, res) {
             });
         }
 
-        // --- ACTIVIDADES ---
         if (action === 'activities') {
             if (req.method !== 'GET') return res.status(405).json({ error: 'Método no permitido' });
             const { userId } = req.query;
             if (!userId) return res.status(400).json({ error: 'Falta ID de usuario' });
-
-            // Consulta de actividad optimizada utilizando los nuevos índices.
             const activities = await sql`
                 SELECT a.id, a.user_id, a.type, a.target_id, a.target_name, a.created_at, u.username, u.profile_image
                 FROM activities a
