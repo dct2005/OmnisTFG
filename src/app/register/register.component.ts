@@ -42,7 +42,6 @@ export class RegisterComponent {
                     confirmButtonColor: '#7c3aed'
                 });
 
-                // Redirigimos al inicio; la Navbar ya mostrará el avatar
                 this.router.navigate(['/']);
             },
             error: (err) => {
@@ -86,7 +85,7 @@ export class RegisterComponent {
             },
             error: (error) => {
                 console.error('Error del login con Google:', error);
-                
+
                 let mensaje = error.error?.error || error.error?.message || error.message || 'Error al iniciar sesión con Google';
                 if (typeof mensaje === 'object') {
                     mensaje = JSON.stringify(mensaje);

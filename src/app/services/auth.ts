@@ -6,7 +6,6 @@ import { Auth, signInWithPopup, GoogleAuthProvider } from '@angular/fire/auth';
   providedIn: 'root'
 })
 export class AuthService {
-  // 1. CAMBIO CRÍTICO: Usamos '/api' sin el localhost para que Vercel encuentre sus funciones
   private apiUrl = '/api';
 
   currentUser = signal<any>(null);
@@ -33,9 +32,8 @@ export class AuthService {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         console.log('[Auth] initializeFromToken - payload:', payload);
-        // Seteamos lo mínimo necesario para que fetchCurrentUser pueda funcionar
         this.currentUser.set({ email: payload.email, id: payload.id, username: payload.username, role: payload.role });
-        this.fetchCurrentUser(); // Sincronizamos con el servidor
+        this.fetchCurrentUser();
       } catch (e) {
         console.error('[Auth] Error parsing token:', e);
         localStorage.removeItem('token');
@@ -369,7 +367,7 @@ export class AuthService {
     });
   }
 
-  // --- SISTEMA DE AMISTADES ---
+  // Amigos amiguitos
 
   getFriends(userId?: number | string): Observable<any[]> {
     const id = userId || this.currentUser()?.id;
@@ -467,18 +465,16 @@ export class AuthService {
     });
   }
 
-  // --- ACCIONES DE ADMINISTRADOR ---
+  // acciones admin
 
-  /**
-   * Obtiene todos los usuarios (solo para administradores)    */
+  // obtener todos los usuarios
   getAllUsers(): Observable<any[]> {
     const userEmail = this.currentUser()?.email;
     if (!userEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-users&requesterEmail=${userEmail}`);
   }
 
-  /**
-   * Elimina un usuario y todos sus datos asociados (solo para administradores)    */
+  // eliminar usuarios
   deleteUser(userIdToDelete: number): Observable<any> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
@@ -489,16 +485,14 @@ export class AuthService {
     });
   }
 
-  /**
-   * Obtiene todos los reportes (tickets de soporte) - Solo administradores    */
+  // obtener todos los reportes
   getAllReports(): Observable<any[]> {
     const userEmail = this.currentUser()?.email;
     if (!userEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-reports&requesterEmail=${userEmail}`);
   }
 
-  /**
-   * Actualiza el estado de un reporte - Solo administradores    */
+  // actualizar estado de un reporte
   updateReportStatus(reportId: number, newStatus: string, adminResponse?: string): Observable<any> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
@@ -511,15 +505,13 @@ export class AuthService {
     });
   }
 
-  /**
-   * Obtiene estadísticas globales - Solo administradores    */
+  // obtener estadisticas, me estoy quedando calvo
   getAdminStats(): Observable<any> {
     const userEmail = this.currentUser()?.email;
     if (!userEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any>(`${this.apiUrl}/user?action=get-admin-stats&requesterEmail=${userEmail}`);
   }
-  /**
-   * Procesa un reembolso de juego - Solo administradores    */
+
   refundGame(reportId: number, userId: number, gameId: string, amount: number): Observable<any> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
@@ -533,16 +525,14 @@ export class AuthService {
     });
   }
 
-  /**
-   * Obtiene todas las comunidades - Solo administradores    */
+  // obtener todas las comunidades
   getAllCommunities(): Observable<any[]> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-communities&requesterEmail=${adminEmail}`);
   }
 
-  /**
-   * Elimina una comunidad - Solo administradores    */
+  // eliminar comunidades
   deleteCommunity(communityId: number): Observable<any> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
@@ -553,32 +543,28 @@ export class AuthService {
     });
   }
 
-  /**
-   * Obtiene todas las transacciones globales - Solo administradores    */
+  // obtener todas las transacciones
   getAllTransactionsAdmin(): Observable<any[]> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-transactions-admin&requesterEmail=${adminEmail}`);
   }
 
-  /**
-   * Obtiene todos los juegos vendidos (solo para administradores)    */
+  // obtener todos los juegos vendidos
   getAllGamesAdmin(): Observable<any[]> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-games-admin&requesterEmail=${adminEmail}`);
   }
 
-  /**
-   * Obtiene la evolución de ventas de un juego - Solo administradores    */
+  // obtener la evolucion de ventas de un juego
   getGameSalesHistory(gameId: string): Observable<any[]> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-game-sales-history&requesterEmail=${adminEmail}&gameId=${gameId}`);
   }
 
-  /**
-   * Obtiene la evolución de miembros de una comunidad - Solo administradores    */
+  // obtener la evolucion de miembros de una comunidad
   getCommunityGrowthHistory(communityId: number): Observable<any[]> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
@@ -589,16 +575,14 @@ export class AuthService {
     return this.http.get<any[]>(`${this.apiUrl}/user?action=search-users&query=${query}`);
   }
 
-  /**
-   * Obtiene las transacciones de un usuario específico - Solo administradores    */
+  // obtener las transacciones de un usuario específico
   getUserTransactionsAdmin(userId: number): Observable<any[]> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-user-transactions-admin&requesterEmail=${adminEmail}&userId=${userId}`);
   }
 
-  /**
-   * Resuelve un reporte de compra ingresando Peppix manualmente - Solo administradores    */
+  // resolver un reporte de compra
   resolvePurchaseReport(reportId: number, userId: number, amount: number): Observable<any> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');

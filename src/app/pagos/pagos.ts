@@ -22,6 +22,7 @@ export class Pagos implements OnInit {
   caducidad: string = '';
   nombreTarjeta: string = '';
   cvv: string = '';
+  emailContacto: string = '';
 
   // Estado de facturación
   billingInfo = {
@@ -99,12 +100,51 @@ export class Pagos implements OnInit {
         }
       });
     } else {
+      if (!this.emailContacto || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.emailContacto)) {
+        Swal.fire({
+          title: 'Email inválido',
+          text: 'Por favor, introduce un correo electrónico válido.',
+          icon: 'warning',
+          background: '#1a103c',
+          color: '#ffffff',
+          confirmButtonColor: '#7c3aed'
+        });
+        return;
+      }
       this.ejecutarPago();
     }
   }
 
+  private luhnCheck(num: string): boolean {
+    let sum = 0;
+    let isEven = false;
+    for (let i = num.length - 1; i >= 0; i--) {
+      let digit = parseInt(num.charAt(i), 10);
+      if (isEven) {
+        digit *= 2;
+        if (digit > 9) {
+          digit -= 9;
+        }
+      }
+      sum += digit;
+      isEven = !isEven;
+    }
+    return (sum % 10) === 0;
+  }
+
   private ejecutarPago() {
     if (this.metodoSeleccionado === 'tarjeta') {
+      if (!/^\d{3,4}$/.test(this.cvv)) {
+        Swal.fire('CVV Inválido', 'El CVV debe tener 3 o 4 dígitos.', 'error');
+        return;
+      }
+
+      const sanitizedNum = this.numTarjeta.replace(/\D/g, '');
+      if (sanitizedNum.length < 13 || sanitizedNum.length > 19 || !this.luhnCheck(sanitizedNum)) {
+        Swal.fire('Tarjeta Inválida', 'El número de tarjeta no es válido.', 'error');
+        return;
+      }
+
       const parts = this.caducidad.split('/');
       if (parts.length !== 2) {
         Swal.fire('Error', 'Formato de fecha inválido (MM/YY)', 'error');

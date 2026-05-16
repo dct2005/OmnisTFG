@@ -60,11 +60,13 @@
 
         <div class="paypal-section" *ngIf="metodoSeleccionado === 'paypal'">
             <p>Serás redirigido a la plataforma segura de PayPal para completar tu compra.</p>
+            <input type="email" placeholder="Correo electrónico requerido" [(ngModel)]="emailContacto" name="emailContacto" style="width: 100%; margin: 15px 0; padding: 12px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white; box-sizing: border-box;">
             <button type="button" class="btn-pay" (click)="pagar()">Continuar con PayPal</button>
         </div>
 
         <div class="crypto-section" *ngIf="metodoSeleccionado === 'crypto'">
             <p>Se generará una dirección de pago para completar la transacción en BTC/ETH.</p>
+            <input type="email" placeholder="Correo electrónico requerido" [(ngModel)]="emailContacto" name="emailContacto" style="width: 100%; margin: 15px 0; padding: 12px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; color: white; box-sizing: border-box;">
             <button type="button" class="btn-pay" (click)="pagar()">Pagar con Cripto</button>
         </div>
 
