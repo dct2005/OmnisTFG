@@ -620,10 +620,16 @@
 
   .game-summary {
     padding: 1.5rem;
+    text-align: center;
+    align-items: center;
   }
 
   .summary-text {
     min-width: unset;
+  }
+
+  .btn-read-more {
+    align-self: center;
   }
 
   .purchase-card {
@@ -646,6 +652,10 @@
 
   .additional-content-section, .reviews-section {
     padding: 1.5rem;
+  }
+
+  .section-title {
+    text-align: center;
   }
 
   .dlc-grid {
