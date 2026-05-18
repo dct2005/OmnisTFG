@@ -76,7 +76,6 @@
 .summary-text {
   margin: 0;
   overflow-y: hidden;
-  min-width: 600px; /* Ancho mínimo para forzar el scroll y evitar que se aplaste */
 }
 
 .game-summary.expanded .summary-text {

@@ -13,6 +13,7 @@ body {
     color: white;
     min-height: 100vh;
     overflow-y: scroll;
+    overflow-x: hidden;
 
     transition: background-image 0.5s ease-in-out;
 }

@@ -1554,6 +1554,15 @@ module.exports = async function handler(req, res) {
                     INSERT INTO friendships (sender_id, receiver_id, status)
                     VALUES (${senderId}, ${receiverId}, 'pending')
                 `;
+
+                const senderQuery = await sql`SELECT username FROM users WHERE id = ${senderId}`;
+                const senderName = senderQuery[0]?.username || 'Alguien';
+
+                await sql`
+                    INSERT INTO notifications (user_id, type, title, message, link)
+                    VALUES (${receiverId}, 'friend_request', 'Solicitud de amistad', ${senderName} || ' quiere ser tu amigo', '/perfil/' || ${senderName})
+                `;
+
                 return res.status(201).json({ message: 'Solicitud enviada' });
             }
 
@@ -1561,10 +1570,22 @@ module.exports = async function handler(req, res) {
                 const { friendshipId } = req.body;
                 if (!friendshipId) return res.status(400).json({ error: 'Falta ID de amistad' });
 
-                await sql`
+                const updated = await sql`
                     UPDATE friendships SET status = 'accepted', updated_at = NOW()
                     WHERE id = ${friendshipId}
+                    RETURNING sender_id, receiver_id
                 `;
+
+                if (updated.length > 0) {
+                    const receiverQuery = await sql`SELECT username FROM users WHERE id = ${updated[0].receiver_id}`;
+                    const receiverName = receiverQuery[0]?.username || 'Alguien';
+
+                    await sql`
+                        INSERT INTO notifications (user_id, type, title, message, link)
+                        VALUES (${updated[0].sender_id}, 'friend_accept', 'Solicitud aceptada', ${receiverName} || ' ha aceptado tu solicitud de amistad', '/perfil/' || ${receiverName})
+                    `;
+                }
+
                 return res.status(200).json({ message: 'Solicitud aceptada' });
             }
 

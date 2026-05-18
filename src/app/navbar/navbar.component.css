@@ -441,6 +441,7 @@
   top: calc(100% + 15px);
   right: 0;
   width: 260px;
+  max-width: 85vw;
   background: rgba(13, 27, 42, 0.85);
   /* Azul muy oscuro con transparencia */
   backdrop-filter: blur(15px);
@@ -600,8 +601,9 @@
 .notifications-dropdown {
   position: absolute;
   top: calc(100% + 15px);
-  right: -50px;
+  right: -10px;
   width: 320px;
+  max-width: 85vw;
   background: rgba(13, 27, 42, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
