@@ -20,7 +20,7 @@ export class AdminDashboardComponent implements OnInit {
   private communityService = inject(CommunityService);
   private http = inject(HttpClient);
   private router = inject(Router);
-  
+
   users = signal<any[]>([]);
   reports = signal<any[]>([]);
   stats = signal<any>(null);
@@ -36,9 +36,9 @@ export class AdminDashboardComponent implements OnInit {
     const q = this.searchQuery().toLowerCase().trim();
     const all = this.users();
     if (!q) return all;
-    
-    return all.filter(u => 
-      u.username?.toLowerCase().includes(q) || 
+
+    return all.filter(u =>
+      u.username?.toLowerCase().includes(q) ||
       u.email?.toLowerCase().includes(q) ||
       u.id?.toString().includes(q)
     );
@@ -48,7 +48,7 @@ export class AdminDashboardComponent implements OnInit {
     return this.games();
   });
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit() {
     this.loadData();
@@ -66,7 +66,7 @@ export class AdminDashboardComponent implements OnInit {
     } else if (this.activeTab() === 'transactions') {
       this.loadAllTransactions();
     } else if (this.activeTab() === 'games') {
-      this.searchGames(); // Usar búsqueda en lugar de carga estática
+      this.searchGames();
     }
   }
 
@@ -164,7 +164,7 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  // Nueva función para buscar en el catálogo completo
+
   searchGames() {
     const query = this.searchQuery().trim();
     if (!query) {
@@ -173,10 +173,8 @@ export class AdminDashboardComponent implements OnInit {
     }
 
     this.loading.set(true);
-    // 1. Buscar en IGDB
     this.http.get<any[]>(`/api/games?search=${query}`).subscribe({
       next: (igdbGames) => {
-        // 2. Obtener ventas de todos los juegos para cruzar datos
         this.authService.getAllGamesAdmin().subscribe({
           next: (salesData) => {
             const results = igdbGames.map(ig => {
@@ -192,14 +190,13 @@ export class AdminDashboardComponent implements OnInit {
             this.loading.set(false);
           },
           error: () => {
-             // Fallback: mostrar solo resultados de IGDB sin ventas
-             this.games.set(igdbGames.map(ig => ({
-               game_api_id: ig.id.toString(),
-               name: ig.name,
-               image: ig.cover?.url?.replace('t_thumb', 't_cover_big'),
-               sales_count: 0
-             })));
-             this.loading.set(false);
+            this.games.set(igdbGames.map(ig => ({
+              game_api_id: ig.id.toString(),
+              name: ig.name,
+              image: ig.cover?.url?.replace('t_thumb', 't_cover_big'),
+              sales_count: 0
+            })));
+            this.loading.set(false);
           }
         });
       },
@@ -212,8 +209,7 @@ export class AdminDashboardComponent implements OnInit {
 
   resolveMultipleGames(ids: string[]) {
     if (ids.length === 0) return;
-    
-    // Agrupar IDs para evitar peticiones demasiado largas
+
     const chunks = [];
     for (let i = 0; i < ids.length; i += 10) {
       chunks.push(ids.slice(i, i + 10));
@@ -222,7 +218,7 @@ export class AdminDashboardComponent implements OnInit {
     chunks.forEach(chunk => {
       this.http.get<any[]>(`/api/games?id=${chunk.join(',')}`).subscribe({
         next: (games) => {
-          this.games.update(current => 
+          this.games.update(current =>
             current.map(g => {
               const info = games.find(info => info.id.toString() === g.game_api_id.toString());
               return info ? { ...g, name: info.name, image: info.cover?.url?.replace('t_thumb', 't_cover_big') } : g;
@@ -337,8 +333,8 @@ export class AdminDashboardComponent implements OnInit {
                 <span style="font-size: 0.7rem; color: #888;">Unido: ${new Date(m.joined_at).toLocaleDateString()}</span>
               </div>
             </div>
-            ${index === 0 ? '<span style="background: #a855f7; color: #fff; font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; text-transform: uppercase;">Creador</span>' : 
-              `<span style="color: #aaa; font-size: 0.7rem;">${m.role}</span>`}
+            ${index === 0 ? '<span style="background: #a855f7; color: #fff; font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; text-transform: uppercase;">Creador</span>' :
+            `<span style="color: #aaa; font-size: 0.7rem;">${m.role}</span>`}
           </div>
         `).join('');
 
@@ -477,8 +473,7 @@ export class AdminDashboardComponent implements OnInit {
 
   fillMissingDates(history: any[], valueKey: string): any[] {
     if (history.length === 0) return [];
-    
-    // Normalizar fechas a medianoche local para comparar sin problemas de hora
+
     const normalize = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
     const sorted = [...history].map(h => ({
@@ -488,22 +483,22 @@ export class AdminDashboardComponent implements OnInit {
 
     const result = [];
     const firstDate = sorted[0].dateObj;
-    const lastDate = normalize(new Date()); // Hasta hoy
-    
+    const lastDate = normalize(new Date());
+
     let current = new Date(firstDate);
     while (current <= lastDate) {
       const time = current.getTime();
       const existing = sorted.find(h => h.dateObj.getTime() === time);
-      
+
       result.push({
         date: new Date(current),
         [valueKey]: existing ? parseInt(existing[valueKey], 10) : 0
       });
-      
+
       current.setDate(current.getDate() + 1);
       current = normalize(current);
     }
-    
+
     return result;
   }
 
@@ -512,7 +507,7 @@ export class AdminDashboardComponent implements OnInit {
       next: (games) => {
         if (games && games.length > 0) {
           const info = games[0];
-          
+
           this.authService.getGameSalesHistory(game.game_api_id).subscribe({
             next: (rawHistory) => {
               const history = this.fillMissingDates(rawHistory, 'sales');
@@ -606,8 +601,8 @@ export class AdminDashboardComponent implements OnInit {
                         y: {
                           beginAtZero: true,
                           grid: { color: 'rgba(255,255,255,0.05)' },
-                          ticks: { 
-                            color: 'rgba(255,255,255,0.5)', 
+                          ticks: {
+                            color: 'rgba(255,255,255,0.5)',
                             font: { size: 10 },
                             stepSize: 1
                           }
@@ -720,8 +715,8 @@ export class AdminDashboardComponent implements OnInit {
                   y: {
                     beginAtZero: true,
                     grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: { 
-                      color: 'rgba(255,255,255,0.5)', 
+                    ticks: {
+                      color: 'rgba(255,255,255,0.5)',
                       font: { size: 10 },
                       stepSize: 1
                     }
@@ -741,7 +736,7 @@ export class AdminDashboardComponent implements OnInit {
   updateReportStatus(reportId: number, newStatus: string, adminResponse?: string) {
     this.authService.updateReportStatus(reportId, newStatus, adminResponse).subscribe({
       next: (res: any) => {
-        this.reports.update(reports => 
+        this.reports.update(reports =>
           reports.map(r => r.id === reportId ? { ...r, status: newStatus, admin_response: adminResponse || r.admin_response } : r)
         );
         if (adminResponse) {
@@ -839,7 +834,6 @@ export class AdminDashboardComponent implements OnInit {
       background: '#1a103c',
       color: '#fff',
       didOpen: () => {
-        // Listeners para botones personalizados
         const viewProfileBtn = document.getElementById('view-profile-btn');
         if (viewProfileBtn) {
           viewProfileBtn.onclick = () => {
@@ -899,7 +893,6 @@ export class AdminDashboardComponent implements OnInit {
                       return;
                     }
 
-                    // Confirmación final con detalles del usuario
                     Swal.fire({
                       title: '¿Confirmar Baneo Permanente?',
                       html: `
@@ -946,7 +939,7 @@ export class AdminDashboardComponent implements OnInit {
         const refundBtn = document.getElementById('refund-btn');
         if (refundBtn) {
           refundBtn.onclick = () => {
-             this.handleRefund(report);
+            this.handleRefund(report);
           };
         }
 
@@ -967,13 +960,13 @@ export class AdminDashboardComponent implements OnInit {
       preDeny: () => {
         const container = document.getElementById('reply-container');
         const textarea = document.getElementById('admin-reply-text') as HTMLTextAreaElement;
-        
+
         if (container?.style.display === 'none') {
           container.style.display = 'block';
           textarea?.focus();
-          return false; // Evita que se cierre el modal
+          return false;
         }
-        
+
         const reply = textarea?.value;
         if (!reply || reply.trim().length < 5) {
           Swal.showValidationMessage('La respuesta es demasiado corta');
@@ -996,7 +989,6 @@ export class AdminDashboardComponent implements OnInit {
       this.authService.deleteUser(userId).subscribe({
         next: () => {
           this.users.update(users => users.filter(u => u.id !== userId));
-          // Si el usuario borrado tenía reportes, podríamos refrescarlos
           if (this.activeTab() === 'reports') this.loadReports();
           alert('Usuario eliminado correctamente');
         },

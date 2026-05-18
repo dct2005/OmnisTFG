@@ -19,18 +19,16 @@ export class SupportComponent implements OnInit {
   private gameService = inject(GameService);
 
   currentUser = this.authService.currentUser;
-  
-  // Ver estados: 'principal', 'juegos', 'detalles del juego', 'compras', 'tienda', 'comunidad', 'pregunta-de la comunidad', 'informe-de la comunidad', 'entradas'
+
   currentView = signal<string>('main');
-  
-  // Datos para formularios
+
   ownedGames = signal<any[]>([]);
   loadingGames = signal(false);
   selectedGame = signal<any>(null);
   ticketSubject = '';
   ticketDetails = '';
   submitting = signal(false);
-  
+
   // Lista de entradas
   tickets = signal<any[]>([]);
   loadingTickets = signal(false);
@@ -45,11 +43,11 @@ export class SupportComponent implements OnInit {
     this.currentView.set(view);
     this.ticketDetails = '';
     this.ticketSubject = '';
-    
+
     if (view === 'games' && this.ownedGames().length === 0) {
       this.loadOwnedGames();
     }
-    
+
     if (view === 'tickets') {
       this.loadTickets();
     }
@@ -58,7 +56,7 @@ export class SupportComponent implements OnInit {
   loadOwnedGames() {
     const user = this.currentUser();
     if (!user) return;
-    
+
     this.loadingGames.set(true);
     this.authService.getUserGames(user.email).subscribe({
       next: (res) => {
@@ -68,8 +66,7 @@ export class SupportComponent implements OnInit {
           return;
         }
 
-        // Obtenga información detallada para todos los juegos en paralelo
-        const detailPromises = gameRecords.map((record: any) => 
+        const detailPromises = gameRecords.map((record: any) =>
           new Promise((resolve) => {
             this.gameService.getGameById(record.game_api_id).subscribe({
               next: (detail) => resolve(detail),
@@ -93,7 +90,7 @@ export class SupportComponent implements OnInit {
   loadTickets() {
     const user = this.currentUser();
     if (!user) return;
-    
+
     this.loadingTickets.set(true);
     this.authService.getSupportTickets(user.id).subscribe({
       next: (tickets) => {

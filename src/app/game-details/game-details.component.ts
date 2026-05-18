@@ -68,7 +68,6 @@ export class GameDetailsComponent implements OnInit {
       }
     });
 
-    // Verifique la propiedad si el usuario ya inició sesión
     if (this.currentUser()) {
       this.fetchOwnedGames();
     }
@@ -103,7 +102,6 @@ export class GameDetailsComponent implements OnInit {
         this.game = game;
         this.additionalContent = [...(game.dlcs || []), ...(game.expansions || [])];
 
-        // Buscar ediciones especiales en DLCs, expansiones y bundles del juego
         const allRelated = [
           ...(game.dlcs || []),
           ...(game.expansions || []),
@@ -138,7 +136,6 @@ export class GameDetailsComponent implements OnInit {
 
     this.gameService.getGames(undefined, 0, genres, themes).subscribe({
       next: (games) => {
-        // Excluye el juego actual de juegos similares. Llega hasta 12.
         this.allSimilarGames = games.filter(g => g.id !== this.game?.id).slice(0, 12);
         this.loadingSimilar = false;
       },
@@ -154,7 +151,6 @@ export class GameDetailsComponent implements OnInit {
     if (this.scrollIndex < maxScroll) {
       this.scrollIndex = Math.min(maxScroll, this.scrollIndex + 3);
     } else {
-      // Regrese al inicio si llegó al final.
       this.scrollIndex = 0;
     }
   }
@@ -182,7 +178,7 @@ export class GameDetailsComponent implements OnInit {
         next: () => {
           this.ownedGameIds = [...this.ownedGameIds, itemId.toString()];
           this.checkIfOwned();
-          
+
           this.authService.currentUser.set({
             ...user,
             peppix: currentPeppix - price

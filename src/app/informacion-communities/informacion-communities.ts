@@ -26,7 +26,7 @@ export class InformacionCommunities implements OnInit {
   members: any[] = [];
   newMessage: string = '';
   posts: any[] = [];
-  
+
   // Paginación
   currentPage: number = 1;
   pageSize: number = 5;
@@ -65,7 +65,7 @@ export class InformacionCommunities implements OnInit {
 
   get communityProgress(): number {
     if (!this.communityData?.xp) return 0;
-    return (this.communityData.xp % 300) / 3 * 1; // Simplificando para que sea un %
+    return (this.communityData.xp % 300) / 3 * 1;
   }
 
   get nextLevelXp(): number {

@@ -1,32 +1,33 @@
 <div class="reward-overlay" (click)="close()">
     <div class="reward-modal" (click)="$event.stopPropagation()">
         <button class="close-btn" (click)="close()">&times;</button>
-        
+
         <div class="reward-content">
             <h2 class="title">RECOMPENSA DIARIA</h2>
             @if (!hasSpun) {
-                <p class="subtitle">¡Gira la ruleta y gana Peppix gratis!</p>
+            <p class="subtitle">¡Gira la ruleta y gana Peppix gratis!</p>
             } @else {
-                @if (prize?.label === 'Nada' || prize?.type === 'nada') {
-                    <p class="subtitle winner" style="color: #cbd5e1 !important; text-shadow: 0 0 10px rgba(255,255,255,0.2);">No has ganado nada, inténtalo de nuevo mañana</p>
-                } @else {
-                    <p class="subtitle winner">¡ENHORABUENA! Has ganado: {{ prize?.label }}</p>
-                }
+            @if (prize?.label === 'Nada' || prize?.type === 'nada') {
+            <p class="subtitle winner" style="color: #cbd5e1 !important; text-shadow: 0 0 10px rgba(255,255,255,0.2);">
+                No has ganado nada, inténtalo de nuevo mañana</p>
+            } @else {
+            <p class="subtitle winner">¡ENHORABUENA! Has ganado: {{ prize?.label }}</p>
+            }
             }
 
             <div class="wheel-container">
                 <div class="wheel-pointer"></div>
-                <div class="wheel-wrapper" [style.transform]="'rotate(' + rotation + 'deg)'" [class.spinning]="isSpinning">
+                <div class="wheel-wrapper" [style.transform]="'rotate(' + rotation + 'deg)'"
+                    [class.spinning]="isSpinning">
                     <div class="wheel-bg"></div>
-                    
-                    <!-- Divisores visuales -->
+
                     <div class="wheel-divider" *ngFor="let p of prizes; let i = index"
-                         [style.transform]="'rotate(' + (i * 45) + 'deg)'">
+                        [style.transform]="'rotate(' + (i * 45) + 'deg)'">
                     </div>
 
                     <div class="wheel-labels">
-                        <div class="wheel-label" *ngFor="let p of prizes; let i = index" 
-                             [style.transform]="'rotate(' + (i * 45 + 22.5 - 90) + 'deg)'">
+                        <div class="wheel-label" *ngFor="let p of prizes; let i = index"
+                            [style.transform]="'rotate(' + (i * 45 + 22.5 - 90) + 'deg)'">
                             {{ p.label }}
                         </div>
                     </div>

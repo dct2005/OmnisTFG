@@ -165,14 +165,13 @@ export class CatalogComponent implements OnInit, OnDestroy {
                     const games = res.games || [];
                     const ids = games.map((g: any) => g.game_api_id);
                     if (ids.length === 0) return of([]);
-                    // En "Mis Juegos", cargamos todos de una vez por ahora (o paginados si implementamos después)
                     return this.gameService.getGames(this.searchTerm(), 0, [], [], ids);
                 })
             ).subscribe({
                 next: (data) => {
                     this.games = this.mapGames(data, true);
                     this.loading.set(false);
-                    this.reachedEnd = true; // Por ahora no paginamos "Mis Juegos"
+                    this.reachedEnd = true;
                 },
                 error: (err) => {
                     console.error('Error loading my games', err);
@@ -242,7 +241,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
             this.router.navigate(['/login']);
             return;
         }
-        
+
         game.isFavorite = !game.isFavorite;
         this.authService.toggleWishlist(game.id).subscribe({
             next: (res: any) => {
@@ -256,7 +255,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
             },
             error: (err) => {
                 console.error('Error toggling wishlist', err);
-                game.isFavorite = !game.isFavorite; // Revertir en caso de error
+                game.isFavorite = !game.isFavorite;
             }
         });
     }

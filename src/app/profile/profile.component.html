@@ -10,12 +10,12 @@
         <img
           [src]="user?.profile_image || user?.avatar || user?.profile_picture || 'https://ui-avatars.com/api/?name=' + user?.username + '&background=0d1b2a&color=fff'"
           class="profile-avatar" [alt]="user?.username">
-        <div class="active-pet-wrapper" *ngIf="activePet()" [title]="activePet().name"
-             [class.pet-dragon]="activePet().name.includes('Dragón')"
-             [class.pet-ghost]="activePet().name.includes('Fantasmitu')"
-             [class.pet-wizard]="activePet().name.includes('Mago')"
-             [class.pet-witch]="activePet().name.includes('Bruja')">
-          <img [src]="activePet().icon_url.replace('.png', '_v2.png') + '?v=' + cacheBuster" class="active-pet-sprite">
+        <div class="active-pet-wrapper" *ngIf="activePet() as pet" [title]="pet.name"
+             [class.pet-dragon]="pet.name.includes('Dragón')"
+             [class.pet-ghost]="pet.name.includes('Fantasmitu')"
+             [class.pet-wizard]="pet.name.includes('Mago')"
+             [class.pet-witch]="pet.name.includes('Bruja')">
+          <img [src]="pet.icon_url.replace('.png', '_v2.png') + '?v=' + cacheBuster" class="active-pet-sprite">
         </div>
         <div class="avatar-overlay" *ngIf="isOwnProfile()">
           <span class="upload-icon">📷</span>
@@ -289,7 +289,7 @@
         <div class="form-grid">
           <div class="form-group">
             <label>Nombre de Usuario</label>
-            <input type="text" [(ngModel)]="editForm().username" placeholder="Tu nuevo nombre">
+            <input type="text" [(ngModel)]="editForm.username" placeholder="Tu nuevo nombre">
           </div>
           <div class="form-group">
             <label>Avatar y Fondo</label>
@@ -306,7 +306,7 @@
           </div>
           <div class="form-group">
             <label>Estado de perfil</label>
-            <select [(ngModel)]="editForm().estado" (change)="onProfileStatusChange(editForm().estado)">
+            <select [(ngModel)]="editForm.estado" (change)="onProfileStatusChange(editForm.estado)">
               <option value="en-linea">En línea</option>
               <option value="ausente">Ausente</option>
               <option value="invisible">Invisible</option>
@@ -315,11 +315,11 @@
           </div>
           <div class="form-group">
             <label>Mensaje de estado</label>
-            <input type="text" [(ngModel)]="editForm().status_message" placeholder="¿Qué estás pensando?">
+            <input type="text" [(ngModel)]="editForm.status_message" placeholder="¿Qué estás pensando?">
           </div>
           <div class="form-group">
             <label>Insignia destacada</label>
-            <select [(ngModel)]="editForm().selected_badge_id">
+            <select [(ngModel)]="editForm.selected_badge_id">
               <option [ngValue]="null">Más alta (Auto)</option>
               <option *ngFor="let badge of user?.badges" [ngValue]="badge.id">{{ badge.name }}</option>
             </select>
@@ -327,21 +327,21 @@
           <div class="form-group">
             <label>Color de Fondo (Tintado)</label>
             <div class="color-picker-wrapper">
-              <input type="color" name="profile_bg_color" [(ngModel)]="editForm().profile_bg_color" class="color-input">
-              <span class="color-hex">{{ editForm().profile_bg_color }}</span>
+              <input type="color" name="profile_bg_color" [(ngModel)]="editForm.profile_bg_color" class="color-input">
+              <span class="color-hex">{{ editForm.profile_bg_color }}</span>
             </div>
           </div>
           <div class="form-group">
             <label>Color del Nombre de Usuario</label>
             <div class="color-picker-wrapper">
-              <input type="color" name="profile_name_color" [(ngModel)]="editForm().profile_name_color" class="color-input">
-              <span class="color-hex">{{ editForm().profile_name_color }}</span>
+              <input type="color" name="profile_name_color" [(ngModel)]="editForm.profile_name_color" class="color-input">
+              <span class="color-hex">{{ editForm.profile_name_color }}</span>
             </div>
           </div>
           <div class="form-group" style="grid-column: span 2;">
             <label>URL de Música de Perfil o Archivo MP3</label>
             <div style="display: flex; gap: 10px; align-items: center;">
-              <input type="text" name="profile_music_url" [(ngModel)]="editForm().profile_music_url" placeholder="https://ejemplo.com/musica.mp3" style="flex-grow: 1;">
+              <input type="text" name="profile_music_url" [(ngModel)]="editForm.profile_music_url" placeholder="https://ejemplo.com/musica.mp3" style="flex-grow: 1;">
               <input type="file" #musicInput (change)="onMusicSelected($event)" accept="audio/mpeg,audio/mp3" style="display: none;">
               <button class="btn-primary" (click)="musicInput.click()" style="padding: 10px 15px; white-space: nowrap; font-size: 0.9rem;">
                 <span class="material-icons-round" style="font-size: 1.2rem; margin-right: 5px; vertical-align: middle;">upload_file</span> Subir MP3
@@ -356,14 +356,14 @@
         <div class="form-grid">
           <div class="form-group">
             <label>Grupo Favorito</label>
-            <select [(ngModel)]="editForm().favorite_group_id">
+            <select [(ngModel)]="editForm.favorite_group_id">
               <option [ngValue]="null">Ninguno</option>
               <option *ngFor="let comm of userCommunities()" [ngValue]="comm.id">{{ comm.name }}</option>
             </select>
           </div>
           <div class="form-group">
             <label>Juego Favorito</label>
-            <select [(ngModel)]="editForm().favorite_game_id">
+            <select [(ngModel)]="editForm.favorite_game_id">
               <option value="">Ninguno</option>
               <option *ngFor="let game of userGames()" [value]="game.game_api_id">
                 {{ gameDetailsMap().get(game.game_api_id) || 'Cargando...' }}
@@ -378,15 +378,15 @@
         <div class="location-grid">
           <div class="form-group">
             <label>País (Código ISO, ej: ES, US, FR)</label>
-            <input type="text" [(ngModel)]="editForm().country" placeholder="ES">
+            <input type="text" [(ngModel)]="editForm.country" placeholder="ES">
           </div>
           <div class="form-group">
             <label>Comunidad / Estado</label>
-            <input type="text" [(ngModel)]="editForm().state" placeholder="Madrid">
+            <input type="text" [(ngModel)]="editForm.state" placeholder="Madrid">
           </div>
           <div class="form-group">
             <label>Ciudad</label>
-            <input type="text" [(ngModel)]="editForm().city" placeholder="Madrid">
+            <input type="text" [(ngModel)]="editForm.city" placeholder="Madrid">
           </div>
         </div>
       </div>
@@ -396,7 +396,7 @@
         <div class="privacy-grid">
           <div class="form-group">
             <label>Perfil</label>
-            <select [(ngModel)]="editForm().privacy_profile">
+            <select [(ngModel)]="editForm.privacy_profile">
               <option value="public">Público</option>
               <option value="friends">Solo Amigos</option>
               <option value="private">Privado</option>
@@ -404,7 +404,7 @@
           </div>
           <div class="form-group">
             <label>Juegos</label>
-            <select [(ngModel)]="editForm().privacy_games">
+            <select [(ngModel)]="editForm.privacy_games">
               <option value="public">Público</option>
               <option value="friends">Solo Amigos</option>
               <option value="private">Privado</option>
@@ -412,7 +412,7 @@
           </div>
           <div class="form-group">
             <label>Comentarios</label>
-            <select [(ngModel)]="editForm().privacy_comments">
+            <select [(ngModel)]="editForm.privacy_comments">
               <option value="public">Público</option>
               <option value="friends">Solo Amigos</option>
               <option value="private">Privado</option>
@@ -420,7 +420,7 @@
           </div>
           <div class="form-group">
             <label>Mostrar en perfil</label>
-            <select [(ngModel)]="editForm().display_comments_type">
+            <select [(ngModel)]="editForm.display_comments_type">
               <option value="profile">Comentarios de Perfil</option>
               <option value="community">Mensajes en Comunidades</option>
             </select>

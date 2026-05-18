@@ -11,6 +11,5 @@ export const adminGuard = () => {
         return true;
     }
 
-    // Si no es admin, redirigir al home o mostrar error
     return router.parseUrl('/home');
 };

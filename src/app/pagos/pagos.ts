@@ -16,7 +16,6 @@ export class Pagos implements OnInit {
   peppix: string = '25.000';
   precio: string = '500,00';
 
-  // Estado para forma y selección.
   metodoSeleccionado: string = 'tarjeta';
   numTarjeta: string = '';
   caducidad: string = '';
@@ -24,7 +23,6 @@ export class Pagos implements OnInit {
   cvv: string = '';
   emailContacto: string = '';
 
-  // Estado de facturación
   billingInfo = {
     firstName: '',
     lastName: '',
@@ -130,7 +128,7 @@ export class Pagos implements OnInit {
       sum += digit;
       isEven = !isEven;
     }
-    return true; // Aceptamos cualquier número en la simulación
+    return true;
   }
 
   private ejecutarPago() {

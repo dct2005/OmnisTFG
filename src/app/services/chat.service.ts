@@ -33,11 +33,10 @@ export class ChatService {
     return this.http.post<any>(`${this.apiUrl}?action=set-typing`, { userId, otherId, isTyping });
   }
 
-  getTypingStatus(userId: number, otherId: number): Observable<{isTyping: boolean}> {
-    return this.http.get<{isTyping: boolean}>(`${this.apiUrl}?action=get-typing&userId=${userId}&otherId=${otherId}`);
+  getTypingStatus(userId: number, otherId: number): Observable<{ isTyping: boolean }> {
+    return this.http.get<{ isTyping: boolean }>(`${this.apiUrl}?action=get-typing&userId=${userId}&otherId=${otherId}`);
   }
 
-  // --- MÉTODOS DE GRUPOS ---
   getGroups(userId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}?action=get-groups&userId=${userId}`);
   }

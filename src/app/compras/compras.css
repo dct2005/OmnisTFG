@@ -1,4 +1,3 @@
-/* --- CONTENEDOR PRINCIPAL --- */
 .compras-page {
     min-height: 100vh;
     width: 100%;
@@ -9,11 +8,9 @@
     overflow: hidden;
     padding: 40px 20px;
 
-    /* Fondo galáctico (asumiendo el global, o puesto aquí si se necesita) */
     background-color: transparent;
 }
 
-/* --- PERSONAJES LATERALES --- */
 .character {
     position: absolute;
     bottom: 0;
@@ -39,7 +36,6 @@
     filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.8));
 }
 
-/* --- TARJETA DE COMPRA (ESTILO CRISTAL) --- */
 .compras-card {
     position: relative;
     z-index: 2;
@@ -63,7 +59,6 @@
     letter-spacing: 1px;
 }
 
-/* --- TABLA DE PRECIOS --- */
 .compras-table {
     display: flex;
     flex-direction: column;
@@ -96,7 +91,6 @@
     color: white;
 }
 
-/* Alineaciones de la tabla */
 .col-price {
     text-align: left;
     padding-left: 10px;
@@ -112,7 +106,7 @@
 
 .header-peppix {
     justify-content: flex-start;
-    padding-left: 45px; /* Para alinearlo con el texto encima de los iconos */
+    padding-left: 45px;
 }
 
 .col-action {
@@ -126,7 +120,6 @@
     filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.4));
 }
 
-/* --- BOTÓN DE COMPRA --- */
 .btn-buy {
     background: #8b5cf6;
     color: white;
@@ -156,7 +149,8 @@
         margin-bottom: 20px;
     }
 
-    .table-header, .table-row {
+    .table-header,
+    .table-row {
         grid-template-columns: 1fr;
         gap: 10px;
         text-align: center;
@@ -165,10 +159,12 @@
     }
 
     .table-header {
-        display: none; /* Esconder cabecera en móvil, es más intuitivo apilado */
+        display: none;
     }
 
-    .col-price, .col-peppix, .col-action {
+    .col-price,
+    .col-peppix,
+    .col-action {
         text-align: center;
         justify-content: center;
         padding-left: 0;
@@ -179,6 +175,6 @@
     }
 
     .character {
-        display: none; /* Esconder personajes si tapan contenido en móvil */
+        display: none;
     }
 }

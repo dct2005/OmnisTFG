@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../services/auth'; // Ajusta la ruta si es necesario
+import { AuthService } from '../services/auth';
 declare var Swal: any;
 
 @Component({

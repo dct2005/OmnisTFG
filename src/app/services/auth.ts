@@ -467,16 +467,12 @@ export class AuthService {
     });
   }
 
-  // acciones admin
-
-  // obtener todos los usuarios
   getAllUsers(): Observable<any[]> {
     const userEmail = this.currentUser()?.email;
     if (!userEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-users&requesterEmail=${userEmail}`);
   }
 
-  // eliminar usuarios
   deleteUser(userIdToDelete: number): Observable<any> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
@@ -487,14 +483,12 @@ export class AuthService {
     });
   }
 
-  // obtener todos los reportes
   getAllReports(): Observable<any[]> {
     const userEmail = this.currentUser()?.email;
     if (!userEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-reports&requesterEmail=${userEmail}`);
   }
 
-  // actualizar estado de un reporte
   updateReportStatus(reportId: number, newStatus: string, adminResponse?: string): Observable<any> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
@@ -507,7 +501,6 @@ export class AuthService {
     });
   }
 
-  // obtener estadisticas, me estoy quedando calvo
   getAdminStats(): Observable<any> {
     const userEmail = this.currentUser()?.email;
     if (!userEmail) throw new Error('Usuario no autenticado');
@@ -527,14 +520,12 @@ export class AuthService {
     });
   }
 
-  // obtener todas las comunidades
   getAllCommunities(): Observable<any[]> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-communities&requesterEmail=${adminEmail}`);
   }
 
-  // eliminar comunidades
   deleteCommunity(communityId: number): Observable<any> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
@@ -545,28 +536,24 @@ export class AuthService {
     });
   }
 
-  // obtener todas las transacciones
   getAllTransactionsAdmin(): Observable<any[]> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-transactions-admin&requesterEmail=${adminEmail}`);
   }
 
-  // obtener todos los juegos vendidos
   getAllGamesAdmin(): Observable<any[]> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-all-games-admin&requesterEmail=${adminEmail}`);
   }
 
-  // obtener la evolucion de ventas de un juego
   getGameSalesHistory(gameId: string): Observable<any[]> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-game-sales-history&requesterEmail=${adminEmail}&gameId=${gameId}`);
   }
 
-  // obtener la evolucion de miembros de una comunidad
   getCommunityGrowthHistory(communityId: number): Observable<any[]> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
@@ -577,14 +564,12 @@ export class AuthService {
     return this.http.get<any[]>(`${this.apiUrl}/user?action=search-users&query=${query}`);
   }
 
-  // obtener las transacciones de un usuario específico
   getUserTransactionsAdmin(userId: number): Observable<any[]> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');
     return this.http.get<any[]>(`${this.apiUrl}/user?action=get-user-transactions-admin&requesterEmail=${adminEmail}&userId=${userId}`);
   }
 
-  // resolver un reporte de compra
   resolvePurchaseReport(reportId: number, userId: number, amount: number): Observable<any> {
     const adminEmail = this.currentUser()?.email;
     if (!adminEmail) throw new Error('Usuario no autenticado');

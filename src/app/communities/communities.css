@@ -3,14 +3,12 @@
 
 .communities-container {
     padding-top: 100px;
-    /* Compensación para barra de navegación fija */
     min-height: 100vh;
     color: white;
     font-family: 'Audiowide', sans-serif;
     padding-bottom: 2rem;
 }
 
-/* Sección de encabezado */
 .communities-header {
     text-align: center;
     margin-bottom: 2rem;
@@ -56,7 +54,6 @@
     transform: translateY(-50%) scale(1.05);
 }
 
-/* Secondary Nav "DESCUBRE" */
 .secondary-nav {
     text-align: center;
     margin-bottom: 1.5rem;
@@ -64,7 +61,6 @@
     color: #dfe6e9;
 }
 
-/* Diseño del contenido principal */
 .main-content {
     display: flex;
     max-width: 1400px;
@@ -77,7 +73,6 @@
     flex: 1;
 }
 
-/* Barra de búsqueda y enlaces rápidos */
 .search-bar-container {
     display: flex;
     justify-content: space-between;
@@ -137,7 +132,6 @@
     color: #2ecc71;
 }
 
-/* Barra lateral de filtros */
 .filters-sidebar {
     width: 250px;
     background: rgba(13, 13, 30, 0.8);
@@ -217,7 +211,6 @@
     transform: rotate(45deg);
 }
 
-/* Cuadrícula de comunidades */
 .communities-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -271,7 +264,6 @@
 
 .library-tag {
     color: #74b9ff;
-    /* Evitar que descripciones muy largas rompan la tarjeta */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -328,7 +320,6 @@
     font-size: 0.9rem;
 }
 
-/* Lista de filtros desplazables */
 .scrollable-list {
     max-height: 200px;
     overflow-y: auto;

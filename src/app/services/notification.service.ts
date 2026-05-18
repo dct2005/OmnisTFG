@@ -20,7 +20,6 @@ export class NotificationService {
   private isInitialized = false;
 
   constructor() {
-    // Escuchar cambios en el usuario para iniciar/detener el polling
     effect(() => {
       const user = this.authService.currentUser();
       if (user) {
@@ -35,9 +34,8 @@ export class NotificationService {
     if (this.isInitialized) return;
     this.isInitialized = true;
 
-    // Sondeo cada 8 segundos
     this.pollingSubscription = interval(8000).pipe(
-      filter(() => !this.router.url.includes('/mensajes')), // No notificar si ya estamos en la pantalla de chat
+      filter(() => !this.router.url.includes('/mensajes')),
       switchMap(() => this.chatService.getUnreadMessages(userId))
     ).subscribe({
       next: (messages) => {

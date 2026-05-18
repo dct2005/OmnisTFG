@@ -20,7 +20,6 @@ const authGuard = () => {
 };
 import { adminGuard } from './guards/admin.guard';
 
-// ... (guardias existentes)
 
 export const routes: Routes = [
     {

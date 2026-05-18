@@ -18,13 +18,11 @@ export class AccountDetailsComponent {
   authService = inject(AuthService);
   gameService = inject(GameService);
 
-  
+
   userEmail = signal('');
   userPhone = signal('');
-  
-  // modo de vista: 'principal' | 'peppix' | 'juegos'
   viewMode = signal<string>('main');
-  
+
   transactions = signal<any[]>([]);
   gamePurchases = signal<any[]>([]);
 
@@ -53,11 +51,10 @@ export class AccountDetailsComponent {
         switchMap((res: any) => {
           const purchases = res.games || [];
           if (purchases.length === 0) return of([]);
-          
+
           const ids = purchases.map((p: any) => p.game_api_id);
           return this.gameService.getGames('', 0, [], [], ids).pipe(
             map(gamesData => {
-              // Combinar los datos de IGDB con las fechas de compra de nuestra BD
               return purchases.map((p: any) => {
                 const gameInfo = gamesData.find(g => g.id.toString() === p.game_api_id.toString());
                 return {

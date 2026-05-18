@@ -8,7 +8,6 @@
     padding-bottom: 2rem;
 }
 
-/* Sección de encabezado */
 .catalog-header {
     text-align: center;
     margin-bottom: 2rem;
@@ -54,7 +53,6 @@
     transform: translateY(-50%) scale(1.05);
 }
 
-/* Secondary Nav "DESCUBRE" */
 .secondary-nav {
     text-align: center;
     margin-bottom: 1.5rem;
@@ -62,7 +60,6 @@
     color: #dfe6e9;
 }
 
-/* Diseño del contenido principal */
 .main-content {
     display: flex;
     max-width: 1400px;
@@ -75,7 +72,6 @@
     flex: 1;
 }
 
-/* Barra de búsqueda y enlaces rápidos */
 .search-bar-container {
     display: flex;
     justify-content: space-between;
@@ -133,10 +129,8 @@
 .quick-link:hover,
 .quick-link.active {
     color: #2ecc71;
-    /* Resaltado verde de la imagen */
 }
 
-/* Barra lateral de filtros */
 .filters-sidebar {
     width: 250px;
     background: rgba(13, 13, 30, 0.8);
@@ -216,7 +210,6 @@
     transform: rotate(45deg);
 }
 
-/* Cuadrícula de juegos */
 .games-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -291,11 +284,8 @@
 
 .material-icons {
     font-family: 'Material Icons';
-    /* Suponiendo que los iconos de materiales estén disponibles o estarán disponibles */
     font-size: 1.2rem;
 }
-
-/* Respaldo para íconos de materiales si no están incluidos */
 
 
 .loading-state,
@@ -373,15 +363,12 @@
     }
 }
 
-/* Lista de filtros desplazables */
 .scrollable-list {
     max-height: 200px;
     overflow-y: auto;
     padding-right: 5px;
-    /* Evitar que la barra de desplazamiento se superponga al contenido */
 }
 
-/* Barra de scroll para los filtros de categorias y tematicas porque no veas con la cantidad de categorias que tiene la API */
 .scrollable-list::-webkit-scrollbar {
     width: 6px;
 }

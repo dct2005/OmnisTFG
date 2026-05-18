@@ -79,13 +79,12 @@ export class ProfileComponent implements OnDestroy {
   totalLibraryValue = signal<number>(0);
   friendActivities = signal<any[]>([]);
 
-  // Editar señales de perfil
   isEditModalOpen = signal(false);
   userGames = signal<any[]>([]);
   userCommunities = signal<any[]>([]);
-  editForm = signal({
+  editForm = {
     username: '',
-    favorite_group_id: null,
+    favorite_group_id: null as number | null,
     favorite_game_id: '',
     country: '',
     state: '',
@@ -96,23 +95,22 @@ export class ProfileComponent implements OnDestroy {
     privacy_comments: 'public',
     status_message: '',
     estado: 'en-linea',
-    selected_badge_id: null,
+    selected_badge_id: null as number | null,
     display_comments_type: 'community',
     profile_theme_color: '#00f2ff',
     profile_bg_color: '#00f2ff',
     profile_name_color: '#ffffff',
     profile_music_url: ''
-  });
-  
+  };
+
   currentTime = signal(Date.now());
   private refreshInterval: any;
   private statusInterval: any;
 
-  commentInput = signal('');
+  commentInput = '';
   commentsOffset = signal(0);
   hasMoreComments = signal(true);
 
-  // Paginación
   currentPage = 1;
   pageSize = 5;
 
@@ -139,10 +137,10 @@ export class ProfileComponent implements OnDestroy {
   statusLabel = computed(() => {
     const user = this.viewedUser();
     const estado = user?.estado;
-    
+
     if (estado === 'en-linea') return 'En línea';
     if (estado === 'ausente') return 'Ausente';
-    
+
     return 'Desconectado';
   });
 
@@ -150,7 +148,7 @@ export class ProfileComponent implements OnDestroy {
     const now = new Date();
     const diffMs = now.getTime() - lastSeen.getTime();
     if (diffMs < 0) return 'poco tiempo';
-    
+
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
@@ -184,13 +182,10 @@ export class ProfileComponent implements OnDestroy {
 
   constructor() {
     this.loadInitialData();
-    
-    // Iniciar timer para actualizar el contador de "hace X min" cada minuto
+
     this.refreshInterval = setInterval(() => {
       this.currentTime.set(Date.now());
     }, 60000);
-
-    // Reaccionamos a cambios en la ruta (username)
     this.route.params.subscribe(params => {
       let username = params['username'];
       if (username === 'me') {
@@ -203,8 +198,6 @@ export class ProfileComponent implements OnDestroy {
       }
       this.loadProfileByUsername(username);
     });
-
-    // Reaccionamos cuando el usuario visualizado cambie para cargar sus datos
     effect(() => {
       const user = this.viewedUser();
       if (user) {
@@ -213,7 +206,6 @@ export class ProfileComponent implements OnDestroy {
       }
     });
 
-    // Efecto para controlar el fondo global del body
     effect(() => {
       const background = this.profileBackground();
       if (background) {
@@ -232,7 +224,7 @@ export class ProfileComponent implements OnDestroy {
           this.comments.set(res.initialComments || []);
           this.commentsOffset.set(res.initialComments?.length || 0);
           this.hasMoreComments.set((res.initialComments?.length || 0) === 5);
-          
+
           this.startStatusPolling(username);
         }
       },
@@ -243,7 +235,6 @@ export class ProfileComponent implements OnDestroy {
   startStatusPolling(username: string) {
     if (this.statusInterval) clearInterval(this.statusInterval);
     this.statusInterval = setInterval(() => {
-      // Usar getLightweightUpdate si es el propio perfil, o mantener getUserStatus si es otro pero con intervalo mayor
       const isOwn = this.isOwnProfile();
       if (isOwn) {
         this.authService.getLightweightUpdate().subscribe({
@@ -272,7 +263,7 @@ export class ProfileComponent implements OnDestroy {
           }
         });
       }
-    }, 60000); // Aumentado a 60s
+    }, 60000);
   }
 
   checkFriendshipStatus(targetUser: any) {
@@ -342,7 +333,6 @@ export class ProfileComponent implements OnDestroy {
   }
 
   loadInitialData() {
-    // Cargar lo primero que haya en la base de datos por defecto
     this.communityService.getCommunities(null, false).subscribe(allComms => {
       if (allComms && allComms.length > 0) {
         this.setFavoriteGroup(allComms[0], 0);
@@ -360,21 +350,17 @@ export class ProfileComponent implements OnDestroy {
   }
 
   loadUserData(user: any) {
-    // Refinar con datos del usuario
     this.authService.getUserGames(user.email).subscribe({
       next: (res: any) => {
         const games = res.games || [];
         this.purchasedGamesList.set(games);
         this.totalLibraryValue.set(res.totalLibraryValue || 0);
         const gameIds = games.map((g: any) => g.game_api_id);
-        
-        // Priorizar el juego favorito si está marcado, si no el primero
+
         const favGameId = user.favorite_game_id || (gameIds.length > 0 ? gameIds[0] : null);
         if (favGameId) {
           this.updateRecentActivity(favGameId);
         }
-
-        // Actualizamos los stats de juegos
         this.profileData.update(data => ({
           ...data,
           stats: { ...data.stats, games: gameIds.length }
@@ -382,13 +368,10 @@ export class ProfileComponent implements OnDestroy {
       }
     });
 
-    // ... insignias ...
-
     this.communityService.getCommunities(user.id, true).subscribe({
       next: (myComms: any[]) => {
         this.userCommunitiesList.set(myComms);
         if (myComms && myComms.length > 0) {
-          // Priorizar el grupo favorito
           const favGroup = myComms.find(c => c.id === user.favorite_group_id) || myComms[0];
           this.setFavoriteGroup(favGroup, myComms.length);
         }
@@ -410,7 +393,6 @@ export class ProfileComponent implements OnDestroy {
       }
     });
 
-    // Comentarios basados en preferencia
     if (user.display_comments_type === 'profile') {
       this.authService.getProfileComments(user.id).subscribe({
         next: (comments) => {
@@ -580,7 +562,7 @@ export class ProfileComponent implements OnDestroy {
     friends.forEach(f => {
       const avatar = f.profile_image || `https://ui-avatars.com/api/?name=${f.username}&background=0d1b2a&color=fff`;
       const statusClass = f.estado === 'en-linea' ? 'text-blue-400' : (f.estado === 'jugando' ? 'text-green-400' : 'text-gray-400');
-      
+
       friendsHtml += `
         <div class="swal-friend-item" style="display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
           <img src="${avatar}" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover; border: 2px solid #00f2ff;">
@@ -630,9 +612,9 @@ export class ProfileComponent implements OnDestroy {
       allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading();
-        
+
         // Obtenga información detallada para todos los juegos en paralelo
-        const detailPromises = gameRecords.map(record => 
+        const detailPromises = gameRecords.map(record =>
           new Promise((resolve) => {
             this.gameService.getGameById(record.game_api_id).subscribe({
               next: (detail) => resolve({ ...detail, purchaseDate: record.purchase_date }),
@@ -649,7 +631,7 @@ export class ProfileComponent implements OnDestroy {
           games.forEach(g => {
             let coverUrl = g.cover?.url || 'https://placehold.co/100x120';
             if (coverUrl.startsWith('//')) coverUrl = 'https:' + coverUrl;
-            
+
             const pDate = new Date(g.purchaseDate).toLocaleDateString();
 
             gamesHtml += `
@@ -710,7 +692,7 @@ export class ProfileComponent implements OnDestroy {
 
     groups.forEach(g => {
       const banner = g.image_url || 'images/default_community.jpg';
-      
+
       groupsHtml += `
         <div class="swal-group-item" style="display: flex; align-items: center; gap: 15px; padding: 12px; background: rgba(72, 187, 120, 0.05); border-radius: 10px; border: 1px solid rgba(72, 187, 120, 0.2); width: 100%; box-sizing: border-box;">
           <img src="${banner}" style="width: 80px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid #48bb78; flex-shrink: 0;">
@@ -794,12 +776,12 @@ export class ProfileComponent implements OnDestroy {
   }
 
   postComment() {
-    const content = this.commentInput().trim();
+    const content = this.commentInput.trim();
     if (!content) return;
 
     const current = this.authService.currentUser();
     const viewed = this.viewedUser();
-    
+
     if (!current || !viewed) return;
 
     this.authService.addProfileComment(viewed.id, current.id, content).subscribe({
@@ -807,7 +789,7 @@ export class ProfileComponent implements OnDestroy {
         if (viewed.display_comments_type === 'profile') {
           this.comments.update(all => [newComment, ...all]);
         }
-        this.commentInput.set('');
+        this.commentInput = '';
         Swal.fire({
           toast: true,
           position: 'top-end',
@@ -1070,7 +1052,7 @@ export class ProfileComponent implements OnDestroy {
     const reader = new FileReader();
     reader.onload = () => {
       const base64Music = reader.result as string;
-      
+
       Swal.fire({
         title: 'Subiendo música...',
         text: 'Esto puede tardar unos segundos dependiendo del tamaño.',
@@ -1082,12 +1064,12 @@ export class ProfileComponent implements OnDestroy {
         next: (res) => {
           Swal.close();
           console.log('Música actualizada');
-          
+
           if (this.isOwnProfile() && res.user) {
             this.viewedUser.set({ ...this.viewedUser(), ...res.user });
           }
-          this.editForm.update(form => ({ ...form, profile_music_url: base64Music }));
-          
+          this.editForm.profile_music_url = base64Music;
+
           Swal.fire({
             toast: true,
             position: 'top-end',
@@ -1128,7 +1110,7 @@ export class ProfileComponent implements OnDestroy {
     this.isEditModalOpen.set(true);
     const user = this.isOwnProfile() ? this.viewedUser() : this.authService.currentUser();
     if (user) {
-      this.editForm.set({
+      this.editForm = {
         username: user.username || '',
         favorite_group_id: user.favorite_group_id || null,
         favorite_game_id: user.favorite_game_id || '',
@@ -1147,7 +1129,7 @@ export class ProfileComponent implements OnDestroy {
         profile_bg_color: user.profile_bg_color || '#00f2ff',
         profile_name_color: user.profile_name_color || '#ffffff',
         profile_music_url: user.profile_music_url || ''
-      });
+      };
 
       this.authService.getUserGames().subscribe({
         next: (res: any) => {
@@ -1183,7 +1165,7 @@ export class ProfileComponent implements OnDestroy {
   }
 
   saveProfile() {
-    const settings = this.editForm();
+    const settings = this.editForm;
     this.authService.updateProfileSettings(settings).subscribe({
       next: (res) => {
         Swal.fire({
@@ -1223,7 +1205,7 @@ export class ProfileComponent implements OnDestroy {
   }
 
   onProfileStatusChange(status: string) {
-    this.editForm.update(form => ({ ...form, estado: status }));
+    this.editForm.estado = status;
   }
 
   openAwardsModal() {
@@ -1231,7 +1213,7 @@ export class ProfileComponent implements OnDestroy {
     const currentUser = this.authService.currentUser();
     const viewedUser = this.viewedUser();
     const userId = currentUser?.id || viewedUser?.id;
-    
+
     if (!userId) {
       console.warn('No se pudo encontrar ID de usuario para abrir galería');
       return;

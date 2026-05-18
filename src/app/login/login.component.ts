@@ -14,7 +14,7 @@ declare var Swal: any;
 export class LoginComponent {
     passwordVisible = signal(false);
     credentials = {
-        username: '', // Recuerda: en tu API esto es el email
+        username: '',
         password: ''
     };
     constructor(private authService: AuthService, private router: Router) { }
@@ -49,17 +49,14 @@ export class LoginComponent {
                     timer: 1500,
                     showConfirmButton: false
                 }).then(() => {
-                    // Redirigimos al inicio; la Navbar ya mostrará el avatar
                     this.router.navigate(['/']);
                 });
             },
             error: (error) => {
                 console.error('Error completo del login:', error);
 
-                // Intentamos extraer un mensaje legible del error
                 let mensaje = error.error?.error || error.error?.message || error.message;
-                
-                // Si el error es un objeto pero no tiene las propiedades anteriores (e.g. Vercel error)
+
                 if (typeof mensaje === 'object') {
                     mensaje = JSON.stringify(mensaje);
                 }
@@ -96,7 +93,7 @@ export class LoginComponent {
             },
             error: (error) => {
                 console.error('Error del login con Google:', error);
-                
+
                 let mensaje = error.error?.error || error.error?.message || error.message || 'Error al iniciar sesión con Google';
                 if (typeof mensaje === 'object') {
                     mensaje = JSON.stringify(mensaje);

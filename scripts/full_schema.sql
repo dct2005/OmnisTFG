@@ -1,7 +1,3 @@
--- OmnisTFG - Full Schema for Supabase Migration
--- Consolidated and audited against all API endpoints
-
--- 1. Users & Auth
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
@@ -41,12 +37,11 @@ CREATE TABLE IF NOT EXISTS users (
     status_message TEXT
 );
 
--- 2. Social & Friendships
 CREATE TABLE IF NOT EXISTS friendships (
     id SERIAL PRIMARY KEY,
     sender_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     receiver_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'accepted', 'rejected'
+    status VARCHAR(50) DEFAULT 'pending', 
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(sender_id, receiver_id)
@@ -60,7 +55,6 @@ CREATE TABLE IF NOT EXISTS profile_comments (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3. Games & Library
 CREATE TABLE IF NOT EXISTS user_games (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -78,7 +72,6 @@ CREATE TABLE IF NOT EXISTS user_wishlist (
     UNIQUE(user_id, game_api_id)
 );
 
--- 4. Communities
 CREATE TABLE IF NOT EXISTS communities (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -111,7 +104,6 @@ CREATE TABLE IF NOT EXISTS community_messages (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 5. Messaging & Groups
 CREATE TABLE IF NOT EXISTS direct_messages (
     id SERIAL PRIMARY KEY,
     sender_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -150,14 +142,13 @@ CREATE TABLE IF NOT EXISTS typing_status (
     last_typed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 6. Gamification
 CREATE TABLE IF NOT EXISTS awards (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     icon_url VARCHAR(255),
     type VARCHAR(50) NOT NULL,
-    requirement TEXT NOT NULL, -- Can be integer or comma-separated string
+    requirement TEXT NOT NULL,
     rarity VARCHAR(50) DEFAULT 'common'
 );
 
@@ -208,7 +199,6 @@ CREATE TABLE IF NOT EXISTS user_quests (
     UNIQUE(user_id, quest_id)
 );
 
--- 7. System & Support
 CREATE TABLE IF NOT EXISTS notifications (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -242,17 +232,15 @@ CREATE TABLE IF NOT EXISTS transactions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 8. Activity & Logging
 CREATE TABLE IF NOT EXISTS activities (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     type VARCHAR(100) NOT NULL,
-    target_id TEXT, -- Changed to TEXT to support both game IDs and community IDs
+    target_id TEXT,
     target_name TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 9. Reviews
 CREATE TABLE IF NOT EXISTS game_reviews (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -262,7 +250,6 @@ CREATE TABLE IF NOT EXISTS game_reviews (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 10. Games Cache
 CREATE TABLE IF NOT EXISTS games (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,

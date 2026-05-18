@@ -1,6 +1,7 @@
 <nav class="navbar">
     <div class="logo-container">
-        <a [routerLink]="authService.currentUser()?.role === 'administrador' ? '/admin' : '/'" (click)="closeMobileMenu()">
+        <a [routerLink]="authService.currentUser()?.role === 'administrador' ? '/admin' : '/'"
+            (click)="closeMobileMenu()">
             <img src="images/logo.webp" alt="Omnis Logo" class="logo">
         </a>
     </div>
@@ -11,37 +12,42 @@
 
     <div class="nav-links" [class.mobile-open]="isMobileMenuOpen()">
         @if (authService.currentUser()?.role !== 'administrador') {
-        <a routerLink="/home" class="nav-link" [routerLinkActiveOptions]="{exact: true}"
-            routerLinkActive="active" (click)="closeMobileMenu()">Inicio</a>
+        <a routerLink="/home" class="nav-link" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active"
+            (click)="closeMobileMenu()">Inicio</a>
         <a routerLink="/catalogo" class="nav-link" routerLinkActive="active" (click)="closeMobileMenu()">Catálogo</a>
-        <a routerLink="/communities" class="nav-link" routerLinkActive="active" (click)="closeMobileMenu()">Comunidad</a>
+        <a routerLink="/communities" class="nav-link" routerLinkActive="active"
+            (click)="closeMobileMenu()">Comunidad</a>
         <a routerLink="/social" class="nav-link" routerLinkActive="active" (click)="closeMobileMenu()">Social</a>
         <a routerLink="/soporte" class="nav-link" routerLinkActive="active" (click)="closeMobileMenu()">Soporte</a>
         } @else {
-        <a routerLink="/admin" class="nav-link admin-link" routerLinkActive="active" (click)="closeMobileMenu()">Administración</a>
+        <a routerLink="/admin" class="nav-link admin-link" routerLinkActive="active"
+            (click)="closeMobileMenu()">Administración</a>
         }
 
         @if (isLoggedIn()) {
         <div class="mobile-profile-menu">
             <div class="mobile-divider"></div>
             <div class="mobile-profile-header">
-                <img [src]="authService.currentUser()?.profile_image || 'https://ui-avatars.com/api/?name=' + usernameValue() + '&background=0d1b2a&color=fff'" class="mobile-user-avatar">
+                <img [src]="authService.currentUser()?.profile_image || 'https://ui-avatars.com/api/?name=' + usernameValue() + '&background=0d1b2a&color=fff'"
+                    class="mobile-user-avatar">
                 <span class="mobile-user-name">{{ usernameValue() }}</span>
             </div>
-            
+
             @if (authService.currentUser()?.role !== 'administrador') {
-                <a [routerLink]="['/perfil', usernameValue()]" class="nav-link mobile-sub-link" (click)="closeMobileMenu()">Ver mi perfil</a>
-                <a routerLink="/account" class="nav-link mobile-sub-link" (click)="closeMobileMenu()">Cuenta</a>
-                <a [routerLink]="['/catalogo']" [queryParams]="{tab: 'mine'}" class="nav-link mobile-sub-link" (click)="closeMobileMenu()">Mis Juegos</a>
+            <a [routerLink]="['/perfil', usernameValue()]" class="nav-link mobile-sub-link"
+                (click)="closeMobileMenu()">Ver mi perfil</a>
+            <a routerLink="/account" class="nav-link mobile-sub-link" (click)="closeMobileMenu()">Cuenta</a>
+            <a [routerLink]="['/catalogo']" [queryParams]="{tab: 'mine'}" class="nav-link mobile-sub-link"
+                (click)="closeMobileMenu()">Mis Juegos</a>
             }
-            <a class="nav-link mobile-sub-link logout-link" (click)="logout($event); closeMobileMenu()">Cerrar Sesión</a>
+            <a class="nav-link mobile-sub-link logout-link" (click)="logout($event); closeMobileMenu()">Cerrar
+                Sesión</a>
         </div>
         }
     </div>
 
     <div class="auth-buttons">
         @if (isLoggedIn()) {
-        <!-- Sección Peppix -->
         <div class="peppix-container" title="Tus Peppix" routerLink="/compras">
             <img src="images/peppix.webp" alt="Peppix Coin" class="peppix-icon">
             <span class="peppix-amount">{{ authService.currentUser()?.peppix || 0 }}</span>
@@ -51,7 +57,6 @@
             <span class="material-icons-round">chat_bubble</span>
         </div>
 
-        <!-- Notificaciones -->
         <div class="notifications-container" [class.active]="isNotificationsOpen()">
             <div class="notifications-icon" (click)="toggleNotifications()" title="Notificaciones">
                 <span class="material-icons-round">notifications</span>
@@ -77,9 +82,9 @@
                         (click)="handleNotificationClick(note)">
                         <div class="note-icon">
                             <span class="material-icons-round">
-                                {{ 
-                                    note.type === 'friend_request' ? 'person_add' : 
-                                    note.type === 'message' ? 'chat' : 'comment' 
+                                {{
+                                note.type === 'friend_request' ? 'person_add' :
+                                note.type === 'message' ? 'chat' : 'comment'
                                 }}
                             </span>
                         </div>
@@ -109,7 +114,6 @@
                 </svg>
             </div>
 
-            <!-- Menú Desplegable -->
             @if (isDropdownOpen()) {
             <div class="status-dropdown" (click)="$event.stopPropagation()">
                 @if (authService.currentUser()?.role !== 'administrador') {

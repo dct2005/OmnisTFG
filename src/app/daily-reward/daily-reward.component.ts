@@ -18,11 +18,10 @@ export class DailyRewardComponent implements OnInit {
   prize: any = null;
   rotation = 0;
 
-  // Los premios deben coincidir visualmente con los del backend (aprox)
   prizes = [
     { label: '50 Peppix', color: '#1a1a2e' },
     { label: '100 Peppix', color: '#16213e' },
-    { label: 'Nada', color: '#334155' }, // Color gris para 'Nada'
+    { label: 'Nada', color: '#334155' },
     { label: '250 Peppix', color: '#0f3460' },
     { label: '500 Peppix', color: '#1a1a2e' },
     { label: '1000 Peppix', color: '#16213e' },
@@ -30,33 +29,28 @@ export class DailyRewardComponent implements OnInit {
     { label: '50 Peppix', color: '#0f3460' }
   ];
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   spin() {
     if (this.isSpinning || this.hasSpun) return;
 
     this.isSpinning = true;
-    
+
     this.authService.claimDailyReward().subscribe({
       next: (res: any) => {
         this.prize = res.prize;
-        
-        // Recalibración: 
-        // 1. Cada segmento tiene 45 grados.
-        // 2. El punto medio del segmento 'i' es i * 45 + 22.5.
-        // 3. Para que ese punto medio quede a las 12 (0 grados), rotamos 360 - (i * 45 + 22.5).
+
         const prizeIndex = this.getPrizeIndex(this.prize);
-        const extraDegrees = 3600; // 10 vueltas completas
+        const extraDegrees = 3600;
         const midpoint = (prizeIndex * 45) + 22.5;
-        const jitter = (Math.random() * 30) - 15; // +/- 15 grados de margen desde el centro
-        
+        const jitter = (Math.random() * 30) - 15;
+
         this.rotation = extraDegrees + (360 - midpoint) + jitter;
-        
+
         setTimeout(() => {
           this.isSpinning = false;
           this.hasSpun = true;
 
-          // Actualice el saldo del usuario localmente después de que finalice el giro para generar suspenso
           if (this.prize && this.prize.type === 'peppix') {
             const user = this.authService.currentUser();
             if (user) {
@@ -67,7 +61,7 @@ export class DailyRewardComponent implements OnInit {
               });
             }
           }
-        }, 5000); 
+        }, 5000);
       },
       error: (err: any) => {
         console.error('Error claiming reward:', err);
@@ -88,7 +82,7 @@ export class DailyRewardComponent implements OnInit {
     if (value === 250) return 3;
     if (prize.type === 'nada' || label.includes('nada')) return 2;
     if (value === 100) return 1;
-    return 0; // 50 Peppix
+    return 0;
   }
 
   close() {

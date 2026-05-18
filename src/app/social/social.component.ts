@@ -19,12 +19,11 @@ declare var Swal: any;
 export class SocialComponent implements OnInit, OnDestroy {
   private socialService = inject(SocialService);
   private authService = inject(AuthService);
-  
+
   rankings = signal<SocialRankings | null>(null);
   loading = signal<boolean>(true);
   error = signal<boolean>(false);
 
-  // Búsqueda de usuarios
   searchQuery = signal<string>('');
   searchResults = signal<any[]>([]);
   searching = signal<boolean>(false);
@@ -121,12 +120,12 @@ export class SocialComponent implements OnInit, OnDestroy {
     }
 
     let html = `<div style="max-height: 500px; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 10px;">`;
-    
+
     users.forEach((u, i) => {
       const avatar = u.profile_image || `https://ui-avatars.com/api/?name=${u.username}&background=0d1b2a&color=fff`;
       const isTop3 = i < 3;
       const medalIcon = i === 0 ? 'gold_medal' : (i === 1 ? 'silver_medal' : (i === 2 ? 'bronze_medal' : ''));
-      
+
       html += `
         <div class="swal-rank-item" style="display: flex; align-items: center; gap: 15px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer;" onclick="window.location.href='/perfil/${u.username}'">
           <div style="width: 30px; font-family: 'Audiowide', cursive; color: ${isTop3 ? color : 'rgba(255,255,255,0.5)'}; font-size: 1.2rem;">${i + 1}</div>
@@ -176,7 +175,6 @@ export class SocialComponent implements OnInit, OnDestroy {
     return '';
   }
 
-  // Respaldo para imágenes de perfil faltantes
   getProfileImage(imageUrl: string | null): string {
     return imageUrl || 'assets/default-avatar.png';
   }

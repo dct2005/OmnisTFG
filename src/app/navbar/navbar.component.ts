@@ -1,7 +1,7 @@
 import { Component, computed, signal, OnInit, OnDestroy, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../services/auth';
-import { CommonModule } from '@angular/common'; // IMPORTANTE para el ngClass
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
@@ -18,22 +18,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private router = inject(Router);
 
   ngOnInit() {
-    // Hace un "polling" (consulta periódica) cada 80 segundos a la base de datos (ligeramente aumentado para salvar cuota)
     this.statusInterval = setInterval(() => {
       if (this.isLoggedIn()) {
         this.authService.getLightweightUpdate().subscribe({
           next: (update) => {
             const user = this.authService.currentUser();
             if (user && update) {
-              // Actualizamos solo lo necesario en el signal global
               this.authService.currentUser.set({
                 ...user,
                 estado: update.estado,
                 last_activity: update.last_activity,
                 xp: update.xp,
                 peppix: update.peppix,
-                unreadCount: update.unreadNotificationsCount, // Guardamos el conteo para la UI
-                // Mockeamos la estructura de notificaciones si es necesario o manejamos el conteo directo
+                unreadCount: update.unreadNotificationsCount,
                 unreadMessagesCount: update.unreadMessagesCount
               });
             }
@@ -79,8 +76,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   toggleNotifications() {
     this.isNotificationsOpen.update(v => !v);
     this.isDropdownOpen.set(false);
-    
-    // Si abrimos y hay notificaciones, marcamos como leídas después de un pequeño delay
+
     if (this.isNotificationsOpen() && this.unreadCount() > 0) {
       setTimeout(() => {
         this.authService.markNotificationsAsRead().subscribe();
@@ -96,13 +92,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   handleNotificationClick(note: any) {
     this.isNotificationsOpen.set(false);
-    
-    // Marcar como leída (ya lo hace el toggle si estaba abierta, pero aseguramos)
+
     this.authService.markNotificationsAsRead().subscribe();
 
     if (!note.link) return;
-
-    // Navegar manualmente para manejar queryParams correctamente
     if (note.link.includes('?')) {
       const [path, query] = note.link.split('?');
       const params: any = {};

@@ -25,7 +25,7 @@ export class DirectMessagesComponent implements OnInit {
   groups = signal<any[]>([]);
   allFriends = signal<any[]>([]);
   isGroup = signal<boolean>(false);
-  
+
   friends = computed(() => {
     const convIds = new Set(this.conversations().map(c => c.id));
     return this.allFriends().filter(f => !convIds.has(f.id));
@@ -53,7 +53,6 @@ export class DirectMessagesComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Verifique los parámetros de consulta para iniciar un chat específico
     this.route.queryParams.subscribe(params => {
       const targetId = params['userId'];
       const groupId = params['groupId'];
@@ -66,7 +65,6 @@ export class DirectMessagesComponent implements OnInit {
       }
     });
 
-    // Iniciar una encuesta global para nuevas conversaciones/puntos no leídos
     this.startGlobalPolling();
   }
 
@@ -74,7 +72,7 @@ export class DirectMessagesComponent implements OnInit {
     if (this.pollingInterval) clearInterval(this.pollingInterval);
     if (this.typingInterval) clearInterval(this.typingInterval);
     if (this.typingTimeout) clearTimeout(this.typingTimeout);
-    
+
     // Asegúrese de que dejemos de escribir el estado si nos vamos
     const user = this.currentUser();
     const other = this.activeChat();
@@ -84,16 +82,14 @@ export class DirectMessagesComponent implements OnInit {
   }
 
   startGlobalPolling() {
-    // 1. Polling más lento (cada 20s) para conversaciones, grupos y lista de mensajes
     this.pollingInterval = setInterval(() => {
       this.loadConversations();
       this.loadGroups();
       if (this.activeChat()) {
-        this.loadMessages(false); // Carga silenciosa
+        this.loadMessages(false);
       }
     }, 20000);
 
-    // 2. Polling rápido (cada 10s) solo para el estado de "escribiendo"
     this.typingInterval = setInterval(() => {
       if (this.activeChat() && !this.isGroup()) {
         this.checkTypingStatus();
@@ -116,10 +112,8 @@ export class DirectMessagesComponent implements OnInit {
     const other = this.activeChat();
     if (!user || !other) return;
 
-    // Enviar estado de escritura
     this.chatService.setTypingStatus(user.id, other.id, true).subscribe();
 
-    // Restablecer el tiempo de espera para dejar de escribir el estado después de 3 segundos de inactividad
     if (this.typingTimeout) clearTimeout(this.typingTimeout);
     this.typingTimeout = setTimeout(() => {
       this.chatService.setTypingStatus(user.id, other.id, false).subscribe();
@@ -127,13 +121,11 @@ export class DirectMessagesComponent implements OnInit {
   }
 
   startChatWith(userId: number) {
-    // Espere a que las conversaciones se carguen primero si es necesario
     const checkAndSelect = () => {
       const existing = this.conversations().find(c => c.id === userId);
       if (existing) {
         this.selectChat(existing);
       } else {
-        // Obtener información del usuario para crear un elemento de conversación "temporal"
         this.authService.getUserById(userId).subscribe({
           next: (user) => {
             const tempConv = {
@@ -153,7 +145,6 @@ export class DirectMessagesComponent implements OnInit {
     if (this.conversations().length > 0) {
       checkAndSelect();
     } else {
-      // Pequeño tiempo de espera para permitir la carga inicial o esperar las conversaciones de carga
       setTimeout(checkAndSelect, 500);
     }
   }
@@ -205,7 +196,6 @@ export class DirectMessagesComponent implements OnInit {
     this.isGroup.set(true);
     this.activeChat.set(group);
     this.loadMessages();
-    // La lógica para marcar el grupo como leído podría agregarse más adelante
   }
 
   loadMessages(showLoading: boolean = true) {
@@ -215,13 +205,12 @@ export class DirectMessagesComponent implements OnInit {
 
     if (showLoading && this.messages().length === 0) this.loading.set(true);
 
-    const obs = this.isGroup() 
+    const obs = this.isGroup()
       ? this.chatService.getGroupChat(other.id)
       : this.chatService.getChatHistory(user.id, other.id);
 
     obs.subscribe({
       next: (data) => {
-        // Actualizar y desplazarse solo si llegaron nuevos mensajes
         if (data.length !== this.messages().length) {
           this.messages.set(data);
           this.scrollToBottom();
@@ -264,7 +253,7 @@ export class DirectMessagesComponent implements OnInit {
         this.newMessage.set('');
         this.selectedImage.set(null);
         if (!this.isGroup()) {
-          this.loadConversations(); 
+          this.loadConversations();
         } else {
           this.loadGroups();
         }
@@ -322,7 +311,7 @@ export class DirectMessagesComponent implements OnInit {
         const name = (document.getElementById('group-name') as HTMLInputElement).value;
         const checkboxes = document.querySelectorAll('.swal2-checkbox-group:checked') as NodeListOf<HTMLInputElement>;
         const memberIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
-        
+
         if (!name) {
           (window as any).Swal.showValidationMessage('¡Ponle un nombre al grupo!');
           return false;
@@ -331,7 +320,7 @@ export class DirectMessagesComponent implements OnInit {
           (window as any).Swal.showValidationMessage('Debes seleccionar al menos un amigo.');
           return false;
         }
-        
+
         return { name, memberIds };
       }
     });
@@ -339,7 +328,7 @@ export class DirectMessagesComponent implements OnInit {
     if (formValues) {
       const user = this.currentUser();
       if (!user) return;
-      
+
       this.chatService.createGroup(formValues.name, user.id, formValues.memberIds).subscribe({
         next: (group) => {
           this.loadGroups();
@@ -363,7 +352,7 @@ export class DirectMessagesComponent implements OnInit {
     setTimeout(() => {
       try {
         this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
-      } catch(err) { }
+      } catch (err) { }
     }, 100);
   }
 }

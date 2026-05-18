@@ -11,7 +11,6 @@
             <p>Total: <span class="price">{{ precio }}€</span></p>
         </div>
 
-        <!-- PASO 1: INFORMACIÓN DE FACTURACIÓN -->
         <div class="payment-methods">
             <div class="method" [class.active]="metodoSeleccionado === 'tarjeta'"
                 (click)="seleccionarMetodo('tarjeta')">
@@ -28,7 +27,6 @@
             </div>
         </div>
 
-        <!-- FORMULARIO DE TARJETA CON FACTURACIÓN INTEGRADA -->
         <form class="card-form" *ngIf="metodoSeleccionado === 'tarjeta'">
             <div class="billing-section-title">Información de Facturación</div>
             <div class="form-row">

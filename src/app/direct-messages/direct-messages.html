@@ -1,5 +1,4 @@
 <div class="dm-container">
-    <!-- Sidebar: Lista de Conversaciones -->
     <aside class="conversations-sidebar">
         <div class="sidebar-header">
             <h2>Mensajes Directos</h2>
@@ -9,24 +8,23 @@
                 <h3 class="section-title">MENSAJES</h3>
                 <div class="conversations-list">
                     @for (conv of conversations(); track conv.id) {
-                        <div class="conversation-item" 
-                             [class.active]="!isGroup() && activeChat()?.id === conv.id"
-                             (click)="selectChat(conv)">
-                            <div class="avatar-wrapper">
-                                <img [src]="conv.profile_image || 'assets/default-avatar.png'" [alt]="conv.username">
-                                @if (!conv.is_read && conv.sender_id !== currentUser()?.id) {
-                                    <span class="unread-dot"></span>
-                                }
-                            </div>
-                            <div class="conv-info">
-                                <span class="conv-name">{{ conv.username }}</span>
-                                <span class="conv-last-msg">{{ conv.last_message }}</span>
-                            </div>
+                    <div class="conversation-item" [class.active]="!isGroup() && activeChat()?.id === conv.id"
+                        (click)="selectChat(conv)">
+                        <div class="avatar-wrapper">
+                            <img [src]="conv.profile_image || 'assets/default-avatar.png'" [alt]="conv.username">
+                            @if (!conv.is_read && conv.sender_id !== currentUser()?.id) {
+                            <span class="unread-dot"></span>
+                            }
                         </div>
+                        <div class="conv-info">
+                            <span class="conv-name">{{ conv.username }}</span>
+                            <span class="conv-last-msg">{{ conv.last_message }}</span>
+                        </div>
+                    </div>
                     } @empty {
-                        <div class="no-conversations">
-                            <p>No hay mensajes recientes.</p>
-                        </div>
+                    <div class="no-conversations">
+                        <p>No hay mensajes recientes.</p>
+                    </div>
                     }
                 </div>
             </div>
@@ -35,7 +33,7 @@
                 <div class="section-header-flex">
                     <h3 class="section-title">GRUPOS</h3>
                 </div>
-                
+
                 <button class="btn-create-group-cta" (click)="openCreateGroupModal()">
                     <span class="material-icons-round">add_circle</span>
                     <span>Nuevo Grupo Privado</span>
@@ -43,21 +41,20 @@
 
                 <div class="conversations-list">
                     @for (group of groups(); track group.id) {
-                        <div class="conversation-item group-item" 
-                             [class.active]="isGroup() && activeChat()?.id === group.id"
-                             (click)="selectGroup(group)">
-                            <div class="group-icon-wrapper">
-                                <span class="material-icons-round">groups</span>
-                            </div>
-                            <div class="conv-info">
-                                <span class="conv-name">{{ group.name }}</span>
-                                <span class="conv-last-msg">{{ group.member_count }} miembros</span>
-                            </div>
+                    <div class="conversation-item group-item"
+                        [class.active]="isGroup() && activeChat()?.id === group.id" (click)="selectGroup(group)">
+                        <div class="group-icon-wrapper">
+                            <span class="material-icons-round">groups</span>
                         </div>
+                        <div class="conv-info">
+                            <span class="conv-name">{{ group.name }}</span>
+                            <span class="conv-last-msg">{{ group.member_count }} miembros</span>
+                        </div>
+                    </div>
                     } @empty {
-                        <div class="no-conversations">
-                            <p>No estás en ningún grupo.</p>
-                        </div>
+                    <div class="no-conversations">
+                        <p>No estás en ningún grupo.</p>
+                    </div>
                     }
                 </div>
             </div>
@@ -66,22 +63,22 @@
                 <h3 class="section-title">AMIGOS</h3>
                 <div class="friends-list">
                     @for (friend of friends(); track friend.id) {
-                        <div class="friend-item" 
-                             [class.active]="activeChat()?.id === friend.id"
-                             (click)="startChatWith(friend.id)">
-                            <div class="avatar-wrapper small">
-                                <img [src]="friend.profile_image || 'assets/default-avatar.png'" [alt]="friend.username">
-                                <span class="status-dot" [class.online]="friend.estado === 'en-linea'"></span>
-                            </div>
-                            <div class="friend-info">
-                                <span class="friend-name">{{ friend.username }}</span>
-                                <span class="friend-activity" *ngIf="friend.current_activity">{{ friend.current_activity }}</span>
-                            </div>
+                    <div class="friend-item" [class.active]="activeChat()?.id === friend.id"
+                        (click)="startChatWith(friend.id)">
+                        <div class="avatar-wrapper small">
+                            <img [src]="friend.profile_image || 'assets/default-avatar.png'" [alt]="friend.username">
+                            <span class="status-dot" [class.online]="friend.estado === 'en-linea'"></span>
                         </div>
+                        <div class="friend-info">
+                            <span class="friend-name">{{ friend.username }}</span>
+                            <span class="friend-activity" *ngIf="friend.current_activity">{{ friend.current_activity
+                                }}</span>
+                        </div>
+                    </div>
                     } @empty {
-                        <div class="no-conversations">
-                            <p>No tienes amigos agregados.</p>
-                        </div>
+                    <div class="no-conversations">
+                        <p>No tienes amigos agregados.</p>
+                    </div>
                     }
                 </div>
             </div>
@@ -90,101 +87,98 @@
 
     <main class="chat-area">
         @if (activeChat()) {
-            <header class="chat-header">
-                <div class="active-user-info">
-                    @if (isGroup()) {
-                        <div class="group-header-icon">
-                            <span class="material-icons-round">groups</span>
-                        </div>
-                        <div class="active-user-details">
-                            <span class="active-username">{{ activeChat().name }}</span>
-                            <span class="active-status">{{ activeChat().member_count }} miembros en la charla</span>
-                        </div>
-                    } @else {
-                        <img [src]="activeChat().profile_image || 'assets/default-avatar.png'" alt="">
-                        <div class="active-user-details">
-                            <span class="active-username">{{ activeChat().username }}</span>
-                            <span class="active-status" *ngIf="activeChat().current_activity">{{ activeChat().current_activity }}</span>
-                        </div>
+        <header class="chat-header">
+            <div class="active-user-info">
+                @if (isGroup()) {
+                <div class="group-header-icon">
+                    <span class="material-icons-round">groups</span>
+                </div>
+                <div class="active-user-details">
+                    <span class="active-username">{{ activeChat().name }}</span>
+                    <span class="active-status">{{ activeChat().member_count }} miembros en la charla</span>
+                </div>
+                } @else {
+                <img [src]="activeChat().profile_image || 'assets/default-avatar.png'" alt="">
+                <div class="active-user-details">
+                    <span class="active-username">{{ activeChat().username }}</span>
+                    <span class="active-status" *ngIf="activeChat().current_activity">{{ activeChat().current_activity
+                        }}</span>
+                </div>
+                }
+            </div>
+        </header>
+
+        <div class="messages-list" #scrollMe>
+            @for (msg of messages(); track msg.id) {
+            <div class="message-wrapper" [class.own-message]="msg.sender_id === currentUser()?.id">
+                <!-- Avatar en mensajes de grupo -->
+                @if (isGroup() && msg.sender_id !== currentUser()?.id) {
+                <img [src]="msg.sender_image || 'assets/default-avatar.png'" class="msg-sender-avatar"
+                    [title]="msg.sender_name" [routerLink]="['/perfil', msg.sender_name]">
+                }
+
+                <div class="message-content">
+                    @if (isGroup() && msg.sender_id !== currentUser()?.id) {
+                    <span class="msg-sender-name">{{ msg.sender_name }}</span>
                     }
-                </div>
-            </header>
-
-            <div class="messages-list" #scrollMe>
-                @for (msg of messages(); track msg.id) {
-                    <div class="message-wrapper" [class.own-message]="msg.sender_id === currentUser()?.id">
-                        <!-- Avatar en mensajes de grupo -->
-                        @if (isGroup() && msg.sender_id !== currentUser()?.id) {
-                            <img [src]="msg.sender_image || 'assets/default-avatar.png'" class="msg-sender-avatar" 
-                                 [title]="msg.sender_name" [routerLink]="['/perfil', msg.sender_name]">
-                        }
-                        
-                        <div class="message-content">
-                            @if (isGroup() && msg.sender_id !== currentUser()?.id) {
-                                <span class="msg-sender-name">{{ msg.sender_name }}</span>
-                            }
-                            @if (msg.image_url) {
-                                <div class="message-image">
-                                    <img [src]="msg.image_url" alt="Imagen adjunta" (click)="selectedImage.set(msg.image_url)">
-                                </div>
-                            }
-                            @if (msg.content) {
-                                <p>{{ msg.content }}</p>
-                            }
-                            <span class="message-time">{{ msg.created_at | date:'shortTime' }}</span>
-                        </div>
+                    @if (msg.image_url) {
+                    <div class="message-image">
+                        <img [src]="msg.image_url" alt="Imagen adjunta" (click)="selectedImage.set(msg.image_url)">
                     </div>
-                }
-            </div>
-
-            <div class="typing-indicator" *ngIf="isOtherTyping()">
-                <div class="typing-content">
-                    <div class="typing-dots">
-                        <span></span><span></span><span></span>
-                    </div>
-                    <p>{{ activeChat().username }} está escribiendo...</p>
+                    }
+                    @if (msg.content) {
+                    <p>{{ msg.content }}</p>
+                    }
+                    <span class="message-time">{{ msg.created_at | date:'shortTime' }}</span>
                 </div>
             </div>
+            }
+        </div>
 
-            <footer class="chat-input-area">
-                @if (selectedImage()) {
-                    <div class="image-preview-bar">
-                        <div class="preview-thumb">
-                            <img [src]="selectedImage()" alt="Preview">
-                            <button class="remove-preview" (click)="selectedImage.set(null)">
-                                <span class="material-icons-round">close</span>
-                            </button>
-                        </div>
-                    </div>
-                }
-                <form (submit)="sendMessage(); $event.preventDefault()">
-                    <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden>
-                    <button type="button" class="attach-btn" (click)="fileInput.click()">
-                        <span class="material-icons-round">add_circle</span>
+        <div class="typing-indicator" *ngIf="isOtherTyping()">
+            <div class="typing-content">
+                <div class="typing-dots">
+                    <span></span><span></span><span></span>
+                </div>
+                <p>{{ activeChat().username }} está escribiendo...</p>
+            </div>
+        </div>
+
+        <footer class="chat-input-area">
+            @if (selectedImage()) {
+            <div class="image-preview-bar">
+                <div class="preview-thumb">
+                    <img [src]="selectedImage()" alt="Preview">
+                    <button class="remove-preview" (click)="selectedImage.set(null)">
+                        <span class="material-icons-round">close</span>
                     </button>
-                    <input type="text" 
-                           [(ngModel)]="newMessage" 
-                           name="messageInput"
-                           (input)="!isGroup() && onTyping($event)"
-                           placeholder="Enviar mensaje..."
-                           autocomplete="off">
-                    <button type="submit" [disabled]="!newMessage().trim() && !selectedImage()">
-                        <span class="material-icons-round">send</span>
-                    </button>
-                </form>
-            </footer>
+                </div>
+            </div>
+            }
+            <form (submit)="sendMessage(); $event.preventDefault()">
+                <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden>
+                <button type="button" class="attach-btn" (click)="fileInput.click()">
+                    <span class="material-icons-round">add_circle</span>
+                </button>
+                <input type="text" [(ngModel)]="newMessage" name="messageInput" (input)="!isGroup() && onTyping($event)"
+                    placeholder="Enviar mensaje..." autocomplete="off">
+                <button type="submit" [disabled]="!newMessage().trim() && !selectedImage()">
+                    <span class="material-icons-round">send</span>
+                </button>
+            </form>
+        </footer>
         } @else {
-            <div class="empty-state">
-                <span class="material-icons-round large-icon">forum</span>
-                <h3>Tus Mensajes</h3>
-                <p>Selecciona una conversación para empezar a chatear.</p>
-                <div class="empty-state-actions">
-                    <button class="btn-create-group-cta empty-cta" (click)="openCreateGroupModal()">
-                        <span class="material-icons-round">groups</span>
-                        <span>Crear mi primer grupo</span>
-                    </button>
-                </div>
+        <div class="empty-state">
+            <span class="material-icons-round large-icon">forum</span>
+            <h3>Tus Mensajes</h3>
+            <p>Selecciona una conversación para empezar a chatear.</p>
+            <div class="empty-state-actions">
+                <button class="btn-create-group-cta empty-cta" (click)="openCreateGroupModal()">
+                    <span class="material-icons-round">groups</span>
+                    <span>Crear mi primer grupo</span>
+                </button>
             </div>
+        </div>
         }
     </main>
 </div>

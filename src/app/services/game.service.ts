@@ -39,13 +39,7 @@ export class GameService {
       params.id = ids.map(id => id.toString());
     }
     if (genres && genres.length > 0) {
-      genres.forEach(g => {
-        // Manejar parámetros de matriz para HttpParams u objeto simple
-        // Angular HttpClient maneja matrices en parámetros como 'clave': ['val1', 'val2'] si usa HttpParams,
-        // pero para un objeto simple puede necesitar un manejo distinto. Usemos un objeto simple con lógica de claves repetidas si es necesario,
-        // o simplemente pase como espera que la serialización de HttpClient funcione para la matriz.
-        // En realidad, es más sencillo pasarlo tal como está.
-      });
+      genres.forEach(g => { });
       params.genres = genres;
     }
     if (themes && themes.length > 0) {
@@ -58,7 +52,6 @@ export class GameService {
           ...game.cover,
           url: game.cover.url.replace('t_thumb', 't_cover_big')
         } : undefined,
-        // extraer desarrollador
         developer: (game as any).involved_companies?.find((c: any) => c.developer)?.company?.name,
         genres: (game as any).genres?.map((g: any) => g.name) || [],
         themes: (game as any).themes?.map((t: any) => t.name) || [],

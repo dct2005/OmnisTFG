@@ -1,17 +1,13 @@
-/* Contenedor principal para centrar absolutamente todo */
 .center-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* Ajusta este 80px si tu barra de navegación superior es más grande o más pequeña */
     min-height: calc(100vh - 80px);
     padding: 2rem;
 }
 
-/* Efecto Cristal (Glassmorfismo) */
 .glass-panel {
     background: rgba(16, 18, 27, 0.6);
-    /* Fondo oscuro semitransparente */
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -19,12 +15,10 @@
     padding: 2.5rem;
     width: 100%;
     max-width: 550px;
-    /* Ancho máximo del formulario */
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
     color: #ffffff;
 }
 
-/* Textos de la cabecera */
 .form-title {
     margin: 0;
     font-size: 2rem;
@@ -40,7 +34,6 @@
     font-size: 0.95rem;
 }
 
-/* Estructura del formulario */
 .form-grid {
     display: flex;
     flex-direction: column;
@@ -57,10 +50,8 @@
 
 .required {
     color: #f87171;
-    /* Un rojo/rosa suave para los asteriscos */
 }
 
-/* Entradas, áreas de texto y selecciones */
 .form-input {
     width: 100%;
     background: rgba(0, 0, 0, 0.25);
@@ -73,7 +64,6 @@
     outline: none;
     transition: all 0.3s ease;
     box-sizing: border-box;
-    /* Evita que se salgan de la caja */
 }
 
 .form-input::placeholder {
@@ -82,18 +72,15 @@
 
 .form-input:focus {
     border-color: #6366f1;
-    /* Color primario (cámbialo por tu --primary si quieres) */
     background: rgba(0, 0, 0, 0.4);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
-/* Opciones del select para que se vean bien en modo oscuro */
 select option {
     background-color: #1e1e2f;
     color: white;
 }
 
-/* Caja para subir la imagen */
 .file-upload-box {
     border: 2px dashed rgba(255, 255, 255, 0.2);
     background: rgba(0, 0, 0, 0.15);
@@ -128,7 +115,6 @@ select option {
     font-size: 0.9rem;
 }
 
-/* Imagen de previsualización */
 .preview-img {
     position: absolute;
     top: 0;
@@ -156,7 +142,6 @@ select option {
     opacity: 1;
 }
 
-/* Botón de enviar */
 .submit-container {
     text-align: center;
     margin-top: 1rem;
@@ -173,7 +158,6 @@ select option {
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     width: 100%;
-    /* Botón ancho para darle protagonismo */
 }
 
 .btn-create:hover {

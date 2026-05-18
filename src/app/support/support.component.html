@@ -7,7 +7,6 @@
     <p class="subtitle" *ngIf="currentView() === 'main'">¿En qué podemos ayudarte?</p>
   </div>
 
-  <!-- Menú de reproducción -->
   <div class="support-options" *ngIf="currentView() === 'main'">
     <button class="support-card" (click)="setView('games')">
       <span>Juegos, software, etc.</span>
@@ -25,7 +24,7 @@
       <span>Comunidad de Omnis</span>
       <span class="icon-arrow">&#9654;</span>
     </button>
-    
+
     <div class="request-shortcut">
       <button class="btn-view-tickets" (click)="setView('tickets')">
         <span>Ver mis solicitudes de ayuda al soporte de omnis</span>
@@ -34,13 +33,12 @@
     </div>
   </div>
 
-  <!-- Selección de juegos -->
   <div class="support-content" *ngIf="currentView() === 'games'">
     <div class="section-title">
       <h2>Selecciona un producto</h2>
       <p>Mostrando los juegos de tu biblioteca de Omnis.</p>
     </div>
-    
+
     <div class="game-selector-grid" *ngIf="!loadingGames(); else loading">
       <div class="game-list" *ngIf="ownedGames().length > 0; else noGames">
         <div *ngFor="let game of ownedGames()" class="game-select-item" (click)="selectGame(game)">
@@ -67,7 +65,6 @@
     </ng-template>
   </div>
 
-  <!-- Formulario de detalles del juego -->
   <div class="support-content" *ngIf="currentView() === 'game-details'">
     <div class="form-header-premium">
       <img [src]="selectedGame()?.cover?.url" class="form-item-img" *ngIf="selectedGame()?.cover">
@@ -76,28 +73,31 @@
         <h2>Problema con {{ selectedGame()?.name }}</h2>
       </div>
     </div>
-    
+
     <div class="form-group">
       <label>Asunto</label>
-      <input type="text" [(ngModel)]="ticketSubject" placeholder="Resumen corto del problema (ej. No inicia, error gráfico...)">
+      <input type="text" [(ngModel)]="ticketSubject"
+        placeholder="Resumen corto del problema (ej. No inicia, error gráfico...)">
     </div>
 
     <div class="form-group">
       <label>Describe tu problema</label>
-      <textarea [(ngModel)]="ticketDetails" placeholder="Explica detalladamente qué sucede con el juego o software..."></textarea>
+      <textarea [(ngModel)]="ticketDetails"
+        placeholder="Explica detalladamente qué sucede con el juego o software..."></textarea>
       <span class="input-hint">Por favor, sé lo más específico posible para ayudarnos a resolverlo rápido.</span>
     </div>
-    
+
     <div class="form-actions">
-      <button class="btn-submit-premium" (click)="submitTicket('games')" [disabled]="!ticketSubject.trim() || !ticketDetails.trim() || submitting()">
+      <button class="btn-submit-premium" (click)="submitTicket('games')"
+        [disabled]="!ticketSubject.trim() || !ticketDetails.trim() || submitting()">
         <span *ngIf="!submitting()">Enviar Solicitud</span>
         <span *ngIf="submitting()" class="loader-small"></span>
       </button>
     </div>
   </div>
 
-  <!-- Plantilla de formulario profesional genérico -->
-  <div class="support-content" *ngIf="['purchases', 'store', 'community-question', 'community-report'].includes(currentView())">
+  <div class="support-content"
+    *ngIf="['purchases', 'store', 'community-question', 'community-report'].includes(currentView())">
     <div class="form-header-premium">
       <div class="form-icon-large">
         <span *ngIf="currentView() === 'purchases'">💳</span>
@@ -135,13 +135,13 @@
     </div>
 
     <div class="form-actions">
-      <button class="btn-submit-premium" (click)="submitTicket(currentView().replace('-', '_'))" [disabled]="!ticketSubject.trim() || !ticketDetails.trim() || submitting()">
+      <button class="btn-submit-premium" (click)="submitTicket(currentView().replace('-', '_'))"
+        [disabled]="!ticketSubject.trim() || !ticketDetails.trim() || submitting()">
         {{ submitting() ? 'Procesando...' : 'Enviar Solicitud' }}
       </button>
     </div>
   </div>
 
-  <!-- Opciones comunitarias -->
   <div class="support-options" *ngIf="currentView() === 'community'">
     <div class="section-title">
       <h2>Comunidad de Omnis</h2>
@@ -157,7 +157,6 @@
     </button>
   </div>
 
-  <!-- Lista de entradas -->
   <div class="support-content" *ngIf="currentView() === 'tickets'">
     <div class="section-title">
       <h2>Mis solicitudes de ayuda</h2>
@@ -185,9 +184,8 @@
           </div>
           <div class="ticket-foot">
             <span class="ticket-date">{{ ticket.created_at | date:'d MMM, yyyy' }}</span>
-            <span class="ticket-status-pill" 
-                  [class.status-open]="ticket.status === 'open'" 
-                  [class.status-rejected]="ticket.status === 'rejected'">
+            <span class="ticket-status-pill" [class.status-open]="ticket.status === 'open'"
+              [class.status-rejected]="ticket.status === 'rejected'">
               {{ ticket.status === 'open' ? 'En proceso' : (ticket.status === 'rejected' ? 'Rechazado' : 'Cerrado') }}
             </span>
           </div>

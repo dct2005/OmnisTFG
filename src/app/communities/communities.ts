@@ -21,8 +21,7 @@ export class CommunitiesComponent implements OnInit {
   searchTerm = signal<string>('');
   selectedCategories = signal<string[]>([]);
   activeTab = signal<'all' | 'mine'>('all');
-  
-  // Sincronizado automáticamente con el servicio central
+
   isLoggedIn = computed(() => !!this.authService.currentUser());
 
 
@@ -62,7 +61,7 @@ export class CommunitiesComponent implements OnInit {
 
 
     if (isMine && !userId) {
-      this.communities.set([]); // Limpiamos para que no se vean las de "Todas"
+      this.communities.set([]);
       Swal.fire({
         title: 'Error',
         text: 'Debes iniciar sesión para ver tus comunidades',
@@ -71,7 +70,7 @@ export class CommunitiesComponent implements OnInit {
         color: '#ffffff',
         confirmButtonColor: '#7c3aed'
       });
-      return; // Nos quedamos en la pestaña vacía con el error
+      return;
     }
 
 

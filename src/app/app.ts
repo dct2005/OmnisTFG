@@ -15,7 +15,6 @@ import { AuthService } from './services/auth';
 export class App {
   protected readonly title = signal('Login');
 
-  // Señal que controla si la navbar se ve o no (por defecto true)
   showNavbar = signal(true);
 
   private router = inject(Router);
@@ -23,7 +22,6 @@ export class App {
   private authService = inject(AuthService);
 
   constructor() {
-    // Escuchamos cada vez que la navegación termina
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
