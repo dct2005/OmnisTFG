@@ -36,7 +36,7 @@ export class Pagos implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -80,7 +80,7 @@ export class Pagos implements OnInit {
 
     if (this.metodoSeleccionado === 'tarjeta') {
       if (!this.numTarjeta || !this.caducidad || !this.nombreTarjeta || !this.cvv ||
-          !this.billingInfo.firstName || !this.billingInfo.lastName || !this.billingInfo.address || !this.billingInfo.phone) {
+        !this.billingInfo.firstName || !this.billingInfo.lastName || !this.billingInfo.address || !this.billingInfo.phone) {
         Swal.fire({
           title: 'Faltan datos',
           text: 'Por favor, rellena todos los campos (facturación y tarjeta).',
@@ -116,11 +116,7 @@ export class Pagos implements OnInit {
   }
 
   private luhnCheck(num: string): boolean {
-    // Para la simulación académica del TFG, se permite omitir la validación de Luhn real
-    // para facilitar las pruebas con números ficticios de simulación (ej. 1234 1234 1234 1234).
-    // Si se desea activar la validación rigurosa en producción, simplemente cambiar el retorno a:
-    // return (sum % 10) === 0;
-    
+
     let sum = 0;
     let isEven = false;
     for (let i = num.length - 1; i >= 0; i--) {
@@ -157,7 +153,7 @@ export class Pagos implements OnInit {
       }
       const month = parseInt(parts[0], 10);
       const yearRaw = parseInt(parts[1], 10);
-      
+
       const now = new Date();
       const currentMonth = now.getMonth() + 1;
       const currentYear2Digit = parseInt(now.getFullYear().toString().slice(-2), 10);
