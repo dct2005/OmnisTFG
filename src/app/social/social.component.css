@@ -181,6 +181,7 @@
   width: 50px;
   height: 50px;
   margin-right: 1.2rem;
+  flex-shrink: 0;
 }
 
 .user-avatar {
@@ -463,6 +464,7 @@
   position: relative;
   width: 40px;
   height: 40px;
+  flex-shrink: 0;
 }
 
 .mini-avatar {

@@ -143,15 +143,6 @@ export class ProfileComponent implements OnDestroy {
     if (estado === 'en-linea') return 'En línea';
     if (estado === 'ausente') return 'Ausente';
     
-    // Tanto invisible como desconectado muestran "Desconectado"
-    // Pero desconectado muestra el tiempo transcurrido
-    if (estado === 'desconectado' && user?.last_activity) {
-      // Usamos currentTime() para que el computed se reevalúe periódicamente
-      this.currentTime(); 
-      const timeStr = this.formatRelativeTime(new Date(user.last_activity));
-      return `Desconectado hace ${timeStr}`;
-    }
-    
     return 'Desconectado';
   });
 

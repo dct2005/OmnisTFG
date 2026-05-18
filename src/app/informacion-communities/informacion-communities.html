@@ -14,13 +14,7 @@
                     } @else {
                         <input [(ngModel)]="editData.name" class="edit-input-title" placeholder="Nombre de la comunidad">
                     }
-                    <div class="community-level-hud" *ngIf="communityData">
-                        <div class="level-badge">NIVEL {{ communityLevel }}</div>
-                        <div class="xp-track">
-                            <div class="xp-fill" [style.width.%]="communityProgress"></div>
-                            <span class="xp-label">{{ nextLevelXp }} XP para el siguiente nivel</span>
-                        </div>
-                    </div>
+
                     <p class="verified-tag">
                         @if (communityData?.is_official) {
                         <span class="material-icons-round text-sm"
