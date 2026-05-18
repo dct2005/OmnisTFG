@@ -1043,7 +1043,7 @@ module.exports = async function handler(req, res) {
                     RETURNING id, username, email, peppix, estado, role, created_at
                 `;
                 const user = inserted[0];
-                const token = jwt.sign({ id: user.id, email: user.email, username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+                const token = jwt.sign({ id: user.id, email: user.email, username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '7d' });
                 return res.status(201).json({
                     message: 'Registrado correctamente',
                     token,
@@ -1060,7 +1060,7 @@ module.exports = async function handler(req, res) {
                 const valid = await bcrypt.compare(password, user.password);
                 if (!valid) return res.status(401).json({ error: 'Contraseña incorrecta' });
 
-                const token = jwt.sign({ id: user.id, email: user.email, username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+                const token = jwt.sign({ id: user.id, email: user.email, username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '7d' });
                 return res.status(200).json({
                     token, message: 'Login exitoso', user: {
                         id: user.id,
@@ -1103,7 +1103,7 @@ module.exports = async function handler(req, res) {
                     }
                 }
 
-                const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+                const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: '7d' });
                 return res.status(200).json({
                     token, message: 'Login con Google exitoso', user: {
                         id: user.id,
