@@ -55,6 +55,8 @@ module.exports = async function handler(req, res) {
                 LIMIT 50
             `;
 
+
+
             return res.status(200).json({
                 top_buyers: topBuyers.map(u => ({ ...u, count: parseInt(u.count, 10) })),
                 top_communities: topCommunities.map(u => ({ ...u, count: parseInt(u.count, 10) })),
