@@ -52,6 +52,10 @@
 
 /*Barra de navegación*/
 
+.mobile-profile-menu {
+  display: none;
+}
+
 .nav-link {
   color: #fff;
   text-decoration: none;
@@ -227,7 +231,62 @@
   }
 
   .user-profile-btn {
-    height: 42px;
+    display: none !important;
+  }
+
+  .mobile-profile-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+    width: 100%;
+  }
+
+  .mobile-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    width: 80%;
+    margin: 0 auto 10px auto;
+  }
+
+  .mobile-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 0 2rem;
+  }
+
+  .mobile-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #a855f7;
+  }
+
+  .mobile-user-name {
+    color: white;
+    font-family: 'Audiowide', cursive;
+    font-size: 1rem;
+  }
+
+  .mobile-sub-link {
+    font-size: 0.85rem !important;
+    color: #b2bec3 !important;
+    text-transform: none !important;
+    padding-left: 2rem;
+  }
+
+  .mobile-sub-link:hover {
+    color: white !important;
+  }
+
+  .mobile-sub-link.logout-link {
+    color: #ff7675 !important;
+    cursor: pointer;
+    font-weight: bold;
   }
 }
 

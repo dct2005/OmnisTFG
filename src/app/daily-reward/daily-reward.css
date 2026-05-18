@@ -60,6 +60,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 50;
 }
 
 .close-btn:hover {
@@ -259,4 +260,24 @@
     font-size: 0.9rem;
     color: #64748b;
     font-weight: 500;
+}
+
+@media (max-width: 480px) {
+    .reward-modal {
+        padding: 40px 20px;
+    }
+    
+    .wheel-container {
+        width: 280px;
+        height: 280px;
+    }
+
+    .close-btn {
+        top: 15px;
+        right: 15px;
+    }
+
+    .title {
+        font-size: 1.8rem;
+    }
 }

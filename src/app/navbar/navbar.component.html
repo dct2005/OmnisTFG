@@ -20,6 +20,23 @@
         } @else {
         <a routerLink="/admin" class="nav-link admin-link" routerLinkActive="active" (click)="closeMobileMenu()">Administración</a>
         }
+
+        @if (isLoggedIn()) {
+        <div class="mobile-profile-menu">
+            <div class="mobile-divider"></div>
+            <div class="mobile-profile-header">
+                <img [src]="authService.currentUser()?.profile_image || 'https://ui-avatars.com/api/?name=' + usernameValue() + '&background=0d1b2a&color=fff'" class="mobile-user-avatar">
+                <span class="mobile-user-name">{{ usernameValue() }}</span>
+            </div>
+            
+            @if (authService.currentUser()?.role !== 'administrador') {
+                <a [routerLink]="['/perfil', usernameValue()]" class="nav-link mobile-sub-link" (click)="closeMobileMenu()">Ver mi perfil</a>
+                <a routerLink="/account" class="nav-link mobile-sub-link" (click)="closeMobileMenu()">Cuenta</a>
+                <a [routerLink]="['/catalogo']" [queryParams]="{tab: 'mine'}" class="nav-link mobile-sub-link" (click)="closeMobileMenu()">Mis Juegos</a>
+            }
+            <a class="nav-link mobile-sub-link logout-link" (click)="logout($event); closeMobileMenu()">Cerrar Sesión</a>
+        </div>
+        }
     </div>
 
     <div class="auth-buttons">
