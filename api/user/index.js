@@ -32,11 +32,16 @@ module.exports = async function handler(req, res) {
 
         async function verifyToken(req) {
             const authHeader = req.headers.authorization;
+            console.log('[verifyToken] authHeader:', authHeader);
             if (!authHeader) return null;
             const token = authHeader.split(' ')[1];
+            console.log('[verifyToken] token:', token);
             try {
-                return jwt.verify(token, SECRET_KEY);
+                const decoded = jwt.verify(token, SECRET_KEY);
+                console.log('[verifyToken] decoded:', decoded);
+                return decoded;
             } catch (e) {
+                console.error('[verifyToken] JWT Verification Error:', e.message);
                 return null;
             }
         }
@@ -1206,10 +1211,26 @@ module.exports = async function handler(req, res) {
 
             if (action === 'update-profile-image') {
                 const { profileImage } = req.body;
+                console.log('[update-profile-image] email:', email, 'profileImage length:', profileImage?.length);
                 if (!email || !profileImage) return res.status(400).json({ error: 'Faltan datos' });
 
                 const decoded = await verifyToken(req);
-                if (!decoded || decoded.email !== email) {
+                console.log('[update-profile-image] decoded:', decoded);
+                if (!decoded) {
+                    return res.status(403).json({ error: 'Token inválido o expirado' });
+                }
+
+                const targetUsers = await sql`SELECT id, email FROM users WHERE email = ${email}`;
+                if (targetUsers.length === 0) {
+                    return res.status(404).json({ error: 'User no encontrado' });
+                }
+                const targetUser = targetUsers[0];
+
+                const isAuthorized = (decoded.id === targetUser.id) || 
+                                     (decoded.email && decoded.email.toLowerCase() === targetUser.email.toLowerCase());
+
+                if (!isAuthorized) {
+                    console.log('[update-profile-image] Auth fail. decoded:', decoded, 'targetUser:', targetUser);
                     return res.status(403).json({ error: 'No autorizado para cambiar esta foto' });
                 }
 
@@ -1233,7 +1254,20 @@ module.exports = async function handler(req, res) {
                 if (!email || profileMusic === undefined) return res.status(400).json({ error: 'Faltan datos' });
 
                 const decoded = await verifyToken(req);
-                if (!decoded || decoded.email !== email) {
+                if (!decoded) {
+                    return res.status(403).json({ error: 'Token inválido o expirado' });
+                }
+
+                const targetUsers = await sql`SELECT id, email FROM users WHERE email = ${email}`;
+                if (targetUsers.length === 0) {
+                    return res.status(404).json({ error: 'User no encontrado' });
+                }
+                const targetUser = targetUsers[0];
+
+                const isAuthorized = (decoded.id === targetUser.id) || 
+                                     (decoded.email && decoded.email.toLowerCase() === targetUser.email.toLowerCase());
+
+                if (!isAuthorized) {
                     return res.status(403).json({ error: 'No autorizado para cambiar el audio' });
                 }
 
@@ -1274,6 +1308,24 @@ module.exports = async function handler(req, res) {
             if (action === 'update-profile-background') {
                 const { background } = req.body;
                 if (!email || !background) return res.status(400).json({ error: 'Faltan datos' });
+
+                const decoded = await verifyToken(req);
+                if (!decoded) {
+                    return res.status(403).json({ error: 'Token inválido o expirado' });
+                }
+
+                const targetUsers = await sql`SELECT id, email FROM users WHERE email = ${email}`;
+                if (targetUsers.length === 0) {
+                    return res.status(404).json({ error: 'User no encontrado' });
+                }
+                const targetUser = targetUsers[0];
+
+                const isAuthorized = (decoded.id === targetUser.id) || 
+                                     (decoded.email && decoded.email.toLowerCase() === targetUser.email.toLowerCase());
+
+                if (!isAuthorized) {
+                    return res.status(403).json({ error: 'No autorizado para cambiar el fondo' });
+                }
 
                 const updated = await sql`
                     UPDATE users 
