@@ -954,8 +954,8 @@ export class ProfileComponent implements OnDestroy {
           next: (res) => {
             console.log('Imagen actualizada');
             if (res.user) {
-              this.viewedUser.set(res.user);
-              this.authService.currentUser.set(res.user);
+              this.viewedUser.set({ ...this.viewedUser(), ...res.user });
+              this.authService.currentUser.set({ ...this.authService.currentUser(), ...res.user });
             }
             Swal.fire({
               icon: 'success',
@@ -1013,8 +1013,8 @@ export class ProfileComponent implements OnDestroy {
           next: (res) => {
             console.log('Fondo actualizado');
             if (res.user) {
-              this.viewedUser.set(res.user);
-              this.authService.currentUser.set(res.user);
+              this.viewedUser.set({ ...this.viewedUser(), ...res.user });
+              this.authService.currentUser.set({ ...this.authService.currentUser(), ...res.user });
             }
             Swal.fire({
               icon: 'success',
