@@ -489,7 +489,7 @@ export class ProfileComponent implements OnDestroy {
     this.gameService.getGameById(gameId).subscribe({
       next: (game: Game) => {
         let coverUrl = game.cover?.url || '';
-        if (coverUrl.startsWith('
+        if (coverUrl.startsWith('//')) {
           coverUrl = 'https:' + coverUrl;
         }
 
@@ -657,7 +657,7 @@ export class ProfileComponent implements OnDestroy {
 
           games.forEach(g => {
             let coverUrl = g.cover?.url || 'https://placehold.co/100x120';
-            if (coverUrl.startsWith('//')) cubiertaUrl = 'https:' + cubiertaUrl;
+            if (coverUrl.startsWith('//')) coverUrl = 'https:' + coverUrl;
             
             const pDate = new Date(g.purchaseDate).toLocaleDateString();
 
