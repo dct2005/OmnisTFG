@@ -899,38 +899,165 @@ export class ProfileComponent implements OnDestroy {
     }
   }
 
+  compressImage(file: File, maxWidth: number, maxHeight: number, quality: number): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            resolve(e.target.result as string);
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+          resolve(compressedBase64);
+        };
+        img.onerror = (err) => reject(err);
+        img.src = e.target.result as string;
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  }
+
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64Image = reader.result as string;
-      this.authService.updateProfileImage(base64Image).subscribe({
-        next: (res) => {
-          console.log('Imagen actualizada');
-        },
-        error: (err) => console.error('Error subiendo imagen:', err)
+    Swal.fire({
+      title: 'Procesando imagen...',
+      text: 'Comprimiendo y subiendo foto de perfil',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      background: '#0d1b2a',
+      color: '#ffffff'
+    });
+
+    this.compressImage(file, 400, 400, 0.85)
+      .then(base64Image => {
+        this.authService.updateProfileImage(base64Image).subscribe({
+          next: (res) => {
+            console.log('Imagen actualizada');
+            if (res.user) {
+              this.viewedUser.set(res.user);
+              this.authService.currentUser.set(res.user);
+            }
+            Swal.fire({
+              icon: 'success',
+              title: 'Foto actualizada',
+              text: '¡Tu foto de perfil ha sido actualizada con éxito!',
+              background: '#0d1b2a',
+              color: '#ffffff',
+              confirmButtonColor: '#00f2ff'
+            });
+          },
+          error: (err) => {
+            console.error('Error subiendo imagen:', err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error de servidor',
+              text: 'No se pudo subir la foto de perfil al servidor.',
+              background: '#0d1b2a',
+              color: '#ffffff',
+              confirmButtonColor: '#00f2ff'
+            });
+          }
+        });
+      })
+      .catch(err => {
+        console.error('Error al comprimir imagen:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de procesamiento',
+          text: 'No se pudo procesar la imagen seleccionada.',
+          background: '#0d1b2a',
+          color: '#ffffff',
+          confirmButtonColor: '#00f2ff'
+        });
       });
-    };
-    reader.readAsDataURL(file);
   }
 
   onBackgroundSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64Image = reader.result as string;
-      this.authService.updateProfileBackground(base64Image).subscribe({
-        next: (res) => {
-          console.log('Fondo actualizado');
-        },
-        error: (err) => console.error('Error subiendo fondo:', err)
+    Swal.fire({
+      title: 'Procesando fondo...',
+      text: 'Comprimiendo y subiendo fondo de perfil',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      background: '#0d1b2a',
+      color: '#ffffff'
+    });
+
+    this.compressImage(file, 1200, 600, 0.75)
+      .then(base64Image => {
+        this.authService.updateProfileBackground(base64Image).subscribe({
+          next: (res) => {
+            console.log('Fondo actualizado');
+            if (res.user) {
+              this.viewedUser.set(res.user);
+              this.authService.currentUser.set(res.user);
+            }
+            Swal.fire({
+              icon: 'success',
+              title: 'Fondo actualizado',
+              text: '¡Tu fondo de perfil ha sido actualizado con éxito!',
+              background: '#0d1b2a',
+              color: '#ffffff',
+              confirmButtonColor: '#00f2ff'
+            });
+          },
+          error: (err) => {
+            console.error('Error subiendo fondo:', err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error de servidor',
+              text: 'No se pudo subir el fondo de perfil al servidor.',
+              background: '#0d1b2a',
+              color: '#ffffff',
+              confirmButtonColor: '#00f2ff'
+            });
+          }
+        });
+      })
+      .catch(err => {
+        console.error('Error al comprimir fondo:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de procesamiento',
+          text: 'No se pudo procesar la imagen de fondo seleccionada.',
+          background: '#0d1b2a',
+          color: '#ffffff',
+          confirmButtonColor: '#00f2ff'
+        });
       });
-    };
-    reader.readAsDataURL(file);
   }
 
   onMusicSelected(event: any) {
