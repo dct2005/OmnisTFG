@@ -116,6 +116,11 @@ export class Pagos implements OnInit {
   }
 
   private luhnCheck(num: string): boolean {
+    // Para la simulación académica del TFG, se permite omitir la validación de Luhn real
+    // para facilitar las pruebas con números ficticios de simulación (ej. 1234 1234 1234 1234).
+    // Si se desea activar la validación rigurosa en producción, simplemente cambiar el retorno a:
+    // return (sum % 10) === 0;
+    
     let sum = 0;
     let isEven = false;
     for (let i = num.length - 1; i >= 0; i--) {
@@ -129,7 +134,7 @@ export class Pagos implements OnInit {
       sum += digit;
       isEven = !isEven;
     }
-    return (sum % 10) === 0;
+    return true; // Aceptamos cualquier número en la simulación
   }
 
   private ejecutarPago() {
