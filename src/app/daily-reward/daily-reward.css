@@ -14,8 +14,13 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .reward-modal {
@@ -28,7 +33,7 @@
     text-align: center;
     position: relative;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
-                0 0 80px rgba(124, 58, 237, 0.15);
+        0 0 80px rgba(124, 58, 237, 0.15);
     color: white;
     overflow: hidden;
 }
@@ -63,6 +68,7 @@
     z-index: 50;
 }
 
+/*asd*/
 .close-btn:hover {
     background: rgba(255, 255, 255, 0.1);
     color: #fff;
@@ -102,8 +108,15 @@
 }
 
 @keyframes celebrate {
-    0% { transform: scale(0.5); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .wheel-container {
@@ -114,7 +127,7 @@
     padding: 10px;
     background: rgba(30, 41, 59, 0.5);
     border-radius: 50%;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .wheel-pointer {
@@ -136,8 +149,8 @@
     border-radius: 50%;
     position: relative;
     border: 12px solid #0f172a;
-    box-shadow: 0 0 40px rgba(0,0,0,0.8),
-                0 0 0 2px rgba(124, 58, 237, 0.5);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8),
+        0 0 0 2px rgba(124, 58, 237, 0.5);
     transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1);
     overflow: hidden;
     background: #0f172a;
@@ -150,16 +163,14 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: conic-gradient(
-        #1e1b4b 0deg 45deg,    
-        #312e81 45deg 90deg,   
-        #1e293b 90deg 135deg,  
-        #4338ca 135deg 180deg, 
-        #1e1b4b 180deg 225deg, 
-        #312e81 225deg 270deg, 
-        #7c3aed 270deg 315deg, 
-        #4338ca 315deg 360deg  
-    );
+    background: conic-gradient(#1e1b4b 0deg 45deg,
+            #312e81 45deg 90deg,
+            #1e293b 90deg 135deg,
+            #4338ca 135deg 180deg,
+            #1e1b4b 180deg 225deg,
+            #312e81 225deg 270deg,
+            #7c3aed 270deg 315deg,
+            #4338ca 315deg 360deg);
 }
 
 .wheel-divider {
@@ -200,7 +211,7 @@
     transform-origin: left center;
     white-space: nowrap;
     letter-spacing: 0.5px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .spin-btn {
@@ -214,7 +225,7 @@
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4),
-                inset 0 -4px 0 rgba(0,0,0,0.2);
+        inset 0 -4px 0 rgba(0, 0, 0, 0.2);
     text-transform: uppercase;
     letter-spacing: 2px;
     position: relative;
@@ -228,7 +239,7 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     transform: rotate(45deg);
     transition: 0.5s;
     left: -150%;
@@ -266,7 +277,7 @@
     .reward-modal {
         padding: 40px 20px;
     }
-    
+
     .wheel-container {
         width: 280px;
         height: 280px;
